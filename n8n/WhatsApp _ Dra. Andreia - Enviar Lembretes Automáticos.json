@@ -1,0 +1,147 @@
+{
+  "name": "WhatsApp / Dra. Andreia - Enviar Lembretes Automáticos",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "id": "cdb5dd54-2e7f-4959-bc13-cb50788a7100",
+      "name": "A cada 15 minutos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT r.id as reminder_id, r.tipo, r.mensagem, p.nome as nome_paciente, p.telefone as telefone_paciente, a.data_consulta, a.hora_consulta, d.nome as nome_dentista\nFROM dra_andreia.lembretes r\nJOIN dra_andreia.pacientes p ON r.id_paciente = p.id\nLEFT JOIN dra_andreia.agendamentos a ON r.id_agendamento = a.id\nLEFT JOIN dra_andreia.dentistas d ON a.id_dentista = d.id\nWHERE r.status = 'pendente'\n  AND r.agendado_para <= NOW()\n  AND r.tentativas < 3\nORDER BY r.agendado_para\nLIMIT 10;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [240, 0],
+      "id": "9e17cfb5-9559-428d-8f3e-ab03b6819b00",
+      "name": "Buscar Lembretes Pendentes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst lembretes = items.filter(l => l.json.reminder_id);\n\nif (lembretes.length === 0) {\n  return [];\n}\n\nreturn lembretes.map(l => {\n  const d = l.json;\n  let message = d.mensagem;\n\n  if (!message) {\n    const date = d.data_consulta ? new Date(d.data_consulta).toLocaleDateString('pt-BR') : '';\n    const time = d.hora_consulta ? d.hora_consulta.substring(0,5) : '';\n    const dentist = d.nome_dentista || '';\n\n    switch (d.tipo) {\n      case 'consulta_24h':\n        message = `Olá ${d.nome_paciente}! 😊 Lembramos que você tem consulta amanhã (${date}) às ${time} com Dr(a). ${dentist} no consultório da Dra. Andreia. Confirme sua presença respondendo SIM. Para cancelar ou reagendar, fale conosco!`;\n        break;\n      case 'consulta_1h':\n        message = `${d.nome_paciente}, sua consulta é em 1 hora! ⏰ Às ${time} com Dr(a). ${dentist}. Estamos esperando você! 😊`;\n        break;\n      case 'retorno':\n        message = `Olá ${d.nome_paciente}! 🦷 Está na hora do seu retorno. Agende sua consulta conosco pelo WhatsApp!`;\n        break;\n      default:\n        message = `Olá ${d.nome_paciente}! 😊 Você tem um lembrete do consultório da Dra. Andreia. Entre em contato para mais informações.`;\n    }\n  }\n\n  return { json: { reminder_id: d.reminder_id, phone: d.telefone_paciente, message } };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 0],
+      "id": "99e0f3a3-dcba-4a0b-b74c-1db45cf8b200",
+      "name": "Preparar Mensagens"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Dra Andreia Mota Mussi",
+        "remoteJid": "={{ $json.phone }}",
+        "messageText": "={{ $json.message }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [752, 0],
+      "id": "354f451c-80ed-4fb6-bd30-0aa25dcd9100",
+      "name": "Enviar Lembrete WhatsApp",
+      "credentials": {
+        "evolutionApi": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE dra_andreia.lembretes SET status = 'enviado', enviado_em = NOW(), tentativas = tentativas + 1 WHERE id = $1::bigint;",
+        "options": {
+          "queryReplacement": "={{ $json.reminder_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [992, 0],
+      "id": "ac933fe3-4280-4c3f-b6e6-0ce7a64a5900",
+      "name": "Marcar como Enviado",
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "A cada 15 minutos": {
+      "main": [
+        [
+          {
+            "node": "Buscar Lembretes Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Lembretes Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Preparar Mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Mensagens": {
+      "main": [
+        [
+          {
+            "node": "Enviar Lembrete WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Lembrete WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Marcar como Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

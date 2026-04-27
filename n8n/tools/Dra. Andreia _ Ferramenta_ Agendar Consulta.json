@@ -1,0 +1,112 @@
+{
+  "name": "Dra. Andreia / Ferramenta: Agendar Consulta",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            { "name": "patient_phone", "type": "string" },
+            { "name": "patient_name", "type": "string" },
+            { "name": "dentist_id", "type": "string" },
+            { "name": "procedure_id", "type": "string" },
+            { "name": "date", "type": "string" },
+            { "name": "time", "type": "string" },
+            { "name": "notes", "type": "string" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0],
+      "id": "a1b00f7a-99e3-4034-94ea-595ea9da6305",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nconst patientPhone = input.patient_phone || input.telefone_paciente || null;\nconst patientName = input.patient_name || input.nome_paciente || null;\nconst dentistId = input.dentist_id || input.id_dentista || null;\nconst procedureId = input.procedure_id || input.id_procedimento || null;\nconst date = input.date || input.data || null;\nconst time = input.time || input.horario || null;\nconst notes = input.notes || input.observacoes || ' ';\n\nconst errors = [];\nif (!patientPhone) errors.push('telefone do paciente');\nif (!patientName) errors.push('nome do paciente');\nif (!dentistId) errors.push('ID do dentista');\nif (!date) errors.push('data da consulta (YYYY-MM-DD)');\nif (!time) errors.push('horário (HH:MM)');\n\nif (errors.length > 0) {\n  return [{ json: { error: true, message: `Dados obrigatórios faltando: ${errors.join(', ')}. Peça essas informações ao paciente.` } }];\n}\n\nreturn [{ json: { patient_phone: patientPhone, patient_name: patientName, dentist_id: String(parseInt(dentistId)), procedure_id: procedureId ? String(parseInt(procedureId)) : ' ', date, time, notes } }];",
+        "inputIndex": 0
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [224, 0],
+      "id": "ab07b4ba-fa50-4aaf-af40-ed3e243bce5f",
+      "name": "Parsear Entrada"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM dra_andreia.criar_agendamento_whatsapp($1::varchar, $2::varchar, $3::bigint, NULLIF(TRIM($4::text), '')::bigint, $5::date, $6::time, NULLIF(TRIM($7::text), ''));",
+        "options": {
+          "queryReplacement": "={{ [$json.patient_phone, $json.patient_name, $json.dentist_id, $json.procedure_id, $json.date, $json.time, $json.notes] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [448, 0],
+      "id": "71430cd7-af11-4a11-93b8-906b97968a55",
+      "name": "Criar Agendamento",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (result.error) {\n  return [{ json: { resultado: result.mensagem } }];\n}\n\nif (result.sucesso) {\n  return [{ json: { resultado: `✅ ${result.mensagem} (ID: ${result.id_agendamento}). Enviaremos um lembrete 24h antes. Para cancelar, informe o ID do agendamento.` } }];\n} else {\n  return [{ json: { resultado: `❌ ${result.mensagem}` } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [672, 0],
+      "id": "c915d154-c1a0-4590-bce3-951c478fac60",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parsear Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Entrada": {
+      "main": [
+        [
+          {
+            "node": "Criar Agendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Agendamento": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

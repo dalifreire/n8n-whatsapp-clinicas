@@ -1,0 +1,80 @@
+{
+  "name": "Dra. Andreia / Ferramenta: Listar Especialidades",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0],
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567800",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM dra_andreia.listar_especialidades_disponiveis();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [240, 0],
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678800",
+      "name": "Buscar Especialidades",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst especialidades = items.filter(i => i.json.especialidade);\n\nif (especialidades.length === 0) {\n  return [{ json: { resultado: 'Nenhuma especialidade cadastrada no momento.' } }];\n}\n\nlet resultado = '🦷 Especialidades disponíveis no consultório:\\n\\n';\nfor (const e of especialidades) {\n  resultado += `• ${e.json.especialidade} (${e.json.dentistas_disponiveis} dentista${e.json.dentistas_disponiveis > 1 ? 's' : ''})\\n`;\n  resultado += `  Profissionais: ${e.json.nomes_dentistas}\\n`;\n}\n\nresultado += '\\nUse a especialidade desejada ao buscar horários disponíveis.';\n\nreturn [{ json: { resultado } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 0],
+      "id": "c3d4e5f6-a7b8-9012-cdef-123456789000",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Especialidades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Especialidades": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

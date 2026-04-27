@@ -1,0 +1,74 @@
+{
+  "documentos": [
+    {
+      "id": "dra_001_sobre",
+      "categoria": "sobre_consultorio",
+      "titulo": "Quem é a Dra. Andreia Mota Mussi?",
+      "conteudo": "A Dra. Andreia Mota Mussi é cirurgiã-dentista, especialista em Clínica Geral e Prótese Dentária. Atende no Complexo Odonto Médico Itaigara, em Salvador - BA. Oferece atendimento humanizado e de excelência, com foco em reabilitação oral e estética dental.",
+      "metadata": {
+        "fonte": "website",
+        "atualizado": "2026-03-04"
+      }
+    },
+    {
+      "id": "dra_002_contato_endereco",
+      "categoria": "informacoes_contato",
+      "titulo": "Endereço e Localização do Consultório",
+      "conteudo": "Endereço: Avenida Antônio Carlos Magalhães, 585 – Ed. Pierre Fauchard, Sala 709 - Itaigara, Salvador - BA, CEP 41825-907. O consultório está localizado no Complexo Odonto Médico Itaigara, um centro de referência em saúde oral em Salvador.",
+      "metadata": {
+        "fonte": "website",
+        "atualizado": "2026-03-04"
+      }
+    },
+    {
+      "id": "dra_003_contato_telefone",
+      "categoria": "informacoes_contato",
+      "titulo": "Telefone e WhatsApp para Contato",
+      "conteudo": "Para entrar em contato com o consultório da Dra. Andreia Mota Mussi: Telefone: (71) 3353-7900. Recomendamos usar WhatsApp para uma resposta mais rápida e agendamentos.",
+      "metadata": {
+        "fonte": "website",
+        "atualizado": "2026-03-04"
+      }
+    },
+    {
+      "id": "dra_004_horario_funcionamento",
+      "categoria": "horario_operacional",
+      "titulo": "Horário de Funcionamento",
+      "conteudo": "Horário de atendimento: Segunda a Sexta-feira, das 08:00 às 18:00. O consultório não funciona aos sábados, domingos e feriados.",
+      "metadata": {
+        "fonte": "website",
+        "atualizado": "2026-03-04"
+      }
+    },
+    {
+      "id": "dra_005_especialidades",
+      "categoria": "servicos",
+      "titulo": "Especialidades e Serviços Oferecidos",
+      "conteudo": "A Dra. Andreia Mota Mussi oferece serviços nas áreas de: Clínica Geral (avaliações, restaurações, limpezas profissionais), Prótese Dentária (coroas, pontes fixas, próteses removíveis e totais), Reabilitação Oral (tratamentos complexos para restaurar função e estética) e procedimentos de Estética Dental.",
+      "metadata": {
+        "fonte": "website",
+        "atualizado": "2026-03-04"
+      }
+    },
+    {
+      "id": "dra_006_complexo_omi",
+      "categoria": "sobre_consultorio",
+      "titulo": "Complexo Odonto Médico Itaigara",
+      "conteudo": "O Complexo Odonto Médico Itaigara (OMI) é um centro de referência em saúde localizado na Avenida Antônio Carlos Magalhães, 585, no bairro Itaigara, Salvador - BA. Abriga médicos, odontólogos, clínicas especializadas e lojas de produtos de saúde. Funciona de segunda a sábado, das 7h às 22h. Telefone geral do complexo: (71) 3354-3980.",
+      "metadata": {
+        "fonte": "website",
+        "atualizado": "2026-03-04"
+      }
+    },
+    {
+      "id": "dra_007_instagram",
+      "categoria": "redes_sociais",
+      "titulo": "Redes Sociais da Dra. Andreia",
+      "conteudo": "Acompanhe a Dra. Andreia Mota Mussi nas redes sociais: Instagram @andreapereiramota. No perfil, ela compartilha conteúdos sobre saúde bucal, dicas de cuidados dentários e informações sobre tratamentos disponíveis.",
+      "metadata": {
+        "fonte": "instagram",
+        "atualizado": "2026-03-04"
+      }
+    }
+  ]
+}

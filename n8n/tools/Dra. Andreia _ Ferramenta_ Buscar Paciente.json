@@ -1,0 +1,84 @@
+{
+  "name": "Dra. Andreia / Ferramenta: Buscar Paciente",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            { "name": "patient_phone", "type": "string" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0],
+      "id": "ec496d9e-797d-4b13-938f-21e5b2270700",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM dra_andreia.buscar_paciente_por_telefone($1::varchar);",
+        "options": {
+          "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [240, 0],
+      "id": "60dd2116-e5fc-40a5-82f1-bc027b809300",
+      "name": "Buscar Paciente",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result.patient_id) {\n  return [{ json: { resultado: 'Paciente não encontrado no cadastro. Pode ser um novo paciente.' } }];\n}\n\nlet resultado = `Paciente encontrado:\\n`;\nresultado += `👤 ${result.name}\\n`;\nresultado += `📱 ${result.phone}\\n`;\nif (result.birth_date) resultado += `🎂 ${new Date(result.birth_date).toLocaleDateString('pt-BR')}\\n`;\nif (result.health_insurance) resultado += `🏥 Convênio: ${result.health_insurance}\\n`;\nif (result.allergies && result.allergies.length > 0) resultado += `⚠️ Alergias: ${result.allergies.join(', ')}\\n`;\nif (result.medical_conditions && result.medical_conditions.length > 0) resultado += `🩺 Condições: ${result.medical_conditions.join(', ')}\\n`;\nresultado += `📊 Total de consultas: ${result.total_appointments}\\n`;\nif (result.active_treatments > 0) resultado += `🔄 Tratamentos ativos: ${result.active_treatments}\\n`;\nif (result.last_appointment) resultado += `📅 Última consulta: ${new Date(result.last_appointment).toLocaleDateString('pt-BR')}\\n`;\n\nreturn [{ json: { resultado, patient_id: result.patient_id } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 0],
+      "id": "b5812769-54cd-471d-b0b2-a2d79afdeef8",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Paciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Paciente": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

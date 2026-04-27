@@ -1,0 +1,107 @@
+{
+  "name": "Dra. Andreia / Ferramenta: Cancelar Consulta",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            { "name": "appointment_id", "type": "string" },
+            { "name": "patient_phone", "type": "string" },
+            { "name": "reason", "type": "string" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0],
+      "id": "ccc7f9ba-e4ee-4127-a59b-acdbf9352100",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nconst appointmentId = input.appointment_id || input.id_agendamento || null;\nconst patientPhone = input.patient_phone || input.telefone_paciente || null;\nconst reason = input.reason || input.motivo || ' ';\n\nif (!appointmentId || !patientPhone) {\n  return [{ json: { error: true, message: 'É necessário o ID do agendamento e o telefone do paciente para cancelar.' } }];\n}\n\nreturn [{ json: { appointment_id: parseInt(appointmentId), patient_phone: patientPhone, reason } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [224, 0],
+      "id": "92abd1e8-e880-49de-9d7d-4d39ab855600",
+      "name": "Parsear Entrada"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM dra_andreia.cancelar_agendamento($1::bigint, $2::varchar, NULLIF(TRIM($3::text), ''));",
+        "options": {
+          "queryReplacement": "={{ [$json.appointment_id, $json.patient_phone, $json.reason] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [448, 0],
+      "id": "c62f0473-3a52-4b4d-85a9-5d2654ec4a6d",
+      "name": "Cancelar Agendamento",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (result.error) {\n  return [{ json: { resultado: result.mensagem } }];\n}\n\nif (result.sucesso) {\n  return [{ json: { resultado: `✅ ${result.mensagem}` } }];\n} else {\n  return [{ json: { resultado: `❌ ${result.mensagem}` } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [672, 0],
+      "id": "855e3a29-dbc1-4e7c-8678-40b84b082100",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parsear Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Entrada": {
+      "main": [
+        [
+          {
+            "node": "Cancelar Agendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar Agendamento": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

@@ -1,0 +1,85 @@
+{
+  "name": "Dra. Andreia / Ferramenta: Consultar Agendamentos do Paciente",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            { "name": "patient_phone", "type": "string" },
+            { "name": "status", "type": "string" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0],
+      "id": "1d16a3da-d30b-47cf-8475-fcef9085be00",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM dra_andreia.obter_agendamentos_paciente($1::varchar, NULLIF(TRIM($2::text), ''), 5);",
+        "options": {
+          "queryReplacement": "={{ [$json.patient_phone || $json.telefone_paciente, $json.status || ' '] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [240, 0],
+      "id": "8a57b744-68d8-491b-ab96-5192037b1800",
+      "name": "Buscar Agendamentos",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst agendamentos = items.filter(i => i.json.id_agendamento);\n\nif (agendamentos.length === 0) {\n  return [{ json: { resultado: 'Nenhum agendamento futuro encontrado para este paciente.' } }];\n}\n\nlet resultado = 'Próximos agendamentos:\\n';\nfor (const a of agendamentos) {\n  const d = a.json;\n  const date = new Date(d.data_consulta).toLocaleDateString('pt-BR');\n  resultado += `\\n📋 ID: ${d.id_agendamento}\\n`;\n  resultado += `   📅 ${date} às ${d.hora_consulta.substring(0,5)}\\n`;\n  resultado += `   👨‍⚕️ Dr(a). ${d.nome_dentista} (${d.especialidade_dentista || 'Clínica Geral'})\\n`;\n  if (d.nome_procedimento) resultado += `   🦷 ${d.nome_procedimento}\\n`;\n  resultado += `   Status: ${d.status}\\n`;\n}\n\nreturn [{ json: { resultado } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 0],
+      "id": "f81fa81e-7f42-4ad2-b735-edacd08bcf00",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Agendamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Agendamentos": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}
