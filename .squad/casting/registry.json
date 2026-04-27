@@ -1,0 +1,49 @@
+{
+  "agents": [
+    {
+      "persistent_name": "Bruce",
+      "role": "Lead",
+      "universe": "batman",
+      "created_at": "2026-04-27T17:09:50-03:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Gordon",
+      "role": "Backend / WhatsApp",
+      "universe": "batman",
+      "created_at": "2026-04-27T17:09:50-03:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Lucius",
+      "role": "Workflow Automation",
+      "universe": "batman",
+      "created_at": "2026-04-27T17:09:50-03:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Ivy",
+      "role": "AI Engineer",
+      "universe": "batman",
+      "created_at": "2026-04-27T17:09:50-03:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Penguin",
+      "role": "Database Engineer",
+      "universe": "batman",
+      "created_at": "2026-04-27T17:09:50-03:00",
+      "legacy_named": false,
+      "status": "active"
+    }
+  ],
+  "metadata": {
+    "totalActive": 5,
+    "universe": "batman",
+    "lastUpdated": "2026-04-27T17:09:50-03:00"
+  }
+}

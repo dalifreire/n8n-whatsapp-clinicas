@@ -1,0 +1,7 @@
+{
+  "universeAllowlist": ["batman"],
+  "currentUniverse": "batman",
+  "maxCapacity": 25,
+  "overflowHandling": "diegetic_expansion",
+  "createdAt": "2026-04-27T17:09:50-03:00"
+}
