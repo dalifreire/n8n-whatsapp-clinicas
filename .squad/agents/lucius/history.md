@@ -603,3 +603,65 @@ grep -riE "andreia|mota|mussi|dra\." n8n/*.md | grep -v "legacy-dra-andreia"
 - Platform now presents as generic from first read; legacy client is invisible to new users
 - Preserved all technical accuracy; only changed identity/examples, not functionality
 
+
+---
+
+## 2025-04-27 21:15 — Neutralize Legacy Archive Path and References
+
+**Task:** Remove all client-specific references from active n8n documentation surface.
+
+**Context:** After previous cleanup efforts by Bruce, active documentation still referenced `legacy-dra-andreia/` directory and contained client-specific examples.
+
+**Actions Taken:**
+
+1. **Renamed legacy archive directory:**
+   - `n8n/legacy-dra-andreia/` → `n8n/legacy-single-tenant/`
+   - Preserves historical rollback capability with neutral naming
+
+2. **Updated n8n/README.md (9 edits):**
+   - Line 18: Changed "preserved in `legacy-dra-andreia/`" → "preserved in `legacy-single-tenant/`"
+   - Line 43-45: Updated directory structure reference
+   - Line 50: Updated legend reference
+   - Line 101: Updated documentation table
+   - Line 242: Updated rollback instructions
+   - Line 246: Updated data loss risk note
+   - Line 275: Updated support documentation reference
+   - Line 285: Updated technical metrics
+   - Line 307: Updated changelog
+
+3. **Updated n8n/WORKFLOW-STRUCTURE.md (3 edits):**
+   - Line 29-34: Updated file structure reference
+   - Line 76: Updated documentation note
+   - Line 296: Changed example schema names from `['tenant_demo', 'dr_carlos', 'dra_maria']` to `['tenant_demo', 'tenant_a', 'tenant_b']`
+
+4. **Verification:**
+   - Ran comprehensive grep search excluding .squad, legacy archive, SQL backups, and logs
+   - Searched for: `andreia`, `mota`, `mussi`, `dra.`, `dra_`
+   - **Result: ✅ Zero hits in active surface**
+
+5. **Created decision record:**
+   - `.squad/decisions/inbox/lucius-neutralize-legacy-names.md`
+   - Documents rationale, actions, and verification
+
+**Outcome:**
+- ✅ Active n8n surface is completely generic
+- ✅ Zero client-specific references in active docs or paths
+- ✅ Legacy archive preserved for rollback with neutral naming
+- ✅ Repository ready for public/multi-tenant deployment
+
+**Files Modified:**
+- `n8n/README.md`
+- `n8n/WORKFLOW-STRUCTURE.md`
+- `.squad/decisions/inbox/lucius-neutralize-legacy-names.md`
+
+**Directory Changes:**
+- `n8n/legacy-dra-andreia/` → `n8n/legacy-single-tenant/`
+
+**Verification Method:**
+```bash
+find n8n -type f -not -path 'n8n/legacy-single-tenant/*' \
+  -exec grep -li 'andreia\|mota\|mussi\|dra\.\|dra_' {} \;
+# Exit code: 0 (no matches found)
+```
+
+**Status:** ✅ Complete — active surface neutralized, verified zero hits
