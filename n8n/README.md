@@ -15,7 +15,7 @@ This directory contains **generic multi-tenant workflows** that support unlimite
 - ✅ **Dynamic schema loading** from `clinic_core.tenants` database
 - ✅ **5-layer AI prompt composition** from database configuration
 - ✅ **All 9 tools** parameterized for multi-tenant use
-- ✅ **Original workflows preserved** in `legacy-dra-andreia/` for reference
+- ✅ **Original workflows preserved** in `legacy-single-tenant/` for reference
 
 ---
 
@@ -40,14 +40,14 @@ n8n/
 │   ├── Ferramenta_ Reiniciar Conversa.json
 │   └── Ferramenta_ Resumo Financeiro do Paciente.json
 │
-└── legacy-dra-andreia/                                    # 🔒 Legacy single-tenant artifacts
+└── legacy-single-tenant/                                  # 🔒 Legacy single-tenant artifacts
     ├── LEGACY-MIGRATION-GUIDE.md                         # Legacy migration documentation
     └── [Original workflow files]
 ```
 
 **Legend:**
 - 🆕 = Active generic workflows
-- 🔒 = Archived in `legacy-dra-andreia/` directory for reference only
+- 🔒 = Archived in `legacy-single-tenant/` directory for reference only
 
 ---
 
@@ -98,7 +98,7 @@ Send a WhatsApp message to your test tenant's number and verify:
 |----------|---------|
 | `README.md` | This file — overview & quick start |
 | `WORKFLOW-STRUCTURE.md` | Technical reference, patterns, code examples |
-| `legacy-dra-andreia/LEGACY-MIGRATION-GUIDE.md` | Legacy migration documentation (reference only) |
+| `legacy-single-tenant/LEGACY-MIGRATION-GUIDE.md` | Legacy migration documentation (reference only) |
 
 **Start with:** `WORKFLOW-STRUCTURE.md` for technical details.
 
@@ -238,12 +238,12 @@ See `WORKFLOW-STRUCTURE.md` for complete technical reference.
 
 1. **Deactivate generic workflows** in n8n UI
 2. **Re-activate original workflows from legacy archive:**
-   - Import workflows from `legacy-dra-andreia/` directory
+   - Import workflows from `legacy-single-tenant/` directory
    - Import original tools
 3. **Update webhook** in EvolutionAPI to original path
 
 **Time to rollback:** < 5 minutes  
-**Data loss risk:** None (legacy workflows preserved in `legacy-dra-andreia/`)
+**Data loss risk:** None (legacy workflows preserved in `legacy-single-tenant/`)
 
 ---
 
@@ -272,7 +272,7 @@ See `WORKFLOW-STRUCTURE.md` for complete technical reference.
 
 ### Documentation
 - **Technical Reference:** `WORKFLOW-STRUCTURE.md`
-- **Legacy Migration Guide:** `legacy-dra-andreia/LEGACY-MIGRATION-GUIDE.md`
+- **Legacy Migration Guide:** `legacy-single-tenant/LEGACY-MIGRATION-GUIDE.md`
 - **Team Decisions:** `.squad/decisions.md`
 
 ---
@@ -282,7 +282,7 @@ See `WORKFLOW-STRUCTURE.md` for complete technical reference.
 **Technical:**
 - ✅ Zero hardcoded tenant references in active workflows
 - ✅ All JSON files validated
-- ✅ Legacy workflows archived in `legacy-dra-andreia/`
+- ✅ Legacy workflows archived in `legacy-single-tenant/`
 
 **Business:**
 - 🎯 New professional onboarding: < 1 day
@@ -304,7 +304,7 @@ See `WORKFLOW-STRUCTURE.md` for complete technical reference.
 ### v0.1 (Original) — Single Tenant
 - Original workflows for single professional
 - Hardcoded schema, prompts, instance names
-- Preserved in `legacy-dra-andreia/` for reference
+- Preserved in `legacy-single-tenant/` for reference
 
 ---
 

@@ -26,7 +26,7 @@ n8n/
 │   ├── Ferramenta_ Reiniciar Conversa.json
 │   └── Ferramenta_ Resumo Financeiro do Paciente.json
 │
-├── [LEGACY] legacy-dra-andreia/
+├── [LEGACY] legacy-single-tenant/
 │   ├── README.md
 │   ├── LEGACY-MIGRATION-GUIDE.md                     # Legacy migration documentation
 │   ├── [Original single-tenant workflow files]
@@ -73,7 +73,7 @@ INSERT INTO clinic_core.tenants (tenant_code, schema_name, professional_id, evol
 VALUES ('tenant-demo', 'tenant_demo', 'PROF-001', 'Demo Professional Instance', '5571999999999', 'active');
 ```
 
-**Note:** For onboarding new tenants, use the generic pattern above. Legacy migration documentation is available in `legacy-dra-andreia/` directory.
+**Note:** For onboarding new tenants, use the generic pattern above. Legacy migration documentation is available in `legacy-single-tenant/` directory.
 
 ---
 
@@ -293,7 +293,7 @@ WHERE t.status = 'active'
 
 **Solution:** Whitelist validation in Load Tenant Config node
 ```javascript
-const allowedSchemas = ['tenant_demo', 'dr_carlos', 'dra_maria'];
+const allowedSchemas = ['tenant_demo', 'tenant_a', 'tenant_b'];
 if (!allowedSchemas.includes(schema_name)) {
   throw new Error('Invalid schema');
 }
