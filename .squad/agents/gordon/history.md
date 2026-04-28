@@ -141,3 +141,49 @@
 - Routing rules: `.squad/routing.md`
 - Decisions: `.squad/decisions.md`
 - Project root: `/Users/dalifreire/Documents/BahiaTI/agentes-n8n/clinicas/n8n-whatsapp-clinicas`
+
+---
+
+## 2026-04-27: RAG Schema Isolation Fix (B8 Resolution)
+
+**Context:** Bruce rejected multi-tenant implementation in B8 because RAG scripts assumed a `professional_id` column in tenant `documentos` tables. The ADR mandates schema-per-tenant isolation ONLY—no row-level professional_id filtering.
+
+**Changes Made:**
+
+1. **knowledge_base_indexar.py**
+   - Removed all `professional_id` column checks and conditional logic
+   - Changed CLI flag from `--professional-id` to `--tenant-code` (kept legacy alias)
+   - Updated insert logic: no longer includes professional_id in INSERT statements
+   - Updated similarity search: removed WHERE professional_id clauses
+   - All isolation now via schema selection only: `get_tenant_schema(tenant_code)`
+   - Updated validation to expect NO professional_id column in tenant documentos tables
+
+2. **knowledge_base_atualizar.py**
+   - Added docstring clarifying professional_id is for JSON organization/routing only
+   - Updated DocumentoRAG dataclass comment: professional_id is NOT a DB column
+   - No database interaction changes (script only generates JSON seed data)
+
+3. **knowledge_base_consultorio.py**
+   - Added docstring explaining schema-isolation pattern
+   - Clarified professional_id in document templates is for routing, not DB storage
+   - No functional changes (script generates JSON, doesn't touch DB)
+
+**Key Architectural Principle:**
+- **Tenant selection** happens at schema level: `tenant_code → schema_name → SET search_path`
+- **No row-level filtering:** documentos table has NO professional_id column
+- **JSON metadata** can keep professional_id for routing/organization (not persisted to DB)
+
+**Validation:**
+- All three Python scripts pass syntax validation
+- Aligned with Bruce's ADR Section 3: "RAG Scope Decision — Schema Isolation Only"
+- Backward compatible with seed tenant `dra-andreia` (uses default tenant_code)
+- Explicit errors when tenant config is missing
+
+**Implications for Integration:**
+- n8n workflows must use `clinic_core.get_professional_context(tenant_code)` to get `schema_name`
+- Similarity search functions are `<schema>.buscar_documentos_similares(...)` with NO professional_id param
+- Python CLI now uses: `python knowledge_base_indexar.py --tenant-code dra-andreia`
+
+**Decision Document:** See `.squad/decisions/inbox/gordon-rag-schema-isolation-fix.md`
+
+---

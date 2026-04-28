@@ -1,0 +1,128 @@
+{
+  "name": "Tool: Buscar Horários Disponíveis",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "dentist_id",
+              "type": "string"
+            },
+            {
+              "name": "date",
+              "type": "string"
+            },
+            {
+              "name": "specialty",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "03e8e532-dddb-4413-9990-4c2d33f49517",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Extrair parâmetros\nconst dentistId = input.dentist_id || input.dentistId || ' ';\nconst date = input.date || input.data || null;\nconst specialty = input.specialty || input.especialidade || ' ';\n\nif (!date) {\n  return [{ json: { error: true, message: 'Data é obrigatória. Informe a data desejada (formato: YYYY-MM-DD).' } }];\n}\n\nreturn [{ json: { dentist_id: dentistId, date, specialty } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "20d0c8ce-4353-40a0-bc77-566769abff83",
+      "name": "Parsear Entrada"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  d.id as id_dentista,\n  d.nome as nome_dentista,\n  d.especialidade,\n  s.slot_inicio,\n  s.slot_fim\nFROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.dentistas d\nCROSS JOIN LATERAL {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.obter_slots_disponiveis(d.id, $1::date) s\nWHERE d.ativo = true\n  AND (NULLIF(TRIM($2::text), '') IS NULL OR d.id = NULLIF(TRIM($2::text), '')::bigint)\n  AND (NULLIF(TRIM($3::text), '') IS NULL OR unaccent(lower(d.especialidade)) ILIKE '%' || unaccent(lower($3::text)) || '%' OR EXISTS (SELECT 1 FROM unnest(d.especialidades) e WHERE unaccent(lower(e)) ILIKE '%' || unaccent(lower($3::text)) || '%'))\nORDER BY d.nome, s.slot_inicio\nLIMIT 20;",
+        "options": {
+          "queryReplacement": "={{ [$json.date, $json.dentist_id, $json.specialty] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        0
+      ],
+      "id": "ccdb5cda-1691-4961-ad8a-3bdad3ebfa6c",
+      "name": "Buscar Horários",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst slots = items.filter(i => i.json.nome_dentista);\n\nif (slots.length === 0) {\n  return [{ json: { resultado: 'Nenhum horário disponível encontrado para esta data. Tente outra data ou especialidade.' } }];\n}\n\n// Agrupar por dentista\nconst byDentist = {};\nfor (const s of slots) {\n  const key = s.json.nome_dentista;\n  if (!byDentist[key]) {\n    byDentist[key] = { specialty: s.json.especialidade, id: s.json.id_dentista, slots: [] };\n  }\n  byDentist[key].slots.push(`${s.json.slot_inicio.substring(0,5)} - ${s.json.slot_fim.substring(0,5)}`);\n}\n\nlet resultado = 'Horários disponíveis:\\n';\nfor (const [name, data] of Object.entries(byDentist)) {\n  resultado += `\\nDr(a). ${name} (${data.specialty || 'Clínica Geral'}) - ID: ${data.id}:\\n`;\n  resultado += data.slots.map(s => `  • ${s}`).join('\\n');\n  resultado += '\\n';\n}\n\nreturn [{ json: { resultado } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "67707d96-8414-4630-8450-31fde60cbc9a",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parsear Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Entrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar Horários",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Horários": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

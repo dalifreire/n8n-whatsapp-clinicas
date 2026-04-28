@@ -1,0 +1,95 @@
+{
+  "name": "Tool: Reiniciar Conversa",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "patient_phone"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0549fb0a-bcf9-46bf-93fd-36257c654200",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.reiniciar_conversa($1::varchar);",
+        "options": {
+          "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        0
+      ],
+      "id": "cd6de1fe-0aca-4244-a5c3-feebe46ed100",
+      "name": "Reiniciar Conversa",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (result.success) {\n  return [{ json: { resultado: `Conversa reiniciada com sucesso! O contexto da IA foi limpo (${result.chat_messages_deleted} mensagens de contexto removidas). O histórico de atendimentos anteriores continua salvo. Estou pronta para um novo atendimento. Como posso ajudar?` } }];\n}\n\nreturn [{ json: { resultado: 'Não foi possível reiniciar a conversa. Tente novamente.' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "d90a01b7-d9c0-41c0-9ac4-5466f376ed00",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Reiniciar Conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reiniciar Conversa": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

@@ -5,3 +5,10 @@
 .squad/sessions/
 # Squad: SubSquad activation file (local to this machine)
 .squad-workstream
+__pycache__/
+
+# Migration artifacts and backups (keep tracked files only)
+*.backup
+.multi-tenant-migration-complete.txt
+*_V1_SINGLE_TENANT.sql
+atualizar_knowledge_base.log

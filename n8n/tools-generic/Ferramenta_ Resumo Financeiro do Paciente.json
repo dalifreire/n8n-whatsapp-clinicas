@@ -1,0 +1,96 @@
+{
+  "name": "Tool: Resumo Financeiro do Paciente",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "patient_phone",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c901a239-be8b-4da9-a38e-cd22e8438c00",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.obter_resumo_financeiro_paciente($1::varchar);",
+        "options": {
+          "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        0
+      ],
+      "id": "f6fe577b-649b-4a1b-b3e2-a6735252ef00",
+      "name": "Buscar Financeiro",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nlet resultado = '💰 Resumo Financeiro:\\n';\nresultado += `  Total cobrado: R$ ${parseFloat(result.total_cobrado || 0).toFixed(2)}\\n`;\nresultado += `  Total pago: R$ ${parseFloat(result.total_pago || 0).toFixed(2)}\\n`;\nresultado += `  Pendente: R$ ${parseFloat(result.total_pendente || 0).toFixed(2)}\\n`;\n\nif (parseFloat(result.total_atrasado) > 0) {\n  resultado += `  ⚠️ Atrasado: R$ ${parseFloat(result.total_atrasado).toFixed(2)}\\n`;\n}\n\nconst proximos = result.proximos_vencimentos;\nif (proximos && Array.isArray(proximos) && proximos.length > 0) {\n  resultado += '\\n📅 Próximos vencimentos:\\n';\n  for (const p of proximos) {\n    resultado += `  • R$ ${parseFloat(p.valor).toFixed(2)} - ${new Date(p.vencimento).toLocaleDateString('pt-BR')} - ${p.descricao || ''}\\n`;\n  }\n}\n\nreturn [{ json: { resultado } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "178bcb2a-c514-41d7-beca-3facba88d600",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Financeiro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Financeiro": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

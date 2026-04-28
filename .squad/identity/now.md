@@ -1,9 +1,9 @@
 ---
-updated_at: 2026-04-27T20:05:36.282Z
-focus_area: Initial setup
+updated_at: 2026-04-27T18:53:03-03:00
+focus_area: Generic clinic platform implementation
 active_issues: []
 ---
 
 # What We're Focused On
 
-Getting started. Updated by coordinator at session start.
+Recreating the current dentist-specific assistant as a generic clinic assistant platform, with isolated assistant instances per professional on shared infrastructure.

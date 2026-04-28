@@ -1,0 +1,128 @@
+{
+  "name": "Tool: Listar Dentistas e Procedimentos",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "type",
+              "type": "string"
+            },
+            {
+              "name": "specialty",
+              "type": "string"
+            },
+            {
+              "name": "category",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "570d6de4-11c4-4764-bcc0-183d662f4d00",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst type = input.type || input.tipo || 'dentistas';\nconst specialty = input.specialty || input.especialidade || ' ';\nconst category = input.category || input.categoria || ' ';\n\nreturn [{ json: { type, specialty, category } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "a50021aa-3ae2-42b0-a8ad-0e86dd43f100",
+      "name": "Parsear Entrada"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Dentistas\nSELECT 'dentista' as record_type, d.id, d.nome, d.cro, d.especialidade as detail1, array_to_string(d.especialidades, ', ') as detail2, NULL as detail3, NULL::decimal as price\nFROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.dentistas d\nWHERE d.ativo = true\n  AND ($1::text = 'dentistas')\n  AND (NULLIF(TRIM($2::text), '') IS NULL OR d.especialidade ILIKE '%' || $2::text || '%' OR $2::text = ANY(d.especialidades))\n\nUNION ALL\n\n-- Procedimentos\nSELECT 'procedimento' as record_type, p.id, p.nome, p.codigo as cro, p.categoria as detail1, p.descricao as detail2, p.duracao_media_min || ' min' as detail3, p.preco_base as price\nFROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.procedimentos p\nWHERE p.ativo = true\n  AND ($1::text = 'procedimentos')\n  AND (NULLIF(TRIM($3::text), '') IS NULL OR p.categoria ILIKE '%' || $3::text || '%')\n\nORDER BY record_type, nome\nLIMIT 30;",
+        "options": {
+          "queryReplacement": "={{ [$json.type, $json.specialty, $json.category] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        0
+      ],
+      "id": "50dd57e7-e63b-4e42-a9ca-99df056c1400",
+      "name": "Buscar Dados",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst records = items.filter(i => i.json.id);\n\nif (records.length === 0) {\n  return [{ json: { resultado: 'Nenhum registro encontrado.' } }];\n}\n\nconst dentists = records.filter(r => r.json.record_type === 'dentista');\nconst procedures = records.filter(r => r.json.record_type === 'procedimento');\n\nlet resultado = '';\n\nif (dentists.length > 0) {\n  resultado += '👨‍⚕️ Dentistas disponíveis:\\n';\n  for (const d of dentists) {\n    resultado += `  • Dr(a). ${d.json.nome} - ${d.json.detail1 || 'Clínica Geral'} (CRO: ${d.json.cro}) - ID: ${d.json.id}\\n`;\n    if (d.json.detail2) resultado += `    Especialidades: ${d.json.detail2}\\n`;\n  }\n}\n\nif (procedures.length > 0) {\n  resultado += '\\n🦷 Procedimentos disponíveis:\\n';\n  for (const p of procedures) {\n    resultado += `  • ${p.json.nome} (${p.json.detail1}) - ID: ${p.json.id}\\n`;\n    if (p.json.price) resultado += `    💰 R$ ${parseFloat(p.json.price).toFixed(2)} | ⏱️ ${p.json.detail3}\\n`;\n  }\n}\n\nreturn [{ json: { resultado } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "259a71c2-162c-456b-bcee-8686e68c8800",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parsear Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Entrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Dados": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

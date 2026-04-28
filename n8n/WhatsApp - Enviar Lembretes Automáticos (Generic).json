@@ -1,0 +1,196 @@
+{
+  "name": "WhatsApp - Enviar Lembretes Automáticos (Generic)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cdb5dd54-2e7f-4959-bc13-cb50788a7100",
+      "name": "A cada 15 minutos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Fetch reminders across all active tenants via canonical platform function\nSELECT * FROM clinic_core.fetch_due_reminders_all(30);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        0
+      ],
+      "id": "9e17cfb5-9559-428d-8f3e-ab03b6819b00",
+      "name": "Buscar Lembretes Pendentes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst lembretes = items.filter(l => l.json.reminder_id);\n\nif (lembretes.length === 0) {\n  return [];\n}\n\nreturn lembretes.map(l => {\n  const d = l.json;\n  const payload = d.payload || {};\n  \n  // Build message from payload if available, otherwise use generic\n  let message = payload.custom_message;\n\n  if (!message) {\n    const appointmentDate = payload.appointment_date ? new Date(payload.appointment_date).toLocaleDateString('pt-BR') : '';\n    const appointmentTime = payload.appointment_time || '';\n    const professionalName = payload.professional_name || 'Profissional';\n    const patientName = d.patient_name || 'Paciente';\n\n    switch (d.reminder_type) {\n      case '24h':\n        message = `Olá ${patientName}! 😊 Lembramos que você tem consulta amanhã (${appointmentDate}) às ${appointmentTime} com ${professionalName}. Confirme sua presença respondendo SIM. Para cancelar ou reagendar, fale conosco!`;\n        break;\n      case '1h':\n        message = `${patientName}, sua consulta é em 1 hora! ⏰ Às ${appointmentTime} com ${professionalName}. Estamos esperando você! 😊`;\n        break;\n      case 'custom':\n        message = `Olá ${patientName}! 😊 Você tem um lembrete do consultório. Entre em contato para mais informações.`;\n        break;\n      default:\n        message = `Olá ${patientName}! 😊 Você tem um lembrete agendado. Entre em contato para mais informações.`;\n    }\n  }\n\n  return { \n    json: { \n      reminder_id: d.reminder_id,\n      phone: d.patient_phone_e164,\n      message: message,\n      tenant_code: d.tenant_code,\n      schema_name: d.schema_name,\n      professional_id: d.professional_id\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "99e0f3a3-dcba-4a0b-b74c-1db45cf8b200",
+      "name": "Preparar Mensagens"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT whatsapp_instance_id FROM clinic_core.get_professional_context($1::text);",
+        "options": {
+          "queryReplacement": "={{ $json.tenant_code }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        616,
+        0
+      ],
+      "id": "3b8d92f1-4f2a-4e9b-b8d5-7c1e3f9a2b00",
+      "name": "Load Tenant Context",
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Load Tenant Context').first().json.whatsapp_instance_id }}",
+        "remoteJid": "={{ $('Preparar Mensagens').item.json.phone }}",
+        "messageText": "={{ $('Preparar Mensagens').item.json.message }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        752,
+        0
+      ],
+      "id": "354f451c-80ed-4fb6-bd30-0aa25dcd9100",
+      "name": "Enviar Lembrete WhatsApp",
+      "credentials": {
+        "evolutionApi": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT clinic_core.mark_reminder_sent($1::text, $2::uuid, 'enviado', $3::text);",
+        "options": {
+          "queryReplacement": "={{ $('Preparar Mensagens').item.json.tenant_code }},={{ $('Preparar Mensagens').item.json.reminder_id }},={{ $json.key ? $json.key.id : '' }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        992,
+        0
+      ],
+      "id": "ac933fe3-4280-4c3f-b6e6-0ce7a64a5900",
+      "name": "Marcar como Enviado",
+      "credentials": {
+        "postgres": {
+          "id": "TODO_CREDENTIAL_ID",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "A cada 15 minutos": {
+      "main": [
+        [
+          {
+            "node": "Buscar Lembretes Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Lembretes Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Preparar Mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Mensagens": {
+      "main": [
+        [
+          {
+            "node": "Load Tenant Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Tenant Context": {
+      "main": [
+        [
+          {
+            "node": "Enviar Lembrete WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Lembrete WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Marcar como Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "meta": {
+    "instanceId": ""
+  },
+  "tags": []
+}

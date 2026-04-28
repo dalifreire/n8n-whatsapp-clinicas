@@ -1,21 +1,30 @@
 #!/usr/bin/env python3
 """
-Script para atualizar a base de conhecimento do consultório da Dra. Andreia Mota Mussi.
+Script para atualizar a base de conhecimento multi-tenant para clínicas.
 
-Fontes:
-  - https://www.odontomedicoitaigara.com.br/odontólogos/andreia-mota-mussi.html/
-  - https://www.instagram.com/andreapereiramota/
+Multi-tenant: Suporta múltiplos profissionais com isolamento de dados via schema-per-tenant.
+
+IMPORTANTE: professional_id neste script é usado apenas para organizar documentos no JSON
+e determinar qual schema do Supabase será usado. Quando indexado, os documentos vão para
+schemas separados SEM coluna professional_id (schema-isolation conforme ADR de Bruce).
 
 Funcionalidades:
-  - Scraping do website
+  - Scraping do website (configurável por profissional)
   - Coleta de dados do Instagram (via API ou web scraping)
-  - Validação de dados
+  - Validação de dados multi-tenant
   - Merge com base existente
   - Backup automático
   - Exportação em JSON
 
 Uso:
-    python knowledge_base_atualizar.py [--site] [--instagram] [--full] [--backup]
+    # Atualizar tenant específico:
+    python knowledge_base_atualizar.py --professional-id profissional-demo --site
+    
+    # Atualizar todos os tenants:
+    python knowledge_base_atualizar.py --all --full
+    
+    # Validar base multi-tenant:
+    python knowledge_base_atualizar.py --validate
 """
 
 import json
@@ -59,18 +68,35 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============================================================================
-# CONFIGURAÇÕES DO CONSULTÓRIO
+# CONFIGURAÇÕES MULTI-TENANT
 # ============================================================================
 
-CONSULTORIO_CONFIG = {
-    "nome": "Consultório Dra. Andreia Mota Mussi",
-    "profissional": "Dra. Andreia Mota Mussi",
-    "website_url": "https://www.odontomedicoitaigara.com.br",
-    "pagina_profissional": "https://www.odontomedicoitaigara.com.br/odontólogos/andreia-mota-mussi.html/",
-    "instagram_username": "andreapereiramota",
-    "telefone": "(71) 3353-7900",
-    "endereco": "Av. Antônio Carlos Magalhães, 585 – Ed. Pierre Fauchard, Sala 709 - Itaigara, Salvador - BA, CEP 41825-907",
+# Example configuration - Add actual professionals here
+DEFAULT_PROFESSIONAL_ID = None  # No default - requires explicit professional_id
+
+PROFESSIONALS_CONFIG = {
+    # Add professional configurations here:
+    # "profissional-demo": {
+    #     "professional_id": "profissional-demo",
+    #     "nome": "Clinica Demo",
+    #     "profissional": "Profissional Demo",
+    #     "website_url": "https://example.com",
+    #     "instagram_username": "clinicademo",
+    #     "telefone": "(00) 0000-0000",
+    #     "endereco": "Endereço da clínica",
+    #     "active": True,
+    #     "is_demo": False
+    # }
 }
+
+def get_professional_config(professional_id: str) -> Dict[str, Any]:
+    """Get configuration for a specific professional."""
+    if professional_id not in PROFESSIONALS_CONFIG:
+        raise ValueError(
+            f"Professional '{professional_id}' not found in configuration. "
+            f"Available: {list(PROFESSIONALS_CONFIG.keys())}"
+        )
+    return PROFESSIONALS_CONFIG[professional_id]
 
 
 # ============================================================================
@@ -79,8 +105,14 @@ CONSULTORIO_CONFIG = {
 
 @dataclass
 class DocumentoRAG:
-    """Estrutura padrão de um documento na base de conhecimento."""
+    """Estrutura padrão de um documento na base de conhecimento multi-tenant.
+    
+    NOTE: professional_id is for JSON organization/routing only. When indexed to Supabase,
+    documents go into tenant-specific schemas WITHOUT a professional_id column (schema-isolation).
+    The tenant_code/professional_id determines which schema to write to, not a column filter.
+    """
     id: str
+    professional_id: str  # Tenant routing key (used to select schema, not as DB column)
     categoria: str
     titulo: str
     conteudo: str
@@ -99,11 +131,13 @@ class DocumentoRAG:
 # ============================================================================
 
 class WebSiteScraper:
-    """Responsável por fazer scraping do website do Complexo Odonto Médico Itaigara."""
+    """Responsável por fazer scraping do website (multi-tenant)."""
 
-    def __init__(self):
-        self.base_url = CONSULTORIO_CONFIG["website_url"]
-        self.pagina_profissional = CONSULTORIO_CONFIG["pagina_profissional"]
+    def __init__(self, professional_id: str):
+        self.professional_id = professional_id
+        self.config = get_professional_config(professional_id)
+        self.base_url = self.config["website_url"]
+        self.pagina_profissional = self.config["pagina_profissional"]
         self.session = self._create_session() if REQUESTS_AVAILABLE else None
 
     def _create_session(self) -> Optional[requests.Session]:
@@ -121,7 +155,7 @@ class WebSiteScraper:
             return []
 
         documentos = []
-        logger.info("📡 Iniciando scraping do website...")
+        logger.info(f"📡 Iniciando scraping para professional_id='{self.professional_id}'...")
 
         try:
             docs = self._scrape_pagina_profissional()
@@ -152,8 +186,10 @@ class WebSiteScraper:
 
                 conteudo = " ".join(content_parts)
                 if conteudo and len(conteudo) > 20:
+                    doc_id_prefix = self.professional_id.replace("-", "_")
                     doc = DocumentoRAG(
-                        id=f"dra_web_{titulo.lower().replace(' ', '_')[:20]}",
+                        id=f"{doc_id_prefix}_web_{titulo.lower().replace(' ', '_')[:20]}",
+                        professional_id=self.professional_id,
                         categoria="sobre_consultorio",
                         titulo=titulo,
                         conteudo=conteudo,
@@ -178,15 +214,21 @@ class WebSiteScraper:
 # ============================================================================
 
 class InstagramScraper:
-    """Responsável por extrair dados do Instagram da Dra. Andreia."""
+    """Responsável por extrair dados do Instagram (multi-tenant)."""
 
-    def __init__(self):
-        self.username = CONSULTORIO_CONFIG["instagram_username"]
-        self.profile_url = f"https://www.instagram.com/{self.username}"
+    def __init__(self, professional_id: str):
+        self.professional_id = professional_id
+        self.config = get_professional_config(professional_id)
+        self.username = self.config.get("instagram_username")
+        self.profile_url = f"https://www.instagram.com/{self.username}" if self.username else None
 
     def scrape_instagram(self) -> List[DocumentoRAG]:
+        if not self.username:
+            logger.warning(f"⚠️  Instagram username not configured for '{self.professional_id}'")
+            return []
+            
         documentos = []
-        logger.info("📸 Iniciando coleta de dados do Instagram...")
+        logger.info(f"📸 Iniciando coleta Instagram para professional_id='{self.professional_id}'...")
 
         if INSTAGRAM_AVAILABLE:
             docs = self._scrape_with_instagrapi()
@@ -218,13 +260,16 @@ class InstagramScraper:
             logger.info(f"📸 Coletando dados públicos de @{self.username}")
             # Instagram requer autenticação para acesso à API
             # Adicionamos informação básica do perfil
+            prof_name = self.config.get("profissional", "Professional")
+            doc_id_prefix = self.professional_id.replace("-", "_")
             doc = DocumentoRAG(
-                id="dra_ig_perfil",
+                id=f"{doc_id_prefix}_ig_perfil",
+                professional_id=self.professional_id,
                 categoria="redes_sociais",
                 titulo=f"Perfil Instagram - @{self.username}",
-                conteudo=f"A Dra. Andreia Mota Mussi está presente no Instagram como @{self.username}. "
+                conteudo=f"{prof_name} está presente no Instagram como @{self.username}. "
                          f"No perfil, compartilha conteúdos sobre saúde bucal, dicas de cuidados "
-                         f"dentários e informações sobre tratamentos disponíveis no consultório.",
+                         f"dentários e informações sobre tratamentos disponíveis.",
                 metadata={
                     "fonte": "instagram",
                     "tipo": "perfil",
@@ -254,8 +299,21 @@ class KnowledgeBaseManager:
     def load(self) -> Dict[str, Any]:
         if os.path.exists(self.filepath):
             with open(self.filepath, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return {"documentos": []}
+                data = json.load(f)
+                # Ensure multi-tenant schema
+                if "professionals" not in data:
+                    data["professionals"] = []
+                if "version" not in data:
+                    data["version"] = "2.0.0"
+                if "schema" not in data:
+                    data["schema"] = "multi_tenant"
+                return data
+        return {
+            "version": "2.0.0",
+            "schema": "multi_tenant",
+            "professionals": [],
+            "documentos": []
+        }
 
     def save(self, data: Dict[str, Any]):
         with open(self.filepath, 'w', encoding='utf-8') as f:
@@ -289,21 +347,44 @@ class KnowledgeBaseManager:
     def validate(self) -> Dict[str, Any]:
         kb = self.load()
         docs = kb.get('documentos', [])
+        professionals = kb.get('professionals', [])
         issues = []
 
         ids_vistos = set()
+        professionals_found = set()
+        
         for doc in docs:
+            # Check for duplicates
             if doc['id'] in ids_vistos:
                 issues.append(f"ID duplicado: {doc['id']}")
             ids_vistos.add(doc['id'])
+            
+            # Check required fields
             if not doc.get('conteudo', '').strip():
                 issues.append(f"Conteúdo vazio: {doc['id']}")
             if not doc.get('titulo', '').strip():
                 issues.append(f"Título vazio: {doc['id']}")
+            
+            # Check professional_id
+            prof_id = doc.get('professional_id')
+            if not prof_id:
+                issues.append(f"Missing professional_id: {doc['id']}")
+            else:
+                professionals_found.add(prof_id)
+
+        # Check if all professionals have documents
+        registered_professionals = {p['professional_id'] for p in professionals if p.get('active', True)}
+        missing_docs = registered_professionals - professionals_found
+        if missing_docs:
+            issues.append(f"Professionals without documents: {', '.join(missing_docs)}")
 
         return {
+            "version": kb.get("version", "unknown"),
+            "schema": kb.get("schema", "unknown"),
             "total_docs": len(docs),
             "ids_unicos": len(ids_vistos),
+            "total_professionals": len(professionals),
+            "professionals_with_docs": list(professionals_found),
             "issues": issues,
             "categorias": list(set(doc.get('categoria', '') for doc in docs))
         }
@@ -328,19 +409,37 @@ class KnowledgeBaseManager:
     def report(self):
         kb = self.load()
         docs = kb.get('documentos', [])
+        professionals = kb.get('professionals', [])
+        
         categorias = {}
+        por_profissional = {}
+        
         for doc in docs:
             cat = doc.get('categoria', 'sem_categoria')
             categorias[cat] = categorias.get(cat, 0) + 1
+            
+            prof_id = doc.get('professional_id', 'unknown')
+            por_profissional[prof_id] = por_profissional.get(prof_id, 0) + 1
 
-        print("\n" + "=" * 50)
-        print("📊 RELATÓRIO DA BASE DE CONHECIMENTO")
-        print("=" * 50)
+        print("\n" + "=" * 60)
+        print("📊 RELATÓRIO DA BASE DE CONHECIMENTO MULTI-TENANT")
+        print("=" * 60)
+        print(f"Versão do schema: {kb.get('version', 'unknown')}")
+        print(f"Tipo: {kb.get('schema', 'unknown')}")
         print(f"Total de documentos: {len(docs)}")
-        print(f"\nPor categoria:")
+        print(f"Total de profissionais registrados: {len(professionals)}")
+        
+        print(f"\n👤 Por profissional:")
+        for prof_id, count in sorted(por_profissional.items(), key=lambda x: -x[1]):
+            # Get professional name if available
+            prof_name = next((p['name'] for p in professionals if p['professional_id'] == prof_id), prof_id)
+            active_status = "✓" if any(p['professional_id'] == prof_id and p.get('active', True) for p in professionals) else "✗"
+            print(f"  {active_status} {prof_name} ({prof_id}): {count} docs")
+        
+        print(f"\n📂 Por categoria:")
         for cat, count in sorted(categorias.items(), key=lambda x: -x[1]):
             print(f"  {cat}: {count}")
-        print("=" * 50)
+        print("=" * 60)
 
 
 # ============================================================================
@@ -349,11 +448,14 @@ class KnowledgeBaseManager:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Atualizar base de conhecimento - Consultório Dra. Andreia Mota Mussi"
+        description="Atualizar base de conhecimento multi-tenant - Plataforma de Clínicas"
     )
+    parser.add_argument('--professional-id', type=str, default=DEFAULT_PROFESSIONAL_ID,
+                        help='ID do profissional para atualizar (required)')
     parser.add_argument('--site', action='store_true', help='Scraping do website')
     parser.add_argument('--instagram', action='store_true', help='Coleta do Instagram')
     parser.add_argument('--full', action='store_true', help='Atualização completa')
+    parser.add_argument('--all', action='store_true', help='Atualizar todos os profissionais')
     parser.add_argument('--backup', action='store_true', help='Criar backup antes')
     parser.add_argument('--validate', action='store_true', help='Validar base existente')
     parser.add_argument('--report', action='store_true', help='Relatório da base')
@@ -364,7 +466,13 @@ def main():
 
     if args.validate:
         result = kb_manager.validate()
-        print(f"\n📋 Validação: {result['total_docs']} docs, {len(result['issues'])} problemas")
+        print(f"\n📋 Validação Multi-Tenant:")
+        print(f"   Schema version: {result['version']}")
+        print(f"   Schema type: {result['schema']}")
+        print(f"   Total docs: {result['total_docs']}")
+        print(f"   Total professionals: {result['total_professionals']}")
+        print(f"   Professionals with docs: {', '.join(result['professionals_with_docs'])}")
+        print(f"   Issues: {len(result['issues'])} problemas")
         for issue in result['issues']:
             print(f"  ⚠️  {issue}")
         return
@@ -381,23 +489,50 @@ def main():
     if args.backup or args.full:
         kb_manager.backup()
 
-    novos_docs = []
+    # Determine which professionals to update
+    if args.all:
+        target_professionals = list(PROFESSIONALS_CONFIG.keys())
+        print(f"\n🔄 Atualizando TODOS os profissionais: {', '.join(target_professionals)}")
+    else:
+        target_professionals = [args.professional_id]
+        print(f"\n🔄 Atualizando profissional: {args.professional_id}")
 
-    if args.site or args.full:
-        scraper = WebSiteScraper()
-        novos_docs.extend(scraper.scrape_site())
+    all_novos_docs = []
 
-    if args.instagram or args.full:
-        ig_scraper = InstagramScraper()
-        novos_docs.extend(ig_scraper.scrape_instagram())
+    for professional_id in target_professionals:
+        try:
+            print(f"\n{'=' * 60}")
+            print(f"Processando: {professional_id}")
+            print(f"{'=' * 60}")
+            
+            novos_docs = []
 
-    if novos_docs:
-        adicionados = kb_manager.merge(novos_docs)
-        print(f"\n✅ {adicionados} novos documentos adicionados à base")
+            if args.site or args.full:
+                scraper = WebSiteScraper(professional_id)
+                novos_docs.extend(scraper.scrape_site())
+
+            if args.instagram or args.full:
+                ig_scraper = InstagramScraper(professional_id)
+                novos_docs.extend(ig_scraper.scrape_instagram())
+
+            all_novos_docs.extend(novos_docs)
+            print(f"✅ {len(novos_docs)} documentos coletados para {professional_id}")
+            
+        except ValueError as e:
+            print(f"❌ Erro: {e}")
+            continue
+        except Exception as e:
+            logger.error(f"❌ Erro processando {professional_id}: {e}")
+            continue
+
+    if all_novos_docs:
+        adicionados = kb_manager.merge(all_novos_docs)
+        print(f"\n✅ {adicionados} novos documentos adicionados à base multi-tenant")
     else:
         print("\n⚠️  Nenhum documento novo coletado")
         if not (args.site or args.instagram or args.full):
             print("   Use: --site, --instagram ou --full")
+            print("   Exemplo: python knowledge_base_atualizar.py --professional-id profissional-demo --full")
 
     kb_manager.report()
 
