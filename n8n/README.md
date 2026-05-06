@@ -29,7 +29,7 @@ n8n/
 ├── WhatsApp - Assistente Clínica (Generic).json          # 🆕 Main workflow (generic)
 ├── WhatsApp - Enviar Lembretes Automáticos (Generic).json # 🆕 Reminder workflow (generic)
 │
-├── tools-generic/                                         # 🆕 Generic tool workflows
+├── tools/                                         # 🆕 Generic tool workflows
 │   ├── Ferramenta_ Agendar Consulta.json
 │   ├── Ferramenta_ Buscar Horários Disponíveis.json
 │   ├── Ferramenta_ Buscar Paciente.json

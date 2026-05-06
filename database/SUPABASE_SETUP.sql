@@ -4,7 +4,7 @@
 -- Architecture: Platform -> Clinic -> Professional (schema-per-professional isolation)
 -- Version: 2.1 - ADR-compliant multi-tenant schema contract
 --
--- This script creates the shared clinic_core registry, canonical tenant
+-- This script creates the shared clinicas registry, canonical tenant
 -- context functions, reminder dispatchers, and the full per-professional
 -- schema template required by the generic n8n workflows.
 --
@@ -16,28 +16,28 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
-CREATE SCHEMA IF NOT EXISTS clinic_core;
+CREATE SCHEMA IF NOT EXISTS clinicas;
 
 -- Remove rejected/legacy function signatures before recreating the ADR contract.
-DROP VIEW IF EXISTS clinic_core.tenants;
-DROP FUNCTION IF EXISTS clinic_core.get_professional_context(text);
-DROP FUNCTION IF EXISTS clinic_core.get_professional_context(varchar, varchar);
-DROP FUNCTION IF EXISTS clinic_core.provision_professional_schema(varchar);
-DROP FUNCTION IF EXISTS clinic_core.provision_professional_schema(text, text, uuid, boolean);
-DROP FUNCTION IF EXISTS clinic_core.register_existing_tenant(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar);
-DROP FUNCTION IF EXISTS clinic_core.fetch_due_reminders_all(int);
-DROP FUNCTION IF EXISTS clinic_core.mark_reminder_sent(text, uuid, text, text);
+DROP VIEW IF EXISTS clinicas.tenants;
+DROP FUNCTION IF EXISTS clinicas.get_professional_context(text);
+DROP FUNCTION IF EXISTS clinicas.get_professional_context(varchar, varchar);
+DROP FUNCTION IF EXISTS clinicas.provision_professional_schema(varchar);
+DROP FUNCTION IF EXISTS clinicas.provision_professional_schema(text, text, uuid, boolean);
+DROP FUNCTION IF EXISTS clinicas.register_existing_tenant(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar);
+DROP FUNCTION IF EXISTS clinicas.fetch_due_reminders_all(int);
+DROP FUNCTION IF EXISTS clinicas.mark_reminder_sent(text, uuid, text, text);
 
 -- ============================================================
--- PART 1: PLATFORM REGISTRY (clinic_core)
+-- PART 1: PLATFORM REGISTRY (clinicas)
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION clinic_core.default_prompt_config()
+CREATE OR REPLACE FUNCTION clinicas.default_prompt_config()
 RETURNS jsonb
 LANGUAGE sql
 IMMUTABLE
 SECURITY DEFINER
-SET search_path = clinic_core, pg_temp
+SET search_path = clinicas, pg_temp
 AS $$
   SELECT '{
     "prompt_version": "v1",
@@ -53,7 +53,7 @@ AS $$
   }'::jsonb;
 $$;
 
-CREATE TABLE IF NOT EXISTS clinic_core.organizations (
+CREATE TABLE IF NOT EXISTS clinicas.organizations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   address text,
@@ -63,13 +63,13 @@ CREATE TABLE IF NOT EXISTS clinic_core.organizations (
   metadata jsonb DEFAULT '{}'::jsonb
 );
 
-ALTER TABLE clinic_core.organizations ADD COLUMN IF NOT EXISTS business_hours jsonb DEFAULT '{}'::jsonb;
-ALTER TABLE clinic_core.organizations ADD COLUMN IF NOT EXISTS instagram_handle text;
-ALTER TABLE clinic_core.organizations ADD COLUMN IF NOT EXISTS metadata jsonb DEFAULT '{}'::jsonb;
+ALTER TABLE clinicas.organizations ADD COLUMN IF NOT EXISTS business_hours jsonb DEFAULT '{}'::jsonb;
+ALTER TABLE clinicas.organizations ADD COLUMN IF NOT EXISTS instagram_handle text;
+ALTER TABLE clinicas.organizations ADD COLUMN IF NOT EXISTS metadata jsonb DEFAULT '{}'::jsonb;
 
-CREATE TABLE IF NOT EXISTS clinic_core.professionals (
+CREATE TABLE IF NOT EXISTS clinicas.professionals (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id uuid REFERENCES clinic_core.organizations(id) ON DELETE SET NULL,
+  organization_id uuid REFERENCES clinicas.organizations(id) ON DELETE SET NULL,
   tenant_code varchar(64) UNIQUE NOT NULL,
   schema_name varchar(63) UNIQUE NOT NULL,
   full_name text NOT NULL,
@@ -82,37 +82,37 @@ CREATE TABLE IF NOT EXISTS clinic_core.professionals (
   CONSTRAINT professionals_status_check CHECK (status IN ('active', 'suspended', 'trial', 'archived'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_professionals_tenant_code ON clinic_core.professionals(tenant_code);
-CREATE INDEX IF NOT EXISTS idx_professionals_schema_name ON clinic_core.professionals(schema_name);
-CREATE INDEX IF NOT EXISTS idx_professionals_status ON clinic_core.professionals(status);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_professionals_tenant_code_unique ON clinic_core.professionals(tenant_code);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_professionals_schema_name_unique ON clinic_core.professionals(schema_name);
+CREATE INDEX IF NOT EXISTS idx_professionals_tenant_code ON clinicas.professionals(tenant_code);
+CREATE INDEX IF NOT EXISTS idx_professionals_schema_name ON clinicas.professionals(schema_name);
+CREATE INDEX IF NOT EXISTS idx_professionals_status ON clinicas.professionals(status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_professionals_tenant_code_unique ON clinicas.professionals(tenant_code);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_professionals_schema_name_unique ON clinicas.professionals(schema_name);
 
-CREATE TABLE IF NOT EXISTS clinic_core.assistant_configs (
+CREATE TABLE IF NOT EXISTS clinicas.assistant_configs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  professional_id uuid NOT NULL UNIQUE REFERENCES clinic_core.professionals(id) ON DELETE CASCADE,
+  professional_id uuid NOT NULL UNIQUE REFERENCES clinicas.professionals(id) ON DELETE CASCADE,
   persona_name text DEFAULT 'Ana',
   tone text DEFAULT 'acolhedor',
   language text DEFAULT 'pt-BR',
   model text DEFAULT 'gpt-4o',
-  prompt_config jsonb DEFAULT clinic_core.default_prompt_config(),
+  prompt_config jsonb DEFAULT clinicas.default_prompt_config(),
   status text NOT NULL DEFAULT 'active',
   CONSTRAINT assistant_configs_status_check CHECK (status IN ('active', 'disabled'))
 );
 
-ALTER TABLE clinic_core.assistant_configs ADD COLUMN IF NOT EXISTS persona_name text DEFAULT 'Ana';
-ALTER TABLE clinic_core.assistant_configs ADD COLUMN IF NOT EXISTS tone text DEFAULT 'acolhedor';
-ALTER TABLE clinic_core.assistant_configs ADD COLUMN IF NOT EXISTS language text DEFAULT 'pt-BR';
-ALTER TABLE clinic_core.assistant_configs ADD COLUMN IF NOT EXISTS model text DEFAULT 'gpt-4o';
-ALTER TABLE clinic_core.assistant_configs ADD COLUMN IF NOT EXISTS prompt_config jsonb DEFAULT clinic_core.default_prompt_config();
-ALTER TABLE clinic_core.assistant_configs ADD COLUMN IF NOT EXISTS status text DEFAULT 'active';
+ALTER TABLE clinicas.assistant_configs ADD COLUMN IF NOT EXISTS persona_name text DEFAULT 'Ana';
+ALTER TABLE clinicas.assistant_configs ADD COLUMN IF NOT EXISTS tone text DEFAULT 'acolhedor';
+ALTER TABLE clinicas.assistant_configs ADD COLUMN IF NOT EXISTS language text DEFAULT 'pt-BR';
+ALTER TABLE clinicas.assistant_configs ADD COLUMN IF NOT EXISTS model text DEFAULT 'gpt-4o';
+ALTER TABLE clinicas.assistant_configs ADD COLUMN IF NOT EXISTS prompt_config jsonb DEFAULT clinicas.default_prompt_config();
+ALTER TABLE clinicas.assistant_configs ADD COLUMN IF NOT EXISTS status text DEFAULT 'active';
 
-CREATE INDEX IF NOT EXISTS idx_assistant_configs_professional ON clinic_core.assistant_configs(professional_id);
-CREATE INDEX IF NOT EXISTS idx_assistant_configs_status ON clinic_core.assistant_configs(status);
+CREATE INDEX IF NOT EXISTS idx_assistant_configs_professional ON clinicas.assistant_configs(professional_id);
+CREATE INDEX IF NOT EXISTS idx_assistant_configs_status ON clinicas.assistant_configs(status);
 
-CREATE TABLE IF NOT EXISTS clinic_core.whatsapp_instances (
+CREATE TABLE IF NOT EXISTS clinicas.whatsapp_instances (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  professional_id uuid NOT NULL UNIQUE REFERENCES clinic_core.professionals(id) ON DELETE CASCADE,
+  professional_id uuid NOT NULL UNIQUE REFERENCES clinicas.professionals(id) ON DELETE CASCADE,
   provider text NOT NULL DEFAULT 'evolution',
   provider_instance_id text,
   phone_number text,
@@ -121,78 +121,78 @@ CREATE TABLE IF NOT EXISTS clinic_core.whatsapp_instances (
   CONSTRAINT whatsapp_instances_status_check CHECK (status IN ('connected', 'disconnected', 'qr_pending', 'error'))
 );
 
-ALTER TABLE clinic_core.whatsapp_instances ADD COLUMN IF NOT EXISTS provider_instance_id text;
-ALTER TABLE clinic_core.whatsapp_instances ADD COLUMN IF NOT EXISTS status text DEFAULT 'disconnected';
-ALTER TABLE clinic_core.whatsapp_instances ADD COLUMN IF NOT EXISTS config jsonb DEFAULT '{}'::jsonb;
+ALTER TABLE clinicas.whatsapp_instances ADD COLUMN IF NOT EXISTS provider_instance_id text;
+ALTER TABLE clinicas.whatsapp_instances ADD COLUMN IF NOT EXISTS status text DEFAULT 'disconnected';
+ALTER TABLE clinicas.whatsapp_instances ADD COLUMN IF NOT EXISTS config jsonb DEFAULT '{}'::jsonb;
 
 DO $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'clinic_core' AND table_name = 'professionals' AND column_name = 'phone'
+    WHERE table_schema = 'clinicas' AND table_name = 'professionals' AND column_name = 'phone'
   ) THEN
-    ALTER TABLE clinic_core.professionals ALTER COLUMN phone DROP NOT NULL;
+    ALTER TABLE clinicas.professionals ALTER COLUMN phone DROP NOT NULL;
   END IF;
 
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'clinic_core' AND table_name = 'whatsapp_instances' AND column_name = 'phone_number'
+    WHERE table_schema = 'clinicas' AND table_name = 'whatsapp_instances' AND column_name = 'phone_number'
   ) THEN
-    ALTER TABLE clinic_core.whatsapp_instances ALTER COLUMN phone_number DROP NOT NULL;
+    ALTER TABLE clinicas.whatsapp_instances ALTER COLUMN phone_number DROP NOT NULL;
   END IF;
 END;
 $$;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_assistant_configs_professional_unique ON clinic_core.assistant_configs(professional_id);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_whatsapp_instances_professional_unique ON clinic_core.whatsapp_instances(professional_id);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_instances_professional ON clinic_core.whatsapp_instances(professional_id);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_instances_phone ON clinic_core.whatsapp_instances(phone_number);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_instances_status ON clinic_core.whatsapp_instances(status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_assistant_configs_professional_unique ON clinicas.assistant_configs(professional_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_whatsapp_instances_professional_unique ON clinicas.whatsapp_instances(professional_id);
+CREATE INDEX IF NOT EXISTS idx_whatsapp_instances_professional ON clinicas.whatsapp_instances(professional_id);
+CREATE INDEX IF NOT EXISTS idx_whatsapp_instances_phone ON clinicas.whatsapp_instances(phone_number);
+CREATE INDEX IF NOT EXISTS idx_whatsapp_instances_status ON clinicas.whatsapp_instances(status);
 
-CREATE TABLE IF NOT EXISTS clinic_core.message_dedupe (
+CREATE TABLE IF NOT EXISTS clinicas.message_dedupe (
   tenant_code varchar(64) NOT NULL,
   provider_message_id text NOT NULL,
   received_at timestamptz DEFAULT now(),
   PRIMARY KEY (tenant_code, provider_message_id)
 );
 
-CREATE TABLE IF NOT EXISTS clinic_core.prompt_templates (
+CREATE TABLE IF NOT EXISTS clinicas.prompt_templates (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text UNIQUE NOT NULL,
-  prompt_config jsonb NOT NULL DEFAULT clinic_core.default_prompt_config(),
+  prompt_config jsonb NOT NULL DEFAULT clinicas.default_prompt_config(),
   status text NOT NULL DEFAULT 'active'
 );
 
-ALTER TABLE clinic_core.organizations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_core.professionals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_core.assistant_configs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_core.whatsapp_instances ENABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_core.message_dedupe ENABLE ROW LEVEL SECURITY;
-ALTER TABLE clinic_core.prompt_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinicas.organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinicas.professionals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinicas.assistant_configs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinicas.whatsapp_instances ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinicas.message_dedupe ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinicas.prompt_templates ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================
 -- PART 2: PLATFORM HELPERS AND CANONICAL CONTEXT CONTRACT
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION clinic_core.is_reserved_schema_name(p_schema_name text)
+CREATE OR REPLACE FUNCTION clinicas.is_reserved_schema_name(p_schema_name text)
 RETURNS boolean
 LANGUAGE sql
 IMMUTABLE
 SECURITY DEFINER
-SET search_path = clinic_core, pg_temp
+SET search_path = clinicas, pg_temp
 AS $$
-  SELECT p_schema_name IN ('information_schema', 'clinic_core', 'public', 'auth', 'storage', 'vault', 'extensions')
+  SELECT p_schema_name IN ('information_schema', 'clinicas', 'public', 'auth', 'storage', 'vault', 'extensions')
      OR p_schema_name LIKE 'pg\_%' ESCAPE '\';
 $$;
 
-CREATE OR REPLACE FUNCTION clinic_core.assert_valid_tenant_identifiers(
+CREATE OR REPLACE FUNCTION clinicas.assert_valid_tenant_identifiers(
   p_tenant_code text,
   p_schema_name text
 )
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = clinic_core, pg_temp
+SET search_path = clinicas, pg_temp
 AS $$
 BEGIN
   IF p_tenant_code IS NULL OR p_tenant_code !~ '^[a-z][a-z0-9-]{1,62}[a-z0-9]$' THEN
@@ -203,13 +203,13 @@ BEGIN
     RAISE EXCEPTION 'Invalid schema_name %. Expected snake_case matching ^[a-z][a-z0-9_]{0,62}$', p_schema_name;
   END IF;
 
-  IF clinic_core.is_reserved_schema_name(p_schema_name) THEN
+  IF clinicas.is_reserved_schema_name(p_schema_name) THEN
     RAISE EXCEPTION 'Schema name % is reserved and cannot be used for a tenant', p_schema_name;
   END IF;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION clinic_core.get_professional_context(p_tenant_code text)
+CREATE OR REPLACE FUNCTION clinicas.get_professional_context(p_tenant_code text)
 RETURNS TABLE (
   professional_id          uuid,
   organization_id          uuid,
@@ -241,7 +241,7 @@ RETURNS TABLE (
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
-SET search_path = clinic_core, pg_temp
+SET search_path = clinicas, pg_temp
 AS $$
   SELECT
     p.id AS professional_id,
@@ -265,43 +265,43 @@ AS $$
     COALESCE(ac.language, 'pt-BR')::text AS assistant_language,
     COALESCE(ac.model, 'gpt-4o')::text AS assistant_model,
     COALESCE(ac.status, 'disabled')::text AS assistant_status,
-    COALESCE(ac.prompt_config, clinic_core.default_prompt_config()) AS prompt_config,
+    COALESCE(ac.prompt_config, clinicas.default_prompt_config()) AS prompt_config,
     wi.provider::text AS whatsapp_provider,
     wi.provider_instance_id::text AS whatsapp_instance_id,
     wi.phone_number::text AS whatsapp_phone_e164,
     COALESCE(wi.status, 'disconnected')::text AS whatsapp_status
-  FROM clinic_core.professionals p
-  LEFT JOIN clinic_core.organizations o ON o.id = p.organization_id
-  LEFT JOIN clinic_core.assistant_configs ac ON ac.professional_id = p.id AND ac.status = 'active'
-  LEFT JOIN clinic_core.whatsapp_instances wi ON wi.professional_id = p.id
+  FROM clinicas.professionals p
+  LEFT JOIN clinicas.organizations o ON o.id = p.organization_id
+  LEFT JOIN clinicas.assistant_configs ac ON ac.professional_id = p.id AND ac.status = 'active'
+  LEFT JOIN clinicas.whatsapp_instances wi ON wi.professional_id = p.id
   WHERE p.tenant_code = p_tenant_code
     AND p.status NOT IN ('suspended', 'archived')
   LIMIT 1;
 $$;
 
-COMMENT ON FUNCTION clinic_core.get_professional_context(text) IS 'Canonical ADR §2 tenant context entry point for n8n, Python, and future APIs.';
+COMMENT ON FUNCTION clinicas.get_professional_context(text) IS 'Canonical ADR §2 tenant context entry point for n8n, Python, and future APIs.';
 
-CREATE OR REPLACE VIEW clinic_core.tenants AS
+CREATE OR REPLACE VIEW clinicas.tenants AS
 SELECT ctx.*
-FROM clinic_core.professionals p
-CROSS JOIN LATERAL clinic_core.get_professional_context(p.tenant_code::text) ctx;
+FROM clinicas.professionals p
+CROSS JOIN LATERAL clinicas.get_professional_context(p.tenant_code::text) ctx;
 
-COMMENT ON VIEW clinic_core.tenants IS 'Read-only wrapper over clinic_core.get_professional_context with the same ADR §2 columns.';
+COMMENT ON VIEW clinicas.tenants IS 'Read-only wrapper over clinicas.get_professional_context with the same ADR §2 columns.';
 
 -- ============================================================
 -- PART 3: FULL TENANT SCHEMA TEMPLATE
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION clinic_core.ensure_tenant_schema_objects(p_schema_name text)
+CREATE OR REPLACE FUNCTION clinicas.ensure_tenant_schema_objects(p_schema_name text)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = clinic_core, public, extensions, pg_temp
+SET search_path = clinicas, public, extensions, pg_temp
 AS $$
 DECLARE
   tbl text;
 BEGIN
-  PERFORM clinic_core.assert_valid_tenant_identifiers('aaa', p_schema_name);
+  PERFORM clinicas.assert_valid_tenant_identifiers('aaa', p_schema_name);
 
   EXECUTE format('CREATE SCHEMA IF NOT EXISTS %I', p_schema_name);
 
@@ -1173,13 +1173,13 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION clinic_core.ensure_tenant_schema_objects(text) IS 'Creates/patches the full tenant-local table and function surface required by ADR §5.1/§5.2.';
+COMMENT ON FUNCTION clinicas.ensure_tenant_schema_objects(text) IS 'Creates/patches the full tenant-local table and function surface required by ADR §5.1/§5.2.';
 
 -- ============================================================
 -- PART 4: PROVISIONING AND LEGACY ADOPTION
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION clinic_core.provision_professional_schema(
+CREATE OR REPLACE FUNCTION clinicas.provision_professional_schema(
   p_tenant_code text,
   p_schema_name text DEFAULT NULL,
   p_organization_id uuid DEFAULT NULL,
@@ -1188,7 +1188,7 @@ CREATE OR REPLACE FUNCTION clinic_core.provision_professional_schema(
 RETURNS uuid
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = clinic_core, public, extensions, pg_temp
+SET search_path = clinicas, public, extensions, pg_temp
 AS $$
 DECLARE
   v_schema_name text;
@@ -1196,17 +1196,17 @@ DECLARE
   v_existing_schema text;
 BEGIN
   v_schema_name := COALESCE(p_schema_name, left(concat('prof_', replace(p_tenant_code, '-', '_')), 63));
-  PERFORM clinic_core.assert_valid_tenant_identifiers(p_tenant_code, v_schema_name);
+  PERFORM clinicas.assert_valid_tenant_identifiers(p_tenant_code, v_schema_name);
 
   SELECT id, schema_name INTO v_professional_id, v_existing_schema
-  FROM clinic_core.professionals
+  FROM clinicas.professionals
   WHERE tenant_code = p_tenant_code;
 
   IF v_professional_id IS NOT NULL THEN
     IF v_existing_schema <> v_schema_name THEN
       RAISE EXCEPTION 'Tenant % already registered with schema %, not %', p_tenant_code, v_existing_schema, v_schema_name;
     END IF;
-    PERFORM clinic_core.ensure_tenant_schema_objects(v_schema_name);
+    PERFORM clinicas.ensure_tenant_schema_objects(v_schema_name);
     RETURN v_professional_id;
   END IF;
 
@@ -1214,9 +1214,9 @@ BEGIN
     RAISE EXCEPTION 'Schema % already exists. Use register_existing_tenant to adopt an existing schema.', v_schema_name;
   END IF;
 
-  PERFORM clinic_core.ensure_tenant_schema_objects(v_schema_name);
+  PERFORM clinicas.ensure_tenant_schema_objects(v_schema_name);
 
-  INSERT INTO clinic_core.professionals (
+  INSERT INTO clinicas.professionals (
     organization_id, tenant_code, schema_name, full_name, specialties,
     credential_type, credential_number, status
   ) VALUES (
@@ -1231,11 +1231,11 @@ BEGIN
   )
   RETURNING id INTO v_professional_id;
 
-  INSERT INTO clinic_core.assistant_configs (professional_id, persona_name, tone, language, model, prompt_config, status)
-  VALUES (v_professional_id, 'Ana', 'acolhedor', 'pt-BR', 'gpt-4o', clinic_core.default_prompt_config(), 'active')
+  INSERT INTO clinicas.assistant_configs (professional_id, persona_name, tone, language, model, prompt_config, status)
+  VALUES (v_professional_id, 'Ana', 'acolhedor', 'pt-BR', 'gpt-4o', clinicas.default_prompt_config(), 'active')
   ON CONFLICT (professional_id) DO NOTHING;
 
-  INSERT INTO clinic_core.whatsapp_instances (professional_id, provider, provider_instance_id, phone_number, status)
+  INSERT INTO clinicas.whatsapp_instances (professional_id, provider, provider_instance_id, phone_number, status)
   VALUES (v_professional_id, 'evolution', NULL, NULL, 'disconnected')
   ON CONFLICT (professional_id) DO NOTHING;
 
@@ -1243,9 +1243,9 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION clinic_core.provision_professional_schema(text, text, uuid, boolean) IS 'ADR §5 provisioner: validates identifiers, creates full tenant schema, and registers the professional.';
+COMMENT ON FUNCTION clinicas.provision_professional_schema(text, text, uuid, boolean) IS 'ADR §5 provisioner: validates identifiers, creates full tenant schema, and registers the professional.';
 
-CREATE OR REPLACE FUNCTION clinic_core.register_existing_tenant(
+CREATE OR REPLACE FUNCTION clinicas.register_existing_tenant(
   p_tenant_code text,
   p_schema_name text,
   p_organization_id uuid DEFAULT NULL,
@@ -1267,29 +1267,29 @@ CREATE OR REPLACE FUNCTION clinic_core.register_existing_tenant(
 RETURNS uuid
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = clinic_core, public, extensions, pg_temp
+SET search_path = clinicas, public, extensions, pg_temp
 AS $$
 DECLARE
   v_professional_id uuid;
   v_other_tenant text;
 BEGIN
-  PERFORM clinic_core.assert_valid_tenant_identifiers(p_tenant_code, p_schema_name);
+  PERFORM clinicas.assert_valid_tenant_identifiers(p_tenant_code, p_schema_name);
 
   IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = p_schema_name) THEN
     RAISE EXCEPTION 'Schema % does not exist; register_existing_tenant adopts existing schemas only', p_schema_name;
   END IF;
 
   SELECT tenant_code INTO v_other_tenant
-  FROM clinic_core.professionals
+  FROM clinicas.professionals
   WHERE schema_name = p_schema_name AND tenant_code <> p_tenant_code;
 
   IF v_other_tenant IS NOT NULL THEN
     RAISE EXCEPTION 'Schema % is already registered to tenant %', p_schema_name, v_other_tenant;
   END IF;
 
-  PERFORM clinic_core.ensure_tenant_schema_objects(p_schema_name);
+  PERFORM clinicas.ensure_tenant_schema_objects(p_schema_name);
 
-  INSERT INTO clinic_core.professionals (
+  INSERT INTO clinicas.professionals (
     organization_id, tenant_code, schema_name, full_name, specialties,
     credential_type, credential_number, status
   ) VALUES (
@@ -1312,7 +1312,7 @@ BEGIN
     status = 'active'
   RETURNING id INTO v_professional_id;
 
-  INSERT INTO clinic_core.assistant_configs (
+  INSERT INTO clinicas.assistant_configs (
     professional_id, persona_name, tone, language, model, prompt_config, status
   ) VALUES (
     v_professional_id,
@@ -1320,7 +1320,7 @@ BEGIN
     p_assistant_tone,
     COALESCE(p_assistant_language, 'pt-BR'),
     COALESCE(p_assistant_model, 'gpt-4o'),
-    COALESCE(p_prompt_config, clinic_core.default_prompt_config()),
+    COALESCE(p_prompt_config, clinicas.default_prompt_config()),
     'active'
   )
   ON CONFLICT (professional_id) DO UPDATE SET
@@ -1331,7 +1331,7 @@ BEGIN
     prompt_config = EXCLUDED.prompt_config,
     status = 'active';
 
-  INSERT INTO clinic_core.whatsapp_instances (
+  INSERT INTO clinicas.whatsapp_instances (
     professional_id, provider, provider_instance_id, phone_number, status
   ) VALUES (
     v_professional_id,
@@ -1354,13 +1354,13 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION clinic_core.register_existing_tenant(text, text, uuid, text, text, text, text[], text, text, text, text, text, text, text, text, text, jsonb) IS 'Adopts an existing tenant schema without recreating it; used for legacy seed schemas and migrations.';
+COMMENT ON FUNCTION clinicas.register_existing_tenant(text, text, uuid, text, text, text, text[], text, text, text, text, text, text, text, text, text, jsonb) IS 'Adopts an existing tenant schema without recreating it; used for legacy seed schemas and migrations.';
 
 -- ============================================================
 -- PART 5: REMINDER DISPATCHERS
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION clinic_core.fetch_due_reminders_all(p_window_minutes int DEFAULT 30)
+CREATE OR REPLACE FUNCTION clinicas.fetch_due_reminders_all(p_window_minutes int DEFAULT 30)
 RETURNS TABLE (
   tenant_code        text,
   schema_name        text,
@@ -1377,7 +1377,7 @@ RETURNS TABLE (
 LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
-SET search_path = clinic_core, pg_temp
+SET search_path = clinicas, pg_temp
 AS $$
 DECLARE
   tenant_rec record;
@@ -1385,7 +1385,7 @@ DECLARE
 BEGIN
   FOR tenant_rec IN
     SELECT t.tenant_code, t.schema_name, t.professional_id
-    FROM clinic_core.tenants t
+    FROM clinicas.tenants t
     WHERE t.professional_status IN ('active', 'trial')
   LOOP
     FOR reminder_rec IN
@@ -1411,7 +1411,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION clinic_core.mark_reminder_sent(
+CREATE OR REPLACE FUNCTION clinicas.mark_reminder_sent(
   p_tenant_code text,
   p_reminder_id uuid,
   p_status text DEFAULT 'enviado',
@@ -1420,13 +1420,13 @@ CREATE OR REPLACE FUNCTION clinic_core.mark_reminder_sent(
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = clinic_core, pg_temp
+SET search_path = clinicas, pg_temp
 AS $$
 DECLARE
   v_schema_name text;
 BEGIN
   SELECT p.schema_name INTO v_schema_name
-  FROM clinic_core.professionals p
+  FROM clinicas.professionals p
   WHERE p.tenant_code = p_tenant_code
     AND p.status NOT IN ('suspended', 'archived');
 
@@ -1440,29 +1440,71 @@ END;
 $$;
 
 -- ============================================================
--- PART 6: OPTIONAL LEGACY SEED ADOPTION
+-- PART 6: SEED INICIAL — DRA. ANDREIA MOTA MUSSI
 -- ============================================================
--- Example: If you have a pre-existing tenant schema (e.g., from single-tenant
--- migration), this block registers it into the multi-tenant platform registry.
--- On a fresh Supabase instance this block is a no-op.
---
--- Uncomment and customize the block below if you need to adopt an existing schema:
-/*
+-- Carga inicial com a profissional Dra. Andreia Mota Mussi.
+-- Este bloco é idempotente: pode ser re-executado sem efeito colateral.
+-- ============================================================
 DO $$
+DECLARE
+  v_org_id  uuid;
+  v_prof_id uuid;
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'your_existing_schema') THEN
-    PERFORM clinic_core.register_existing_tenant(
-      p_tenant_code := 'your-tenant-code',        -- URL-safe identifier
-      p_schema_name := 'your_existing_schema',    -- Existing schema name
-      p_full_name := 'Professional Full Name',    -- e.g., 'Dr. João Silva'
-      p_credential_type := 'CRM',                 -- CRM, CRO, etc.
-      p_credential_number := '12345',
-      p_whatsapp_provider := 'evolution'
-    );
+  -- 1. Organização
+  INSERT INTO clinicas.organizations (name, address, contact_phone, business_hours, instagram_handle, metadata)
+  VALUES (
+    'Consultório Dra. Andreia Mota Mussi',
+    'Av. Antônio Carlos Magalhães, 585 – Ed. Pierre Fauchard, Sala 709 - Itaigara, Salvador - BA, CEP 41825-907',
+    '(71) 3353-7900',
+    '{"weekdays": "Segunda a Sexta, das 08:00 às 18:00", "weekend": "Sáb/Dom/Feriados: Fechado"}'::jsonb,
+    '@andreapereiramota',
+    '{}'::jsonb
+  )
+  ON CONFLICT DO NOTHING
+  RETURNING id INTO v_org_id;
+
+  IF v_org_id IS NULL THEN
+    SELECT id INTO v_org_id
+    FROM clinicas.organizations
+    WHERE name = 'Consultório Dra. Andreia Mota Mussi'
+    LIMIT 1;
   END IF;
+
+  -- 2. Schema + profissional (idempotente via provision)
+  v_prof_id := clinicas.provision_professional_schema(
+    p_tenant_code     := 'dra-andreia',
+    p_schema_name     := 'dra_andreia',
+    p_organization_id := v_org_id
+  );
+
+  -- 3. Dados da profissional
+  UPDATE clinicas.professionals SET
+    full_name         = 'Dra. Andreia Mota Mussi',
+    specialties       = ARRAY['Clínico Geral', 'Prótese Dentária'],
+    credential_type   = 'CRO',
+    credential_number = '4407',
+    status            = 'active'
+  WHERE id = v_prof_id;
+
+  -- 4. Configuração do assistente
+  UPDATE clinicas.assistant_configs SET
+    persona_name = 'Ana',
+    tone         = 'acolhedor',
+    language     = 'pt-BR',
+    model        = 'gpt-4o',
+    status       = 'active'
+  WHERE professional_id = v_prof_id;
+
+  -- 5. Instância WhatsApp (Evolution API)
+  UPDATE clinicas.whatsapp_instances SET
+    provider             = 'evolution',
+    provider_instance_id = 'Dra Andreia Mota Mussi',
+    status               = 'disconnected'
+  WHERE professional_id = v_prof_id;
+
+  RAISE NOTICE 'Seed: Dra. Andreia Mota Mussi registrada (professional_id: %)', v_prof_id;
 END;
 $$;
-*/
 
 -- ============================================================
 -- END OF SETUP
