@@ -55,7 +55,7 @@ The current generic architecture addresses these limitations:
 - ✅ Database-driven AI configuration
 - ✅ Parameterized tool workflows
 
-**See:** `n8n/MIGRATION-GUIDE.md` for complete migration documentation.
+**See:** `n8n/WORKFLOW-STRUCTURE.md` and `doc/MULTI_TENANT_QUICK_START.md` for current migration and operation references.
 
 ---
 

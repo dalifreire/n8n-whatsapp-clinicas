@@ -16,7 +16,7 @@ The knowledge base supports **isolated assistants per professional** with schema
 
 ### 1. Add a New Professional
 
-**Step 1:** Add config to `knowledge_base_atualizar.py`:
+**Step 1:** Add config to `src/knowledge_base_atualizar.py`:
 
 ```python
 PROFESSIONALS_CONFIG = {
@@ -37,38 +37,38 @@ PROFESSIONALS_CONFIG = {
 **Step 2:** Generate seed documents:
 
 ```bash
-PROFESSIONAL_ID=profissional-demo python knowledge_base_consultorio.py
+PROFESSIONAL_ID=profissional-demo python src/knowledge_base_consultorio.py
 ```
 
 **Step 3:** Index for new professional:
 
 ```bash
-python knowledge_base_indexar.py --tenant-code profissional-demo
+python src/knowledge_base_indexar.py --tenant-code profissional-demo
 ```
 
 **Step 4:** (Optional) Scrape professional's website/social:
 
 ```bash
-python knowledge_base_atualizar.py --professional-id profissional-demo --full
+python src/knowledge_base_atualizar.py --professional-id profissional-demo --full
 ```
 
 ---
 
 ## CLI Reference
 
-### knowledge_base_indexar.py
+### src/knowledge_base_indexar.py
 
 Generate embeddings and store in Supabase pgvector.
 
 ```bash
 # Index specific professional (REQUIRED)
-python knowledge_base_indexar.py --tenant-code profissional-demo
+python src/knowledge_base_indexar.py --tenant-code profissional-demo
 
 # Index all professionals in knowledge base
-python knowledge_base_indexar.py --all
+python src/knowledge_base_indexar.py --all
 
 # Use environment variable
-TENANT_CODE=profissional-demo python knowledge_base_indexar.py
+TENANT_CODE=profissional-demo python src/knowledge_base_indexar.py
 ```
 
 **Environment Variables:**
@@ -78,22 +78,22 @@ TENANT_CODE=profissional-demo python knowledge_base_indexar.py
 
 ---
 
-### knowledge_base_atualizar.py
+### src/knowledge_base_atualizar.py
 
 Scrape professional's website/social media and update knowledge base.
 
 ```bash
 # Update specific professional
-python knowledge_base_atualizar.py --professional-id profissional-demo --full
+python src/knowledge_base_atualizar.py --professional-id profissional-demo --full
 
 # Update all professionals
-python knowledge_base_atualizar.py --all --site --instagram
+python src/knowledge_base_atualizar.py --all --site --instagram
 
 # Validate multi-tenant schema
-python knowledge_base_atualizar.py --validate
+python src/knowledge_base_atualizar.py --validate
 
 # Show per-professional stats
-python knowledge_base_atualizar.py --report
+python src/knowledge_base_atualizar.py --report
 ```
 
 **Flags:**
@@ -106,13 +106,13 @@ python knowledge_base_atualizar.py --report
 
 ---
 
-### knowledge_base_consultorio.py
+### src/knowledge_base_consultorio.py
 
 Add generic seed documents (scheduling, procedures, FAQ) for a professional.
 
 ```bash
 # Add documents for specific professional (REQUIRED)
-PROFESSIONAL_ID=profissional-demo python knowledge_base_consultorio.py
+PROFESSIONAL_ID=profissional-demo python src/knowledge_base_consultorio.py
 ```
 
 **Note:** Edit `NOVOS_DOCUMENTOS` array to customize document content per professional. Replace placeholder text with actual clinic information.
@@ -216,7 +216,7 @@ Pass `tenant_code` when invoking scripts:
 {{ $node["webhook"].json["tenant_code"] }}
 
 // Shell command
-TENANT_CODE={{tenant_code}} python knowledge_base_indexar.py
+TENANT_CODE={{tenant_code}} python src/knowledge_base_indexar.py
 ```
 
 ### RAG Queries
@@ -253,7 +253,7 @@ LIMIT 5;
 ### Validate Knowledge Base
 
 ```bash
-python knowledge_base_atualizar.py --validate
+python src/knowledge_base_atualizar.py --validate
 ```
 
 **Checks:**
@@ -265,7 +265,7 @@ python knowledge_base_atualizar.py --validate
 ### Report Stats
 
 ```bash
-python knowledge_base_atualizar.py --report
+python src/knowledge_base_atualizar.py --report
 ```
 
 **Output:**
@@ -281,12 +281,12 @@ python knowledge_base_atualizar.py --report
 ### Error: "Professional 'xxx' not found"
 
 **Cause:** `professional_id` not in `PROFESSIONALS_CONFIG`  
-**Fix:** Add professional config to `knowledge_base_atualizar.py`
+**Fix:** Add professional config to `src/knowledge_base_atualizar.py`
 
 ### Error: "No documents found for professional"
 
 **Cause:** Knowledge base missing documents for that professional  
-**Fix:** Run `knowledge_base_consultorio.py` with correct `PROFESSIONAL_ID`
+**Fix:** Run `src/knowledge_base_consultorio.py` with correct `PROFESSIONAL_ID`
 
 ### Error: "No tenant specified"
 
@@ -297,9 +297,9 @@ python knowledge_base_atualizar.py --report
 
 ## Next Steps
 
-1. **Add Professional Config:** Edit `PROFESSIONALS_CONFIG` in `knowledge_base_atualizar.py`
-2. **Generate Documents:** Run `knowledge_base_consultorio.py` with PROFESSIONAL_ID
-3. **Index Documents:** Run `knowledge_base_indexar.py` with --tenant-code
+1. **Add Professional Config:** Edit `PROFESSIONALS_CONFIG` in `src/knowledge_base_atualizar.py`
+2. **Generate Documents:** Run `src/knowledge_base_consultorio.py` with PROFESSIONAL_ID
+3. **Index Documents:** Run `src/knowledge_base_indexar.py` with --tenant-code
 4. **Update n8n:** Configure workflows to pass tenant_code from routing
 
 ---

@@ -17,21 +17,21 @@ Generalized the AI/RAG knowledge base layer to support **isolated assistants per
    - Active base is now empty - ready for professional onboarding
    - Generic product base without client-specific data
 
-2. **knowledge_base_indexar.py** (18KB)
+2. **src/knowledge_base_indexar.py** (18KB)
    - CLI args: `--tenant-code`, `--all`
    - REQUIRED tenant specification (no default fallback)
    - Environment: `TENANT_CODE` (no silent default)
    - Per-professional schema resolution and embedding generation
    - Clear error messages when tenant not specified
 
-3. **knowledge_base_atualizar.py** (20KB)
+3. **src/knowledge_base_atualizar.py** (20KB)
    - Multi-tenant scraping (website + Instagram)
    - CLI args: `--professional-id`, `--all`, `--validate`, `--report`
    - `PROFESSIONALS_CONFIG` now empty template with commented examples
    - No active seed data - requires professional addition
    - Validation checks for missing professional_id
 
-4. **knowledge_base_consultorio.py** (22KB)
+4. **src/knowledge_base_consultorio.py** (22KB)
    - 42 generic TEMPLATE documents (placeholder text)
    - REQUIRES `PROFESSIONAL_ID` env var (no default)
    - Clear instructions to replace placeholder content
@@ -39,17 +39,17 @@ Generalized the AI/RAG knowledge base layer to support **isolated assistants per
 
 ### Documentation Updated
 
-5. **KNOWLEDGE_BASE_MULTI_TENANT.md** (6.8KB)
+5. **doc/KNOWLEDGE_BASE_MULTI_TENANT.md** (6.8KB)
    - Examples use: `profissional-demo`, `clinica-exemplo`
    - Clear guidance on no defaults - explicit tenant required
    - Migration section clarifies generic product approach
 
-6. **SUMMARY_MULTI_TENANT_KB.md** (this file)
+6. **doc/SUMMARY_MULTI_TENANT_KB.md** (this file)
    - Updated to reflect generic product status
    - Removed seed tenant language
    - Emphasizes empty base ready for onboarding
 
-7. **MULTI_TENANT_QUICK_START.md**
+7. **doc/MULTI_TENANT_QUICK_START.md**
    - Examples use generic tenant names
    - Registration steps reference product patterns, not specific professional
    - Clear separation of demo data vs. active data
@@ -60,23 +60,23 @@ Generalized the AI/RAG knowledge base layer to support **isolated assistants per
 
 ✅ **Add New Professional:**
 ```bash
-# 1. Add config to PROFESSIONALS_CONFIG in knowledge_base_atualizar.py
+# 1. Add config to PROFESSIONALS_CONFIG in src/knowledge_base_atualizar.py
 # 2. Generate seed documents
-PROFESSIONAL_ID=profissional-demo python knowledge_base_consultorio.py
+PROFESSIONAL_ID=profissional-demo python src/knowledge_base_consultorio.py
 
 # 3. Index documents
-python knowledge_base_indexar.py --tenant-code profissional-demo
+python src/knowledge_base_indexar.py --tenant-code profissional-demo
 ```
 
 ✅ **Validate Multi-Tenant Schema:**
 ```bash
-python knowledge_base_atualizar.py --validate
+python src/knowledge_base_atualizar.py --validate
 # Output: Schema version, professional counts, integrity checks
 ```
 
 ✅ **Index All Professionals:**
 ```bash
-python knowledge_base_indexar.py --all
+python src/knowledge_base_indexar.py --all
 ```
 
 ---
@@ -132,8 +132,8 @@ python knowledge_base_indexar.py --all
 
 ## Documentation
 
-📘 **User Guide:** `KNOWLEDGE_BASE_MULTI_TENANT.md`  
-📋 **Quick Start:** `MULTI_TENANT_QUICK_START.md`  
+📘 **User Guide:** `doc/KNOWLEDGE_BASE_MULTI_TENANT.md`  
+📋 **Quick Start:** `doc/MULTI_TENANT_QUICK_START.md`  
 📝 **Session Notes:** `.squad/agents/ivy/history.md`  
 🔧 **Script Help:** Run with `--help` flag for CLI reference
 
