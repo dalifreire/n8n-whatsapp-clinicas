@@ -2,18 +2,24 @@
 
 ## Overview
 
-A plataforma usa isolamento schema-per-professional.
+A plataforma usa isolamento **schema-per-professional**.
 
 - Metadados compartilhados: schema `clinicas`
-- Dados operacionais: um schema por profissional (ex.: `dra_andreia`)
+- Dados operacionais: um schema por profissional (ex.: `clinicas_dra_andreia`)
 - Contrato canônico de contexto: `clinicas.get_professional_context(p_tenant_code text)`
 
-## Estrutura Atual
+## Estrutura do Repositório
 
 ```text
 n8n-whatsapp-clinicas/
   database/
-    SUPABASE_SETUP.sql
+    v001_extensions_and_schema.sql   -- extensões e schema clinicas
+    v002_core_tables.sql             -- tabelas do registry compartilhado
+    v003_platform_functions.sql      -- get_professional_context, tenants view
+    v004_tenant_schema_template.sql  -- ensure_tenant_schema_objects (template por profissional)
+    v005_provisioning.sql            -- provision_professional_schema, register_existing_tenant
+    v006_reminder_dispatchers.sql    -- fetch_due_reminders_all, mark_reminder_sent
+    v007_seed_dra_andreia.sql        -- carga inicial Dra. Andreia Mota Mussi
   src/
     knowledge_base_atualizar.py
     knowledge_base_consultorio.py
@@ -30,19 +36,23 @@ n8n-whatsapp-clinicas/
 
 ## 1. Setup do Banco
 
-Execute o script completo:
+Execute os scripts em ordem no Supabase SQL Editor:
 
-```sql
--- Supabase SQL Editor
--- arquivo: database/SUPABASE_SETUP.sql
+```
+v001_extensions_and_schema.sql
+v002_core_tables.sql
+v003_platform_functions.sql
+v004_tenant_schema_template.sql
+v005_provisioning.sql
+v006_reminder_dispatchers.sql
+v007_seed_dra_andreia.sql   ← carga inicial (opcional em ambientes sem Dra. Andreia)
 ```
 
-Esse script cria:
+Após execução completa:
 
-- schema `clinicas`
-- tabelas de plataforma: `organizations`, `professionals`, `assistant_configs`, `whatsapp_instances`, `message_dedupe`, `prompt_templates`
-- funções canônicas (contexto, provisionamento, reminders)
-- seed inicial da Dra. Andreia (`tenant_code = 'dra-andreia'`, schema `dra_andreia`)
+- Schema `clinicas` com tabelas de plataforma: `organizations`, `professionals`, `assistant_configs`, `whatsapp_instances`, `message_dedupe`, `prompt_templates`
+- Funções canônicas de contexto, provisionamento e lembretes
+- Seed inicial da Dra. Andreia (`tenant_code = 'dra-andreia'`, schema `clinicas_dra_andreia`)
 
 ## 2. Verificações Rápidas
 
@@ -102,8 +112,8 @@ SELECT clinicas.provision_professional_schema(
   p_schema_name := 'dr_carlos'
 );
 ```
-
-Depois ajuste dados cadastrais/configuração:
+-- Instâncias WhatsApp
+SELECT p.tenant_code, wi.provider, wi.provider_config->>'instance_id' AS instance_id, wi.phone_number, wi.status
 
 ```sql
 UPDATE clinicas.professionals
@@ -116,7 +126,7 @@ WHERE tenant_code = 'dr-carlos';
 UPDATE clinicas.assistant_configs
 SET persona_name = 'Carla',
     tone = 'acolhedor',
-    language = 'pt-BR',
+      p_schema_name := 'clinicas_dr_carlos'
     model = 'gpt-4o',
     status = 'active'
 WHERE professional_id = (
@@ -142,7 +152,7 @@ SELECT clinicas.register_existing_tenant(
   p_full_name := 'Dr. Carlos Silva',
   p_credential_type := 'CRO',
   p_credential_number := '5678'
-);
+        provider_config = jsonb_build_object('instance_id', 'Dr Carlos Silva'),
 ```
 
 ## 5. Knowledge Base (Python)
@@ -155,7 +165,7 @@ PROFESSIONAL_ID=dr-carlos python src/knowledge_base_consultorio.py
 
 # Indexação RAG por tenant
 python src/knowledge_base_indexar.py --tenant-code dr-carlos
-
+      p_schema_name := 'clinicas_dr_carlos',
 # Atualização/scraping
 python src/knowledge_base_atualizar.py --professional-id dr-carlos --full
 ```
@@ -184,7 +194,7 @@ Se não retornar linha, verifique `status` do profissional (`active`/`trial`) e 
 ```sql
 SELECT schema_name
 FROM information_schema.schemata
-WHERE schema_name = 'dr_carlos';
+WHERE schema_name = 'clinicas_dr_carlos';
 ```
 
 ## 7. Regras de Segurança
@@ -196,5 +206,5 @@ WHERE schema_name = 'dr_carlos';
 
 ---
 
-Last Updated: 2026-05-06
-Version: 2.1 (aligned with `database/SUPABASE_SETUP.sql`)
+Last Updated: 2026-05-12
+Version: 2.2 (scripts numerados v001–v007, padrão clinicas_<tenant> para schemas)

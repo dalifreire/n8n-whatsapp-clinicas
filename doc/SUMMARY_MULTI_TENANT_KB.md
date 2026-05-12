@@ -1,58 +1,53 @@
 # Summary: Multi-Tenant Knowledge Base Implementation
 
-**Date:** 2025-01-24  
-**Agent:** Ivy (AI Engineer)  
-**Status:** ✅ Complete — Generic multi-tenant knowledge base ready
+**Date:** 2026-05-12
+**Status:** ✅ Completo — Plataforma multi-tenant genérica com seed da Dra. Andreia Mota Mussi
 
 ---
 
 ## What Was Done
 
-Generalized the AI/RAG knowledge base layer to support **isolated assistants per professional** as a generic product offering (no hardcoded defaults).
+Generalização da camada de knowledge base AI/RAG para suportar **assistentes isolados por profissional**, com arquitetura schema-per-tenant e script de banco dividido em migrações numeradas.
 
 ### Files Modified
 
-1. **knowledge_base.json** (2.5KB)
-   - Upgraded to schema version 2.0.0 (multi-tenant)
-   - Active base is now empty - ready for professional onboarding
-   - Generic product base without client-specific data
-
-2. **src/knowledge_base_indexar.py** (18KB)
+1. **src/knowledge_base_indexar.py**
    - CLI args: `--tenant-code`, `--all`
    - REQUIRED tenant specification (no default fallback)
    - Environment: `TENANT_CODE` (no silent default)
    - Per-professional schema resolution and embedding generation
    - Clear error messages when tenant not specified
 
-3. **src/knowledge_base_atualizar.py** (20KB)
+2. **src/knowledge_base_atualizar.py**
    - Multi-tenant scraping (website + Instagram)
    - CLI args: `--professional-id`, `--all`, `--validate`, `--report`
    - `PROFESSIONALS_CONFIG` now empty template with commented examples
    - No active seed data - requires professional addition
    - Validation checks for missing professional_id
 
-4. **src/knowledge_base_consultorio.py** (22KB)
+3. **src/knowledge_base_consultorio.py**
    - 42 generic TEMPLATE documents (placeholder text)
    - REQUIRES `PROFESSIONAL_ID` env var (no default)
    - Clear instructions to replace placeholder content
    - Generic professional-neutral language
 
-### Documentation Updated
+### Scripts de Banco (database/)
 
-5. **doc/KNOWLEDGE_BASE_MULTI_TENANT.md** (6.8KB)
-   - Examples use: `profissional-demo`, `clinica-exemplo`
-   - Clear guidance on no defaults - explicit tenant required
-   - Migration section clarifies generic product approach
+| Arquivo | Conteúdo |
+|---|---|
+| `v001_extensions_and_schema.sql` | Extensões PostgreSQL + schema `clinicas` + DROPs de compatibilidade |
+| `v002_core_tables.sql` | Tabelas do registry: `organizations`, `professionals`, `assistant_configs`, `whatsapp_instances`, `message_dedupe`, `prompt_templates` |
+| `v003_platform_functions.sql` | `get_professional_context`, `assert_valid_tenant_identifiers`, view `clinicas.tenants` |
+| `v004_tenant_schema_template.sql` | `ensure_tenant_schema_objects`: 17 tabelas + índices + triggers + funções por tenant |
+| `v005_provisioning.sql` | `provision_professional_schema`, `register_existing_tenant` |
+| `v006_reminder_dispatchers.sql` | `fetch_due_reminders_all`, `mark_reminder_sent` (nível plataforma) |
+| `v007_seed_dra_andreia.sql` | Carga inicial Dra. Andreia Mota Mussi (idempotente) |
 
-6. **doc/SUMMARY_MULTI_TENANT_KB.md** (this file)
-   - Updated to reflect generic product status
-   - Removed seed tenant language
-   - Emphasizes empty base ready for onboarding
+### Documentação
 
-7. **doc/MULTI_TENANT_QUICK_START.md**
-   - Examples use generic tenant names
-   - Registration steps reference product patterns, not specific professional
-   - Clear separation of demo data vs. active data
+- **doc/MULTI_TENANT_QUICK_START.md** — Atualizado: scripts numerados, padrão `clinicas_<tenant>`, `provider_config`
+- **doc/KNOWLEDGE_BASE_MULTI_TENANT.md** — Referências de paths e tenant codes corretas
+- **doc/SUMMARY_MULTI_TENANT_KB.md** — Este arquivo
 
 ---
 
@@ -106,13 +101,8 @@ python src/knowledge_base_indexar.py --all
 
 **Tenant Code as Isolation Key:**
 - Format: kebab-case (`profissional-demo`, `clinica-exemplo`)
-- Maps to database schema: underscore-case (`profissional_demo`, `clinica_exemplo`)
+- Maps to database schema: `clinicas_` + underscore-case (`clinicas_profissional_demo`, `clinicas_dr_carlos`)
 - Prevents cross-tenant data leakage
-
-**Schema Versioning:**
-- v2.0.0 signals multi-tenant support
-- Scripts detect version and adapt behavior
-- Breaking change from v1.x (requires explicit tenant_code)
 
 **No Default Pattern:**
 - Scripts require explicit tenant specification
@@ -139,4 +129,4 @@ python src/knowledge_base_indexar.py --all
 
 ---
 
-**Questions or issues?** See decision documents in `.squad/decisions/` or contact Ivy via squad channel.
+**Dúvidas ou problemas?** Consulte `doc/MULTI_TENANT_QUICK_START.md` ou os scripts de banco em `database/`.

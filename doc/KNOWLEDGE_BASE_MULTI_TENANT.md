@@ -168,27 +168,19 @@ PROFESSIONAL_ID=profissional-demo python src/knowledge_base_consultorio.py
 
 Each professional gets their own PostgreSQL schema:
 
-- `profissional-demo` → `profissional_demo` schema
-- `clinica-exemplo` → `clinica_exemplo` schema
+- `profissional-demo` → schema `clinicas_profissional_demo`
+- `dr-carlos` → schema `clinicas_dr_carlos`
 
-### Required Table Structure
+O schema **não deve ser criado manualmente**. Ele é provisionado automaticamente por:
 
 ```sql
-CREATE SCHEMA IF NOT EXISTS profissional_demo;
-
-CREATE TABLE profissional_demo.documentos (
-    id BIGSERIAL PRIMARY KEY,
-    titulo TEXT,
-    conteudo TEXT,
-    categoria VARCHAR(100),
-    metadados JSONB,
-    embedding vector(1536),        -- text-embedding-3-small
-    fonte VARCHAR(100),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+SELECT clinicas.provision_professional_schema(
+  p_tenant_code := 'dr-carlos',
+  p_schema_name := 'clinicas_dr_carlos'
 );
-
-CREATE INDEX idx_documentos_embedding ON profissional_demo.documentos USING ivfflat(embedding vector_cosine_ops);
 ```
+
+A tabela `documentos` (com embedding `vector(1536)`) é criada dentro do schema pelo script `v004_tenant_schema_template.sql`.
 
 ---
 
@@ -197,11 +189,11 @@ CREATE INDEX idx_documentos_embedding ON profissional_demo.documentos USING ivff
 | Scope | Format | Example |
 |-------|--------|---------|
 | Professional ID | kebab-case | `profissional-demo`, `clinica-exemplo` |
-| Database Schema | underscore-case | `profissional_demo`, `clinica_exemplo` |
+| Database Schema | `clinicas_` + underscore-case | `clinicas_profissional_demo`, `clinicas_dr_carlos` |
 | Document ID Prefix | underscore-case | `prof_001_sobre`, `clinica_002_horario` |
 | Config Key | kebab-case | `PROFESSIONALS_CONFIG["profissional-demo"]` |
 
-**Conversion:** Handled automatically by `get_tenant_schema(tenant_code)`.
+**Conversão automática:** ao omitir `p_schema_name`, `provision_professional_schema` gera o nome como `clinicas_` + `tenant_code` com hífens substituídos por underscores.
 
 ---
 
@@ -221,14 +213,14 @@ TENANT_CODE={{tenant_code}} python src/knowledge_base_indexar.py
 
 ### RAG Queries
 
-Scope similarity search to professional schema:
+Use a função `buscar_documentos_similares` gerada no schema do tenant:
 
 ```sql
-SELECT conteudo, titulo, 
-       1 - (embedding <=> $1::vector) as similaridade
-FROM profissional_demo.documentos
-ORDER BY embedding <=> $1::vector
-LIMIT 5;
+SELECT * FROM clinicas_dr_carlos.buscar_documentos_similares(
+  query_embedding := $1::vector,
+  match_threshold := 0.7,
+  match_count := 5
+);
 ```
 
 ---
