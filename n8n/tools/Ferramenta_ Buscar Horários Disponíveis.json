@@ -6,16 +6,13 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "dentist_id",
-              "type": "string"
+              "name": "dentist_id"
             },
             {
-              "name": "date",
-              "type": "string"
+              "name": "date"
             },
             {
-              "name": "specialty",
-              "type": "string"
+              "name": "specialty"
             }
           ]
         }
@@ -26,7 +23,7 @@
         0,
         0
       ],
-      "id": "03e8e532-dddb-4413-9990-4c2d33f49517",
+      "id": "cf243a53-0632-43f4-94f4-5c147fb4bb2c",
       "name": "Trigger"
     },
     {
@@ -39,7 +36,7 @@
         224,
         0
       ],
-      "id": "20d0c8ce-4353-40a0-bc77-566769abff83",
+      "id": "43699fa9-3359-4503-a9d3-578b5699aae8",
       "name": "Parsear Entrada"
     },
     {
@@ -56,12 +53,12 @@
         448,
         0
       ],
-      "id": "ccdb5cda-1691-4961-ad8a-3bdad3ebfa6c",
+      "id": "0aa07584-e3dc-40e9-be10-d9174577d3cf",
       "name": "Buscar Horários",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -76,7 +73,7 @@
         672,
         0
       ],
-      "id": "67707d96-8414-4630-8450-31fde60cbc9a",
+      "id": "4f3616aa-c0ac-423a-9e15-fe43e2e8d78a",
       "name": "Formatar Resultado"
     }
   ],
@@ -116,13 +113,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "376ce26d-83aa-4022-be7d-a4583f859013",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "2YelpHyxOWru-WvXVobgh",
   "tags": []
 }

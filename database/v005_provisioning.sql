@@ -63,7 +63,7 @@ BEGIN
   ON CONFLICT (professional_id) DO NOTHING;
 
   INSERT INTO clinicas.whatsapp_instances (professional_id, provider, provider_config, phone_number, status)
-  VALUES (v_professional_id, 'evolution', '{}'::jsonb, NULL, 'disconnected')
+  VALUES (v_professional_id, 'evolution', '{}'::jsonb, 'nao-informado', 'disconnected')
   ON CONFLICT (professional_id) DO NOTHING;
 
   RETURN v_professional_id;
@@ -99,6 +99,7 @@ AS $$
 DECLARE
   v_professional_id uuid;
   v_other_tenant text;
+  v_whatsapp_phone_final text;
 BEGIN
   PERFORM clinicas.assert_valid_tenant_identifiers(p_tenant_code, p_schema_name);
 
@@ -113,6 +114,8 @@ BEGIN
   IF v_other_tenant IS NOT NULL THEN
     RAISE EXCEPTION 'Schema % is already registered to tenant %', p_schema_name, v_other_tenant;
   END IF;
+
+  v_whatsapp_phone_final := NULLIF(trim(COALESCE(p_whatsapp_phone_e164, p_whatsapp_phone, p_phone, '')), '');
 
   PERFORM clinicas.ensure_tenant_schema_objects(p_schema_name);
 
@@ -164,12 +167,12 @@ BEGIN
     v_professional_id,
     CASE
       WHEN COALESCE(p_whatsapp_provider, 'evolution') IN ('evolution-api', 'evolution_api') THEN 'evolution'
-      WHEN COALESCE(p_whatsapp_provider, 'evolution') IN ('cloud-api', 'cloudapi') THEN 'cloud_api'
+      WHEN COALESCE(p_whatsapp_provider, 'evolution') IN ('cloud-api', 'cloudapi') THEN 'whatsapp_cloud_api'
       ELSE COALESCE(p_whatsapp_provider, 'evolution')
     END,
     jsonb_strip_nulls(jsonb_build_object('instance_id', p_whatsapp_instance_id)),
-    COALESCE(p_whatsapp_phone_e164, p_whatsapp_phone, p_phone),
-    CASE WHEN COALESCE(p_whatsapp_phone_e164, p_whatsapp_phone, p_phone) IS NULL THEN 'disconnected' ELSE 'connected' END
+    COALESCE(v_whatsapp_phone_final, 'nao-informado'),
+    CASE WHEN v_whatsapp_phone_final IS NULL THEN 'disconnected' ELSE 'connected' END
   )
   ON CONFLICT (professional_id) DO UPDATE SET
     provider = EXCLUDED.provider,

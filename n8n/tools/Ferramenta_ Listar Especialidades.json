@@ -13,7 +13,7 @@
         0,
         0
       ],
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567800",
+      "id": "6f532887-9ef2-480f-8387-5b5f3d5eb011",
       "name": "Trigger"
     },
     {
@@ -28,12 +28,12 @@
         240,
         0
       ],
-      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678800",
+      "id": "9b54228a-67f8-472f-b7a0-8c1822195414",
       "name": "Buscar Especialidades",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -48,7 +48,7 @@
         480,
         0
       ],
-      "id": "c3d4e5f6-a7b8-9012-cdef-123456789000",
+      "id": "2718acdd-52d8-40c6-93a4-719caec46ecc",
       "name": "Formatar Resultado"
     }
   ],
@@ -82,8 +82,11 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "37c6523f-3ce6-463d-a14b-341816f791e0",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "Tn8tMYgL5SUiJgj-Il-W-",
   "tags": []
 }

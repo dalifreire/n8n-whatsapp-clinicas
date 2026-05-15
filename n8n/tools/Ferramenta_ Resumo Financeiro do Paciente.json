@@ -6,8 +6,7 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "patient_phone",
-              "type": "string"
+              "name": "patient_phone"
             }
           ]
         }
@@ -18,7 +17,7 @@
         0,
         0
       ],
-      "id": "c901a239-be8b-4da9-a38e-cd22e8438c00",
+      "id": "37893996-eebe-48e6-bd4a-a314b371e739",
       "name": "Trigger"
     },
     {
@@ -35,12 +34,12 @@
         240,
         0
       ],
-      "id": "f6fe577b-649b-4a1b-b3e2-a6735252ef00",
+      "id": "e80e90ce-b178-4683-9fd9-15e31c866514",
       "name": "Buscar Financeiro",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -55,7 +54,7 @@
         480,
         0
       ],
-      "id": "178bcb2a-c514-41d7-beca-3facba88d600",
+      "id": "e85ca7c1-677e-4d29-9fc8-6df182dc8011",
       "name": "Formatar Resultado"
     }
   ],
@@ -84,13 +83,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "f46629cd-94d1-41b2-9842-1fea3ff8d668",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "7p-QuU6PC9dXHq_4t-DEv",
   "tags": []
 }

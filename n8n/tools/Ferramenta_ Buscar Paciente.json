@@ -6,8 +6,7 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "patient_phone",
-              "type": "string"
+              "name": "patient_phone"
             }
           ]
         }
@@ -18,7 +17,7 @@
         0,
         0
       ],
-      "id": "ec496d9e-797d-4b13-938f-21e5b2270700",
+      "id": "ffc304e9-8d01-495e-9197-2763a7e46736",
       "name": "Trigger"
     },
     {
@@ -35,12 +34,12 @@
         240,
         0
       ],
-      "id": "60dd2116-e5fc-40a5-82f1-bc027b809300",
+      "id": "f7ac2f93-e05c-4409-b1f2-899f33b87ff5",
       "name": "Buscar Paciente",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -55,7 +54,7 @@
         480,
         0
       ],
-      "id": "b5812769-54cd-471d-b0b2-a2d79afdeef8",
+      "id": "58c9ea39-9035-494f-8c33-543de84c7340",
       "name": "Formatar Resultado"
     }
   ],
@@ -84,13 +83,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "0e5a19e1-557f-4a0f-b21b-cbb89ae48992",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "lTaS2twY8A-3Zkwz6iCAk",
   "tags": []
 }

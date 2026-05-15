@@ -6,7 +6,10 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "patient_phone"
+              "name": "session_id"
+            },
+            {
+              "name": "schema_name"
             }
           ]
         }
@@ -17,15 +20,15 @@
         0,
         0
       ],
-      "id": "0549fb0a-bcf9-46bf-93fd-36257c654200",
+      "id": "7391613a-9ff8-4a42-8476-216c3acd6606",
       "name": "Trigger"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.reiniciar_conversa($1::varchar);",
+        "query": "SELECT * FROM {{$json.schema_name}}.reiniciar_conversa($1::varchar);",
         "options": {
-          "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
+          "queryReplacement": "={{ $json.session_id }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -34,12 +37,12 @@
         240,
         0
       ],
-      "id": "cd6de1fe-0aca-4244-a5c3-feebe46ed100",
+      "id": "edd516eb-d166-496b-a307-2712d6f547a6",
       "name": "Reiniciar Conversa",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -54,11 +57,23 @@
         480,
         0
       ],
-      "id": "d90a01b7-d9c0-41c0-9ac4-5466f376ed00",
+      "id": "2e136010-dfa6-4143-a3c4-6106049da9ae",
       "name": "Formatar Resultado"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Trigger": [
+      {
+        "json": {
+          "session_id": "5571920043588|553496620569",
+          "schema_name": "clinicas_dra_andreia"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
   "connections": {
     "Trigger": {
       "main": [
@@ -83,13 +98,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "27543ddc-b45e-4c90-a534-7ef77181bee9",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "PDkFS5em9NgG0vKPUMMYb",
   "tags": []
 }

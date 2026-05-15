@@ -6,16 +6,13 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "appointment_id",
-              "type": "string"
+              "name": "appointment_id"
             },
             {
-              "name": "patient_phone",
-              "type": "string"
+              "name": "patient_phone"
             },
             {
-              "name": "reason",
-              "type": "string"
+              "name": "reason"
             }
           ]
         }
@@ -26,7 +23,7 @@
         0,
         0
       ],
-      "id": "ccc7f9ba-e4ee-4127-a59b-acdbf9352100",
+      "id": "5849c326-76c1-489d-afa2-163dfedd377e",
       "name": "Trigger"
     },
     {
@@ -39,7 +36,7 @@
         224,
         0
       ],
-      "id": "92abd1e8-e880-49de-9d7d-4d39ab855600",
+      "id": "089e45be-162a-4fe7-834d-7c38935683e3",
       "name": "Parsear Entrada"
     },
     {
@@ -56,12 +53,12 @@
         448,
         0
       ],
-      "id": "c62f0473-3a52-4b4d-85a9-5d2654ec4a6d",
+      "id": "776adc53-3fca-4268-8740-72141210981c",
       "name": "Cancelar Agendamento",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -76,7 +73,7 @@
         672,
         0
       ],
-      "id": "855e3a29-dbc1-4e7c-8678-40b84b082100",
+      "id": "a03fa184-040b-4bd7-bca9-4da83eb8308a",
       "name": "Formatar Resultado"
     }
   ],
@@ -116,13 +113,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "cfaa69ed-f2e0-4e13-b4f4-49afb83497b8",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "7cNVINCL9vWl7E091-Bsv",
   "tags": []
 }

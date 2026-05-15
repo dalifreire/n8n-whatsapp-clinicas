@@ -6,16 +6,13 @@
         "workflowInputs": {
           "values": [
             {
-              "name": "type",
-              "type": "string"
+              "name": "type"
             },
             {
-              "name": "specialty",
-              "type": "string"
+              "name": "specialty"
             },
             {
-              "name": "category",
-              "type": "string"
+              "name": "category"
             }
           ]
         }
@@ -26,7 +23,7 @@
         0,
         0
       ],
-      "id": "570d6de4-11c4-4764-bcc0-183d662f4d00",
+      "id": "5303d579-54f7-4879-aeac-29fba215c0bc",
       "name": "Trigger"
     },
     {
@@ -39,7 +36,7 @@
         224,
         0
       ],
-      "id": "a50021aa-3ae2-42b0-a8ad-0e86dd43f100",
+      "id": "88418db5-3247-4703-a076-cee915240d6b",
       "name": "Parsear Entrada"
     },
     {
@@ -56,12 +53,12 @@
         448,
         0
       ],
-      "id": "50dd57e7-e63b-4e42-a9ca-99df056c1400",
+      "id": "f49bfa30-2638-42f1-b3f9-402a1974f912",
       "name": "Buscar Dados",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "TODO_CREDENTIAL_ID",
+          "id": "rtR0aIfgqJvl8ozT",
           "name": "Postgres supabase cloud"
         }
       }
@@ -76,7 +73,7 @@
         672,
         0
       ],
-      "id": "259a71c2-162c-456b-bcee-8686e68c8800",
+      "id": "18bed1a6-de9a-47ac-be63-2047ed73cd75",
       "name": "Formatar Resultado"
     }
   ],
@@ -116,13 +113,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
+  "versionId": "21fed403-eb17-4785-8865-52f0335e65cc",
   "meta": {
-    "instanceId": ""
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
   },
+  "id": "kD2fs_WAae3V2DLLHAAe9",
   "tags": []
 }

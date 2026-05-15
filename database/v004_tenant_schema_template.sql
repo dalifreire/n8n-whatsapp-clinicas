@@ -101,9 +101,9 @@ BEGIN
     CREATE TABLE IF NOT EXISTS %I.documentos (
       id bigserial PRIMARY KEY,
       titulo varchar(500),
-      conteudo text NOT NULL,
+      text text NOT NULL,
       categoria varchar(255),
-      metadados jsonb,
+      metadata jsonb,
       embedding vector(1536),
       fonte varchar(255),
       criado_em timestamptz DEFAULT now(),
@@ -416,9 +416,9 @@ BEGIN
     RETURNS TABLE (
       id bigint,
       titulo varchar,
-      conteudo text,
+      text text,
       categoria varchar,
-      metadados jsonb,
+      metadata jsonb,
       similaridade float
     )
     LANGUAGE plpgsql
@@ -431,9 +431,9 @@ BEGIN
       SELECT
         d.id,
         d.titulo,
-        d.conteudo,
+        d.text,
         d.categoria,
-        d.metadados,
+        d.metadata,
         (1 - (d.embedding <=> query_embedding))::float AS similaridade
       FROM documentos d
       WHERE d.embedding IS NOT NULL
