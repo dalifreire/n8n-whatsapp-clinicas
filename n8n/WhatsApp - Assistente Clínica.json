@@ -186,9 +186,9 @@
           "mappingMode": "defineBelow",
           "value": {
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
-            "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', ``, 'string') }}",
+            "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', `Especialidade para filtrar horários (opcional)`, 'string', '') }}",
             "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', ``, 'string') }}",
-            "dentist_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dentist_id', ``, 'string') }}"
+            "dentist_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dentist_id', `ID do dentista para filtrar horários (opcional)`, 'string', '') }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -259,10 +259,10 @@
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}",
             "patient_name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('patient_name', `Nome completo do paciente`, 'string') }}",
             "dentist_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dentist_id', `ID do dentista`, 'string') }}",
-            "procedure_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('procedure_id', `ID do procedimento (opcional)`, 'string') }}",
+            "procedure_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('procedure_id', `ID do procedimento (opcional)`, 'string', '') }}",
             "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', `Data da consulta no formato YYYY-MM-DD`, 'string') }}",
             "time": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('time', `Horário da consulta no formato HH:MM`, 'string') }}",
-            "notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('notes', `Observações opcionais sobre a consulta`, 'string') }}"
+            "notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('notes', `Observações opcionais sobre a consulta`, 'string', '') }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -369,7 +369,7 @@
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "appointment_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('appointment_id', ``, 'string') }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}",
-            "reason": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('reason', ``, 'string') }}"
+            "reason": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('reason', `Motivo do cancelamento (opcional)`, 'string', '') }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -439,7 +439,7 @@
           "value": {
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').item.json.message_from }}",
-            "status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status', ``, 'string') }}"
+            "status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status', `Status do agendamento para filtrar (opcional)`, 'string', '') }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -498,9 +498,9 @@
           "mappingMode": "defineBelow",
           "value": {
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
-            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', `'dentistas' ou 'procedimentos'`, 'string') }}",
-            "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', ``, 'string') }}",
-            "category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('category', ``, 'string') }}"
+            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', `'dentistas' ou 'procedimentos'`, 'string', 'dentistas') }}",
+            "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', `Especialidade para filtrar dentistas (opcional)`, 'string', '') }}",
+            "category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('category', `Categoria para filtrar procedimentos (opcional)`, 'string', '') }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -572,7 +572,6 @@
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}"
           },
           "matchingColumns": [
-            "patient_phone"
           ],
           "schema": [
             {
