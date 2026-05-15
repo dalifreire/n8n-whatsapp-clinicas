@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1872,
-        896
+        48,
+        2304
       ],
-      "id": "03152edd-e68d-40ee-9b9f-8a5608de256a",
+      "id": "f04f7686-75eb-4749-86a7-115b45039c83",
       "name": "Load Tenant Config",
       "alwaysOutputData": true,
       "credentials": {
@@ -32,10 +32,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1632,
-        1168
+        288,
+        2576
       ],
-      "id": "5d7dc067-0775-45ba-a3ef-eaae3e27f0da",
+      "id": "c761cea5-29df-4cf3-b238-17ffd45c66f5",
       "name": "Compose AI Prompt"
     },
     {
@@ -52,10 +52,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        0,
-        1104
+        1920,
+        2512
       ],
-      "id": "1e8ff81c-a2d8-44e6-9bc9-85fa644cb4df",
+      "id": "71c91808-8703-4a39-9231-14d7f3b0949b",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -74,10 +74,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        144,
-        1104
+        2064,
+        2512
       ],
-      "id": "ca1c5996-cd79-40f1-b7d8-76550d1c5376",
+      "id": "7f95998a-c90f-455d-b322-4ab7990aca96",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
@@ -91,10 +91,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1.1,
       "position": [
-        272,
-        1392
+        2192,
+        2800
       ],
-      "id": "b1b1fa62-0e6b-4781-947d-a4752eb48727",
+      "id": "405a108d-8238-4352-aa7d-769f4b51630a",
       "name": "Think"
     },
     {
@@ -104,10 +104,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        272,
-        1104
+        2192,
+        2512
       ],
-      "id": "0cf509e9-1bb2-44f5-87e7-759f2ab76a88",
+      "id": "969a41af-21cc-4877-8b71-ae78c9afbd8d",
       "name": "Date & Time"
     },
     {
@@ -115,10 +115,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        272,
-        1248
+        2192,
+        2656
       ],
-      "id": "f839f113-1c64-41d6-a1a4-278ce87566f5",
+      "id": "757c2cfa-cc66-4863-80f7-f8e7283f5e02",
       "name": "Calculator"
     },
     {
@@ -166,10 +166,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        656,
-        1104
+        2576,
+        2512
       ],
-      "id": "7bf9795e-a695-4b77-a235-943f8cb16dd0",
+      "id": "ef054931-fde2-493b-8db1-d6241efe8014",
       "name": "Buscar Paciente"
     },
     {
@@ -237,10 +237,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        976,
-        1296
+        2896,
+        2704
       ],
-      "id": "4f508e81-eac8-45a8-b8ec-ab79038988ff",
+      "id": "3481bc83-4210-4067-9b33-ca0a5704254d",
       "name": "Buscar Horários"
     },
     {
@@ -347,10 +347,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        1024,
-        1104
+        2944,
+        2512
       ],
-      "id": "dbae3368-492f-4046-9fdc-597c91113c91",
+      "id": "872530f2-9ff7-4d3a-965a-8244b006d09c",
       "name": "Agendar Consulta"
     },
     {
@@ -418,10 +418,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        1152,
-        1296
+        3072,
+        2704
       ],
-      "id": "c9f12e17-ab36-45a9-b44f-2e698c56eb62",
+      "id": "964e173a-78c2-415b-a680-7720d7f32baa",
       "name": "Cancelar Consulta"
     },
     {
@@ -479,10 +479,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        1184,
-        1088
+        3104,
+        2496
       ],
-      "id": "7b1cfbcd-35eb-4cd0-95ac-121bc974abd8",
+      "id": "03e95c80-9f3e-495f-ab16-e11f571bde6a",
       "name": "Consultar Agendamentos"
     },
     {
@@ -549,10 +549,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        816,
-        1360
+        2736,
+        2768
       ],
-      "id": "6308aa32-5721-4270-adfe-41aa2fb0317f",
+      "id": "ba18d08f-1d9c-41a6-9520-7ecd7eddddf7",
       "name": "Listar Dentistas/Procedimentos"
     },
     {
@@ -571,8 +571,7 @@
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}"
           },
-          "matchingColumns": [
-          ],
+          "matchingColumns": [],
           "schema": [
             {
               "id": "schema_name",
@@ -601,10 +600,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        1344,
-        1168
+        3264,
+        2576
       ],
-      "id": "933d27d7-a083-45b9-b48e-2d1097832746",
+      "id": "11e9afe6-6cbc-4e60-9e61-f4eae254e2ba",
       "name": "Resumo Financeiro"
     },
     {
@@ -655,10 +654,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        640,
-        1360
+        2560,
+        2768
       ],
-      "id": "55857f6b-ace7-4934-8767-63fe27c84dc7",
+      "id": "eb12d63a-3033-41bb-9f5c-733e9e12f0c9",
       "name": "Reiniciar Conversa"
     },
     {
@@ -696,10 +695,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        832,
-        1088
+        2752,
+        2496
       ],
-      "id": "013390c3-a8e6-48d6-93af-b75aa85a235c",
+      "id": "339a6437-5d66-488d-a7b4-2995a2e8af63",
       "name": "Listar Especialidades"
     },
     {
@@ -713,10 +712,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -544,
-        1648
+        1376,
+        3056
       ],
-      "id": "f6bfdb5e-b283-425e-ab7f-be92017593ad",
+      "id": "eaf1e210-0478-4094-bb88-5bb985785770",
       "name": "Executar Reset",
       "alwaysOutputData": true,
       "credentials": {
@@ -733,143 +732,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1184,
-        1648
+        736,
+        3056
       ],
-      "id": "492b126c-ed0f-48fd-b891-6b19cb7148c6",
+      "id": "53e72101-9135-4998-b363-f03df97a6e70",
       "name": "Mensagem de Reset"
-    },
-    {
-      "parameters": {
-        "schema": {
-          "__rl": true,
-          "value": "={{ $('Load Tenant Config').first().json.schema_name }}",
-          "mode": "id"
-        },
-        "table": {
-          "__rl": true,
-          "value": "conversas",
-          "mode": "list",
-          "cachedResultName": "conversas"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "telefone": "={{ $('Mensagem Recebida').first().json.message_from }}",
-            "nome": "={{ $('Mensagem Recebida').first().json.message_from_profile_name }}",
-            "mensagem": "={{ $('Unificar Mensagens').item.json.chat_input }}",
-            "resposta_ia": "={{ $('AI Agent').first().json.output }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "telefone",
-              "displayName": "telefone",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "nome",
-              "displayName": "nome",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "mensagem",
-              "displayName": "mensagem",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "resposta_ia",
-              "displayName": "resposta_ia",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "contexto_rag",
-              "displayName": "contexto_rag",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "object",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "data_hora",
-              "displayName": "data_hora",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "criado_em",
-              "displayName": "criado_em",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "atualizado_em",
-              "displayName": "atualizado_em",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": true
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        960,
-        688
-      ],
-      "id": "c9a5735d-97a8-40ee-80e3-b6eb5648ccd7",
-      "name": "Salvar Conversa no BD",
-      "credentials": {
-        "postgres": {
-          "id": "rtR0aIfgqJvl8ozT",
-          "name": "Postgres supabase cloud"
-        }
-      }
     },
     {
       "parameters": {
@@ -878,10 +745,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2896,
-        800
+        4816,
+        2208
       ],
-      "id": "0f075098-7cc3-43ca-9db1-2c19415f3e6a",
+      "id": "5481d319-c6e1-4934-9fd3-bfbaa89a239c",
       "name": "Code in JavaScript2"
     },
     {
@@ -891,10 +758,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        3312,
-        800
+        5232,
+        2208
       ],
-      "id": "852a0e9f-af65-41a3-9688-d445e2e18f88",
+      "id": "ad35a8de-6f26-44fc-b4dd-720d7825216a",
       "name": "Loop Over Items"
     },
     {
@@ -903,13 +770,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "05ad47a4-51fe-4e71-b98d-d7be64426228",
+      "id": "2be03830-ab6a-45e5-99bc-367f07ec6348",
       "name": "Webhook Verificação Meta",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -2704,
-        1328
+        -784,
+        1488
       ],
       "webhookId": "meta-verification-webhook"
     },
@@ -926,7 +793,7 @@
             {
               "id": "verify-token-check",
               "leftValue": "={{ $json.query['hub.verify_token'] }}",
-              "rightValue": "6ce961fdd9922b34cd90560ac2825f72",
+              "rightValue": "6990655e5f96dab54ff827a0d16f4883",
               "operator": {
                 "type": "string",
                 "operation": "equals"
@@ -937,13 +804,13 @@
         },
         "options": {}
       },
-      "id": "aba86348-eef0-495d-affb-0fe85a388034",
+      "id": "b07ead9d-1aa6-4f73-82bd-bb7fdf3a2628",
       "name": "Token Válido?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -2480,
-        1328
+        -560,
+        1488
       ]
     },
     {
@@ -952,13 +819,13 @@
         "responseBody": "={{ $('Webhook Verificação Meta').first().json.query['hub.challenge'] }}",
         "options": {}
       },
-      "id": "947ce08b-a7cf-4b41-aa09-2d2d55181d69",
+      "id": "640cd83b-bcc9-4a83-89ff-371b1e077cb9",
       "name": "Responder Verificação",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -2256,
-        1200
+        -336,
+        1360
       ]
     },
     {
@@ -969,13 +836,13 @@
           "responseCode": 403
         }
       },
-      "id": "f640fae9-5486-45ba-a017-b556288b4ec1",
+      "id": "8fa9eff1-06e7-4964-9e62-c46445d28a93",
       "name": "Responder Proibido",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -2256,
-        1440
+        -336,
+        1600
       ]
     },
     {
@@ -986,13 +853,13 @@
           "responseCode": 200
         }
       },
-      "id": "0a55bb6e-86d2-4438-9b25-a18ddab92868",
+      "id": "6e4afe4c-759d-4120-8a5b-8c4d7a83f7ec",
       "name": "Responder 200 OK",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -2128,
-        496
+        -208,
+        1904
       ]
     },
     {
@@ -1004,13 +871,13 @@
           "rawBody": true
         }
       },
-      "id": "7f38fb32-011d-482c-8731-1d0ac5ee18e2",
+      "id": "f2fd2812-30f1-42b3-8ce5-7e61eb1f60d7",
       "name": "Webhook Mensagens Recebidas",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -2688,
-        688
+        -768,
+        2096
       ],
       "webhookId": "joao-leao-webhook"
     },
@@ -1022,13 +889,13 @@
           "queryReplacement": "={{ $json.whatsapp_phone_number }}"
         }
       },
-      "id": "d17c22f6-ac97-4920-976f-aaee78371989",
+      "id": "8a0aa664-f8e1-420e-ace3-634cd129cbbe",
       "name": "Buscar tenant",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        -2128,
-        896
+        -208,
+        2304
       ],
       "credentials": {
         "postgres": {
@@ -1041,13 +908,13 @@
       "parameters": {
         "jsCode": "// Extrair dados da mensagem recebida via API Oficial do WhatsApp (Meta Cloud API)\nconst body = $input.first().json.body || $input.first().json;\n\n// Validar que é um webhook do WhatsApp Business\nif (body.object !== 'whatsapp_business_account') {\n  return [];\n}\n\n// Extrair a primeira entrada e mudança\nconst entry = (body.entry || [])[0];\nif (!entry) return [];\n\nconst change = (entry.changes || [])[0];\nif (!change || change.field !== 'messages') return [];\n\nconst value = change.value || {};\nconst metadata = value.metadata || {};\n\n// Extrair mensagem (ignorar status/delivery receipts)\nconst messages = value.messages || [];\nif (messages.length === 0) return [];\n\nconst msg = messages[0];\nconst contacts = value.contacts || [];\nconst contact = contacts[0] || {};\n\n// Dados do remetente\nconst message_from = msg.from || '';\nconst message_from_profile_name = contact.profile?.name || '';\nconst message_id = msg.id || '';\nconst whatsapp_phone_number = metadata.display_phone_number || '';\nconst whatsapp_phone_number_id = metadata.phone_number_id || '';\n\n// Determinar tipo da mensagem\nlet message_type = 'text';\nlet message_content = '';\nlet media_mimetype = '';\nlet media_caption = '';\nlet media_id = '';\n\nif (msg.type === 'audio') {\n  message_type = 'audio';\n  media_mimetype = msg.audio?.mime_type || 'audio/ogg';\n  media_id = msg.audio?.id || '';\n} else if (msg.type === 'image') {\n  message_type = 'image';\n  media_mimetype = msg.image?.mime_type || 'image/jpeg';\n  media_caption = msg.image?.caption || '';\n  media_id = msg.image?.id || '';\n} else if (msg.type === 'text') {\n  message_content = msg.text?.body || '';\n} else if (msg.type === 'interactive') {\n  message_content = msg.interactive?.button_reply?.title || msg.interactive?.list_reply?.title || '';\n} else if (msg.type === 'button') {\n  message_content = msg.button?.text || '';\n} else {\n  // Tipo não suportado\n  return [];\n}\n\n// Detectar comandos de reset da conversa\nconst resetCommands = ['/limpar', '/reset', '/reiniciar', '/nova conversa', '/novo', 'nova conversa', 'limpar conversa', '#reiniciar', '#reset', '#limpar', 'reiniciar conversa', 'recomeçar conversa', 'recomecar conversa', 'começar denovo', 'comecar denovo'];\n\nconst normalizedContent = message_content.trim().toLowerCase();\nif (resetCommands.includes(normalizedContent)) {\n  message_type = 'reset';\n}\n\n// Montar sessionId: telefone do assistente + telefone do usuário\nconst session_id = whatsapp_phone_number + '|' + message_from;\n\nreturn [{\n  json: {\n    message_type,\n    message_content,\n    media_mimetype,\n    media_caption,\n    media_id,\n    message_from,\n    message_from_profile_name,\n    message_id,\n    session_id, \n    whatsapp_phone_number,\n    whatsapp_phone_number_id,\n    raw_message: msg\n  }\n}];"
       },
-      "id": "b731f669-5c9f-404d-85a5-29de1ced50b6",
+      "id": "95e93fe0-94d6-44e0-b364-7894bca4fd45",
       "name": "Mensagem Recebida",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2432,
-        688
+        -512,
+        2096
       ]
     },
     {
@@ -1154,26 +1021,26 @@
         },
         "options": {}
       },
-      "id": "da8b8057-ab2b-43b4-ad9e-792a26bc1822",
+      "id": "904d8a07-dadd-434f-a8df-aaeb74ada64f",
       "name": "Tipo de Mensagem",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -1584,
-        864
+        336,
+        2272
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar texto transcrito do áudio para o agente IA\nconst transcription = $input.first().json.text || '';\nconst originalData = $('Mensagem Recebida').first().json;\n\nconst transcription_text = (transcription && transcription.trim()) \n      ? transcription.trim()\n      : '[Áudio recebido mas não foi possível transcrever. Por favor, envie em texto.]'\n\nreturn [{\n  json: {\n    ...originalData,\n    message_type: 'audio',\n    chat_input: `[Mensagem de áudio transcrita]: ${transcription_text}`,\n    original_transcription: transcription_text\n  }\n}];"
       },
-      "id": "edb4fd1e-d38c-427a-bf41-7bf7c943459c",
+      "id": "8365f5b4-c425-4ffe-a7f3-31ebd6e6728c",
       "name": "Preparar Texto do Áudio",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -400,
-        768
+        1520,
+        2176
       ]
     },
     {
@@ -1185,10 +1052,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        -640,
-        768
+        1280,
+        2176
       ],
-      "id": "2be9bd10-f5ed-45b1-8c55-c6dd131a2888",
+      "id": "68492373-ea4e-4b5d-9025-52cefc7cd51e",
       "name": "Transcribe a recording",
       "credentials": {
         "openAiApi": {
@@ -1206,10 +1073,10 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        -1136,
-        768
+        784,
+        2176
       ],
-      "id": "b21765af-3e29-43ae-908e-6f0c29e1ed8d",
+      "id": "bb5e0612-4f50-48b6-a150-afb6d90df1e4",
       "name": "Download audio",
       "webhookId": "da1b6a8d-7add-451c-8800-5f319f5e8372",
       "credentials": {
@@ -1235,10 +1102,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -880,
-        768
+        1040,
+        2176
       ],
-      "id": "3f854775-cc50-4144-8c3b-6a48ee8d4f4a",
+      "id": "236f11e3-d631-4f39-ba6f-65ab716da48c",
       "name": "Baixar Áudio Binary",
       "credentials": {
         "whatsAppApi": {
@@ -1251,27 +1118,122 @@
       "parameters": {
         "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Unificar todas as mensagens (texto, áudio, imagem) para o agente IA\nconst item = $input.first().json;\n\nreturn [{\n  json: {\n    ...item,\n    ...originalData\n  }\n}];"
       },
-      "id": "52d4a1a1-48a1-4a19-9d32-e436a34f922f",
+      "id": "5f42504c-4801-4dfb-a6f1-d9031610ecae",
       "name": "Unificar Mensagens",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        176,
-        848
+        2096,
+        2256
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar mensagem de texto para o agente IA\nconst originalData = $('Mensagem Recebida').first().json;\nconst messageContent = originalData.message_content\n\nreturn [{\n  json: {\n    ...originalData,\n    chat_input: messageContent,\n    message_type: 'text'\n  }\n}];"
       },
-      "id": "62518e95-7c6c-423a-ae4f-4b4eb7fa843a",
+      "id": "ea173434-2be2-427c-bb40-cf8d71035352",
       "name": "Preparar Texto",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -832,
-        288
+        1088,
+        1696
       ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Mensagem Recebida').first().json.whatsapp_phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Mensagem Recebida').first().json.message_from }}",
+        "textBody": "={{ $json.item }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        5520,
+        2224
+      ],
+      "id": "4c74266b-0f31-4926-85b6-ea65858983a3",
+      "name": "Enviar Mensagem Resposta",
+      "webhookId": "cd14995a-7e3e-45d5-b337-1d094a35d364",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "QEdJvd4UlIJ2xjVE",
+          "name": "Tenóbio - WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Mensagem de reset\nconst mensagemReset = $('Mensagem de Reset').first().json;\n\nreturn [{\n  json: {\n    ...mensagemReset,\n    ...originalData\n  }\n}];"
+      },
+      "id": "dffdc69e-6cf3-4e62-96a7-2c4779d70eb8",
+      "name": "Restaurar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        3056
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "=Busca informações na base de conhecimento oficial do {{ $('Buscar tenant').first().json.organization_name }}. Use esta ferramenta para encontrar dados sobre sua trajetória política, mandatos, comissões, áreas de atuação, bandeiras, experiência empresarial, cargos executivos e contexto eleitoral para as próximas eleições. Sempre consulte esta ferramenta antes de responder perguntas sobre {{ $('Buscar tenant').first().json.nome }}. ",
+        "tableName": "={{ $('Load Tenant Config').first().json.schema_name }}.documentos",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        3408,
+        2416
+      ],
+      "id": "48ed5595-9f79-401c-9472-61af5d6ee1f6",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3408,
+        2688
+      ],
+      "id": "71c490ea-9ffd-41e8-bf3a-6d21eaa9a37a",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "mBrIhUVilYC9NHDM",
+          "name": "OpenAI: politicos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chat_input }}",
+        "options": {
+          "systemMessage": "=Você é um assistente virtual para consultório de saúde. Você é educado, profissional, acolhedor e eficiente. Responda sempre em português brasileiro.\n\n══════════════════════════════════════\n📋 PROTOCOLOS GERAIS\n══════════════════════════════════════\n1. Respostas breves e diretas para WhatsApp (máximo 4-5 linhas por mensagem)\n2. Use emojis com moderação para melhorar legibilidade\n3. Sempre confirme dados antes de executar ações (agendar, cancelar)\n4. NUNCA invente informações médicas - quando não souber, direcione ao profissional\n5. Mantenha sigilo sobre dados de outros pacientes\n6. Se não encontrar o paciente no sistema, trate como novo paciente\n7. Não seja repetitivo\n8. Mensagens de áudio são automaticamente transcritas para texto\n\n══════════════════════════════════════\n🏥 INFORMAÇÕES DO CONSULTÓRIO\n══════════════════════════════════════\n- Clínica: {{ $('Buscar tenant').first().json.organization_name }}\n- Endereço: {{ $('Buscar tenant').first().json.organization_address }}\n- Telefone: {{ $('Buscar tenant').first().json.organization_phone }}\n- Horário: {{ JSON.stringify($('Buscar tenant').first().json.organization_hours)}}\n- Instagram: {{ $('Buscar tenant').first().json.organization_instagram }}\n\n══════════════════════════════════════\n👨‍⚕️ PROFISSIONAL\n══════════════════════════════════════\n- Nome: {{ $('Buscar tenant').first().json.full_name }}\n- Especialidades: {{ JSON.stringify($('Buscar tenant').first().json.specialties)}}\n- Registro: {{ $('Buscar tenant').first().json.credential_type }} {{ $('Buscar tenant').first().json.credential_number }}\n\n══════════════════════════════════════\n🤖 SUA IDENTIDADE\n══════════════════════════════════════\nVocê é {{ $('Buscar tenant').first().json.assistant_persona_name }}, assistente virtual deste consultório.\nPersonalidade: {{ $('Buscar tenant').first().json.assistant_tone }}\n\n══════════════════════════════════════\n🛠️ FERRAMENTAS DISPONÍVEIS\n══════════════════════════════════════\nUse as ferramentas disponíveis para:\\n- Buscar dados de pacientes\n- Verificar horários disponíveis\n- Agendar consultas\n- Consultar agendamentos\n- Gerenciar informações\n\nSempre confirme os dados antes de executar ações.\n\nMENSAGEM DO USUÁRIO:\nPerfil WhatsApp: {{ $('Mensagem Recebida').first().json.message_from_profile_name }}\nTelefone WhatsApp: {{ $('Mensagem Recebida').first().json.message_from }}\nTipo de mensagem: {{ $('Mensagem Recebida').first().json.message_type }}\nTexto enviado: {{ $json.chat_input }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2352,
+        2256
+      ],
+      "id": "41d42b02-1913-450e-aa40-497b57a2dc69",
+      "name": "AI Agent"
     },
     {
       "parameters": {
@@ -1393,10 +1355,142 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -848,
-        1648
+        1072,
+        3056
       ],
-      "id": "fe67445a-d7a8-41bd-afab-8a43c477a697",
+      "id": "c5f0134a-601b-428b-a77f-f06f8e77ffb6",
+      "name": "Salvar Histórico de Conversa (reset)",
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "={{ $('Load Tenant Config').first().json.schema_name }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "conversas",
+          "mode": "list",
+          "cachedResultName": "conversas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefone": "={{ $('Mensagem Recebida').first().json.message_from }}",
+            "nome": "={{ $('Mensagem Recebida').first().json.message_from_profile_name }}",
+            "mensagem": "={{ $('Unificar Mensagens').item.json.chat_input }}",
+            "resposta_ia": "={{ $('AI Agent').first().json.output }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resposta_ia",
+              "displayName": "resposta_ia",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contexto_rag",
+              "displayName": "contexto_rag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "data_hora",
+              "displayName": "data_hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "atualizado_em",
+              "displayName": "atualizado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2880,
+        2096
+      ],
+      "id": "d255d0c4-10d5-495a-9535-b892429fce19",
       "name": "Salvar Histórico de Conversa",
       "credentials": {
         "postgres": {
@@ -1404,101 +1498,6 @@
           "name": "Postgres supabase cloud"
         }
       }
-    },
-    {
-      "parameters": {
-        "operation": "send",
-        "phoneNumberId": "={{ $('Mensagem Recebida').first().json.whatsapp_phone_number_id }}",
-        "recipientPhoneNumber": "={{ $('Mensagem Recebida').first().json.message_from }}",
-        "textBody": "={{ $json.item }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.whatsApp",
-      "typeVersion": 1.1,
-      "position": [
-        3600,
-        816
-      ],
-      "id": "209ad874-7780-403b-8800-851705a30f05",
-      "name": "Enviar Mensagem Resposta",
-      "webhookId": "cd14995a-7e3e-45d5-b337-1d094a35d364",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "QEdJvd4UlIJ2xjVE",
-          "name": "Tenóbio - WhatsApp account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Mensagem de reset\nconst mensagemReset = $('Mensagem de Reset').first().json;\n\nreturn [{\n  json: {\n    ...mensagemReset,\n    ...originalData\n  }\n}];"
-      },
-      "id": "2d5b3d67-dbb2-4ad1-b970-c9a1e7a3b5b7",
-      "name": "Restaurar Dados",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -144,
-        1648
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolDescription": "=Busca informações na base de conhecimento oficial do {{ $('Buscar tenant').first().json.organization_name }}. Use esta ferramenta para encontrar dados sobre sua trajetória política, mandatos, comissões, áreas de atuação, bandeiras, experiência empresarial, cargos executivos e contexto eleitoral para as próximas eleições. Sempre consulte esta ferramenta antes de responder perguntas sobre {{ $('Buscar tenant').first().json.nome }}. ",
-        "tableName": "={{ $('Load Tenant Config').first().json.schema_name }}.documentos",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
-      "typeVersion": 1.3,
-      "position": [
-        1424,
-        976
-      ],
-      "id": "65f9ad3d-f5e6-4334-9682-c93f0fc6f089",
-      "name": "Postgres PGVector Store",
-      "credentials": {
-        "postgres": {
-          "id": "rtR0aIfgqJvl8ozT",
-          "name": "Postgres supabase cloud"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1520,
-        1184
-      ],
-      "id": "88b305b3-8271-4ca0-8fb6-6bb5694e4e51",
-      "name": "Embeddings OpenAI",
-      "credentials": {
-        "openAiApi": {
-          "id": "mBrIhUVilYC9NHDM",
-          "name": "OpenAI: politicos"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.chat_input }}",
-        "options": {
-          "systemMessage": "=Você é um assistente virtual para consultório de saúde. Você é educado, profissional, acolhedor e eficiente. Responda sempre em português brasileiro.\n\n══════════════════════════════════════\n📋 PROTOCOLOS GERAIS\n══════════════════════════════════════\n1. Respostas breves e diretas para WhatsApp (máximo 4-5 linhas por mensagem)\n2. Use emojis com moderação para melhorar legibilidade\n3. Sempre confirme dados antes de executar ações (agendar, cancelar)\n4. NUNCA invente informações médicas - quando não souber, direcione ao profissional\n5. Mantenha sigilo sobre dados de outros pacientes\n6. Se não encontrar o paciente no sistema, trate como novo paciente\n7. Não seja repetitivo\n8. Mensagens de áudio são automaticamente transcritas para texto\n\n══════════════════════════════════════\n🏥 INFORMAÇÕES DO CONSULTÓRIO\n══════════════════════════════════════\n- Clínica: {{ $('Buscar tenant').first().json.organization_name }}\n- Endereço: {{ $('Buscar tenant').first().json.organization_address }}\n- Telefone: {{ $('Buscar tenant').first().json.organization_phone }}\n- Horário: {{ JSON.stringify($('Buscar tenant').first().json.organization_hours)}}\n- Instagram: {{ $('Buscar tenant').first().json.organization_instagram }}\n\n══════════════════════════════════════\n👨‍⚕️ PROFISSIONAL\n══════════════════════════════════════\n- Nome: {{ $('Buscar tenant').first().json.full_name }}\n- Especialidades: {{ JSON.stringify($('Buscar tenant').first().json.specialties)}}\n- Registro: {{ $('Buscar tenant').first().json.credential_type }} {{ $('Buscar tenant').first().json.credential_number }}\n\n══════════════════════════════════════\n🤖 SUA IDENTIDADE\n══════════════════════════════════════\nVocê é {{ $('Buscar tenant').first().json.assistant_persona_name }}, assistente virtual deste consultório.\nPersonalidade: {{ $('Buscar tenant').first().json.assistant_tone }}\n\n══════════════════════════════════════\n🛠️ FERRAMENTAS DISPONÍVEIS\n══════════════════════════════════════\nUse as ferramentas disponíveis para:\\n- Buscar dados de pacientes\n- Verificar horários disponíveis\n- Agendar consultas\n- Consultar agendamentos\n- Gerenciar informações\n\nSempre confirme os dados antes de executar ações.\n\nMENSAGEM DO USUÁRIO:\nPerfil WhatsApp: {{ $('Mensagem Recebida').first().json.message_from_profile_name }}\nTelefone WhatsApp: {{ $('Mensagem Recebida').first().json.message_from }}\nTipo de mensagem: {{ $('Mensagem Recebida').first().json.message_type }}\nTexto enviado: {{ $json.chat_input }}"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        432,
-        848
-      ],
-      "id": "19144e0c-815c-4ab3-acba-ba7d8bb91a19",
-      "name": "AI Agent"
     }
   ],
   "pinData": {
@@ -1538,18 +1537,18 @@
           "headers": {
             "host": "n8n.bahiati.cloud",
             "user-agent": "facebookexternalua",
-            "content-length": "575",
+            "content-length": "578",
             "accept": "*/*",
             "accept-encoding": "deflate, gzip",
             "content-type": "application/json",
-            "x-forwarded-for": "173.252.127.3",
+            "x-forwarded-for": "173.252.95.62",
             "x-forwarded-host": "n8n.bahiati.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
             "x-forwarded-server": "0559ca9a5ebb",
-            "x-hub-signature": "sha1=bd1c7351170ecb6ebb8850f77c2f328b06d394a6",
-            "x-hub-signature-256": "sha256=176ea1f2823ddb1784f26311cb1c4c14df02d4bda13fcbfe678144b376506823",
-            "x-real-ip": "173.252.127.3"
+            "x-hub-signature": "sha1=44413b244732e2208791f5a082c0a3c977f94006",
+            "x-hub-signature-256": "sha256=51164c32f55d0e2eaba4e45ebac3c8e813753dfa7938ccabc381b3af04e89863",
+            "x-real-ip": "173.252.95.62"
           },
           "params": {},
           "query": {},
@@ -1579,10 +1578,10 @@
                         {
                           "from": "553496620569",
                           "from_user_id": "BR.4255431628102803",
-                          "id": "wamid.HBgMNTUzNDk2NjIwNTY5FQIAEhgUM0IxRDdBMDY5NzcyRDc1MjE0MEQA",
-                          "timestamp": "1778823887",
+                          "id": "wamid.HBgMNTUzNDk2NjIwNTY5FQIAEhgUM0IwOTdEOTlBNTZGMkY5NDcyMkQA",
+                          "timestamp": "1778860367",
                           "text": {
-                            "body": "quais dentistas disponiveis?"
+                            "body": "quero comecar uma nova conversa"
                           },
                           "type": "text"
                         }
@@ -1599,7 +1598,7 @@
         },
         "binary": {
           "data": {
-            "data": "eyJvYmplY3QiOiJ3aGF0c2FwcF9idXNpbmVzc19hY2NvdW50IiwiZW50cnkiOlt7ImlkIjoiMTg2NzIyMDA4NzMwODkzNyIsImNoYW5nZXMiOlt7InZhbHVlIjp7Im1lc3NhZ2luZ19wcm9kdWN0Ijoid2hhdHNhcHAiLCJtZXRhZGF0YSI6eyJkaXNwbGF5X3Bob25lX251bWJlciI6IjU1NzE5MjAwNDM1ODgiLCJwaG9uZV9udW1iZXJfaWQiOiIxMDA5NjEyNjY4OTEzMDI2In0sImNvbnRhY3RzIjpbeyJwcm9maWxlIjp7Im5hbWUiOiJEYWxcdTAwZWQgRnJlaXJlIn0sIndhX2lkIjoiNTUzNDk2NjIwNTY5IiwidXNlcl9pZCI6IkJSLjQyNTU0MzE2MjgxMDI4MDMifV0sIm1lc3NhZ2VzIjpbeyJmcm9tIjoiNTUzNDk2NjIwNTY5IiwiZnJvbV91c2VyX2lkIjoiQlIuNDI1NTQzMTYyODEwMjgwMyIsImlkIjoid2FtaWQuSEJnTU5UVXpORGsyTmpJd05UWTVGUUlBRWhnVU0wSXhSRGRCTURZNU56Y3lSRGMxTWpFME1FUUEiLCJ0aW1lc3RhbXAiOiIxNzc4ODIzODg3IiwidGV4dCI6eyJib2R5IjoicXVhaXMgZGVudGlzdGFzIGRpc3Bvbml2ZWlzPyJ9LCJ0eXBlIjoidGV4dCJ9XX0sImZpZWxkIjoibWVzc2FnZXMifV19XX0=",
+            "data": "eyJvYmplY3QiOiJ3aGF0c2FwcF9idXNpbmVzc19hY2NvdW50IiwiZW50cnkiOlt7ImlkIjoiMTg2NzIyMDA4NzMwODkzNyIsImNoYW5nZXMiOlt7InZhbHVlIjp7Im1lc3NhZ2luZ19wcm9kdWN0Ijoid2hhdHNhcHAiLCJtZXRhZGF0YSI6eyJkaXNwbGF5X3Bob25lX251bWJlciI6IjU1NzE5MjAwNDM1ODgiLCJwaG9uZV9udW1iZXJfaWQiOiIxMDA5NjEyNjY4OTEzMDI2In0sImNvbnRhY3RzIjpbeyJwcm9maWxlIjp7Im5hbWUiOiJEYWxcdTAwZWQgRnJlaXJlIn0sIndhX2lkIjoiNTUzNDk2NjIwNTY5IiwidXNlcl9pZCI6IkJSLjQyNTU0MzE2MjgxMDI4MDMifV0sIm1lc3NhZ2VzIjpbeyJmcm9tIjoiNTUzNDk2NjIwNTY5IiwiZnJvbV91c2VyX2lkIjoiQlIuNDI1NTQzMTYyODEwMjgwMyIsImlkIjoid2FtaWQuSEJnTU5UVXpORGsyTmpJd05UWTVGUUlBRWhnVU0wSXdPVGRFT1RsQk5UWkdNa1k1TkRjeU1rUUEiLCJ0aW1lc3RhbXAiOiIxNzc4ODYwMzY3IiwidGV4dCI6eyJib2R5IjoicXVlcm8gY29tZWNhciB1bWEgbm92YSBjb252ZXJzYSJ9LCJ0eXBlIjoidGV4dCJ9XX0sImZpZWxkIjoibWVzc2FnZXMifV19XX0=",
             "mimeType": "application/json"
           }
         },
@@ -1625,7 +1624,7 @@
       "main": [
         [
           {
-            "node": "Salvar Histórico de Conversa",
+            "node": "Salvar Histórico de Conversa (reset)",
             "type": "main",
             "index": 0
           }
@@ -1995,17 +1994,6 @@
         ]
       ]
     },
-    "Salvar Histórico de Conversa": {
-      "main": [
-        [
-          {
-            "node": "Executar Reset",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Restaurar Dados": {
       "main": [
         [
@@ -2048,7 +2036,18 @@
             "index": 0
           },
           {
-            "node": "Salvar Conversa no BD",
+            "node": "Salvar Histórico de Conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Histórico de Conversa (reset)": {
+      "main": [
+        [
+          {
+            "node": "Executar Reset",
             "type": "main",
             "index": 0
           }
@@ -2061,7 +2060,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "bceb35c0-7423-484b-94e3-a119db44465e",
+  "versionId": "ec94dd2d-a0c8-4b6e-88cb-a126cad4da27",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"

@@ -167,9 +167,9 @@ BEGIN
     ativo = EXCLUDED.ativo,
     atualizado_em = now();
 
-  -- 6. Instância WhatsApp (Evolution API)
+  -- 6. Instância WhatsApp (WhatsApp Cloud API)
   UPDATE clinicas.whatsapp_instances SET
-    provider             = 'evolution',
+    provider             = 'whatsapp_cloud_api',
     provider_config      = jsonb_build_object('instance_id', 'Dra Andreia Mota Mussi'),
     status               = 'disconnected'
   WHERE professional_id = v_prof_id;
