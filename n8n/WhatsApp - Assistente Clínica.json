@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        96,
-        240
+        -1872,
+        896
       ],
-      "id": "8cd06f8c-9579-4d7e-96a1-e470bfc25934",
+      "id": "03152edd-e68d-40ee-9b9f-8a5608de256a",
       "name": "Load Tenant Config",
       "alwaysOutputData": true,
       "credentials": {
@@ -32,10 +32,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        336,
-        512
+        -1632,
+        1168
       ],
-      "id": "f76779c3-b2d5-4779-a526-a94569f3275d",
+      "id": "5d7dc067-0775-45ba-a3ef-eaae3e27f0da",
       "name": "Compose AI Prompt"
     },
     {
@@ -52,10 +52,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        1968,
-        448
+        0,
+        1104
       ],
-      "id": "eaa1db9b-b676-45c8-9b1f-e485d769117f",
+      "id": "1e8ff81c-a2d8-44e6-9bc9-85fa644cb4df",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -74,10 +74,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        2112,
-        448
+        144,
+        1104
       ],
-      "id": "f0938284-5866-422c-9c14-ad4c4a295154",
+      "id": "ca1c5996-cd79-40f1-b7d8-76550d1c5376",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
@@ -91,10 +91,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1.1,
       "position": [
-        2240,
-        736
+        272,
+        1392
       ],
-      "id": "807f9977-e31d-4d99-8add-99f7b0ad631c",
+      "id": "b1b1fa62-0e6b-4781-947d-a4752eb48727",
       "name": "Think"
     },
     {
@@ -104,10 +104,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        2240,
-        448
+        272,
+        1104
       ],
-      "id": "22431575-771f-4d70-9974-da52c49783a4",
+      "id": "0cf509e9-1bb2-44f5-87e7-759f2ab76a88",
       "name": "Date & Time"
     },
     {
@@ -115,10 +115,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        2240,
-        592
+        272,
+        1248
       ],
-      "id": "330dcfbe-929b-4e83-8325-3bd5cf01cd85",
+      "id": "f839f113-1c64-41d6-a1a4-278ce87566f5",
       "name": "Calculator"
     },
     {
@@ -137,8 +137,7 @@
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}"
           },
-          "matchingColumns": [
-          ],
+          "matchingColumns": [],
           "schema": [
             {
               "id": "schema_name",
@@ -167,10 +166,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2624,
-        448
+        656,
+        1104
       ],
-      "id": "6eeb71bb-3c39-41d0-83e7-3be8d177fc29",
+      "id": "7bf9795e-a695-4b77-a235-943f8cb16dd0",
       "name": "Buscar Paciente"
     },
     {
@@ -238,10 +237,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2944,
-        640
+        976,
+        1296
       ],
-      "id": "49e27b02-8259-4a93-aa75-c25de7c7c148",
+      "id": "4f508e81-eac8-45a8-b8ec-ab79038988ff",
       "name": "Buscar Horários"
     },
     {
@@ -348,10 +347,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2992,
-        448
+        1024,
+        1104
       ],
-      "id": "c32f053a-21bf-4fbb-bed5-c4f9a1c6740d",
+      "id": "dbae3368-492f-4046-9fdc-597c91113c91",
       "name": "Agendar Consulta"
     },
     {
@@ -419,10 +418,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3120,
-        640
+        1152,
+        1296
       ],
-      "id": "53eeed93-f130-4123-baa4-cba1b277523f",
+      "id": "c9f12e17-ab36-45a9-b44f-2e698c56eb62",
       "name": "Cancelar Consulta"
     },
     {
@@ -480,10 +479,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3152,
-        432
+        1184,
+        1088
       ],
-      "id": "702c1777-167f-477c-8657-6ebaa9c3dc5c",
+      "id": "7b1cfbcd-35eb-4cd0-95ac-121bc974abd8",
       "name": "Consultar Agendamentos"
     },
     {
@@ -499,7 +498,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
-            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', ``, 'string') }}",
+            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', `'dentistas' ou 'procedimentos'`, 'string') }}",
             "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', ``, 'string') }}",
             "category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('category', ``, 'string') }}"
           },
@@ -550,10 +549,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2784,
-        704
+        816,
+        1360
       ],
-      "id": "456e784c-2af8-48f8-a80f-98caccff82c8",
+      "id": "6308aa32-5721-4270-adfe-41aa2fb0317f",
       "name": "Listar Dentistas/Procedimentos"
     },
     {
@@ -603,10 +602,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3312,
-        512
+        1344,
+        1168
       ],
-      "id": "1b3bebf2-dd3d-44a9-8531-db26dea6ecb2",
+      "id": "933d27d7-a083-45b9-b48e-2d1097832746",
       "name": "Resumo Financeiro"
     },
     {
@@ -657,10 +656,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2608,
-        704
+        640,
+        1360
       ],
-      "id": "74768c77-3387-4c8b-915e-688391cd44a9",
+      "id": "55857f6b-ace7-4934-8767-63fe27c84dc7",
       "name": "Reiniciar Conversa"
     },
     {
@@ -698,10 +697,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2800,
-        432
+        832,
+        1088
       ],
-      "id": "8f6416dc-c11b-490b-b431-e190daef2a44",
+      "id": "013390c3-a8e6-48d6-93af-b75aa85a235c",
       "name": "Listar Especialidades"
     },
     {
@@ -715,10 +714,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1424,
-        992
+        -544,
+        1648
       ],
-      "id": "643c2b05-7a17-4409-ac1e-c6f0d06b9b2a",
+      "id": "f6bfdb5e-b283-425e-ab7f-be92017593ad",
       "name": "Executar Reset",
       "alwaysOutputData": true,
       "credentials": {
@@ -735,10 +734,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        784,
-        992
+        -1184,
+        1648
       ],
-      "id": "cbaee57f-0e01-4773-acd5-e3dec77c1733",
+      "id": "492b126c-ed0f-48fd-b891-6b19cb7148c6",
       "name": "Mensagem de Reset"
     },
     {
@@ -861,10 +860,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2928,
-        32
+        960,
+        688
       ],
-      "id": "c0eb5094-b58f-46a7-b55c-c8a1ea171bbe",
+      "id": "c9a5735d-97a8-40ee-80e3-b6eb5648ccd7",
       "name": "Salvar Conversa no BD",
       "credentials": {
         "postgres": {
@@ -880,10 +879,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4864,
-        144
+        2896,
+        800
       ],
-      "id": "7ff83e92-84f8-4854-a980-2008ae312a09",
+      "id": "0f075098-7cc3-43ca-9db1-2c19415f3e6a",
       "name": "Code in JavaScript2"
     },
     {
@@ -893,10 +892,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        5280,
-        144
+        3312,
+        800
       ],
-      "id": "d701e36f-5344-4f9c-a1cf-671c6a0c9cec",
+      "id": "852a0e9f-af65-41a3-9688-d445e2e18f88",
       "name": "Loop Over Items"
     },
     {
@@ -905,13 +904,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "9605dc5f-5cd8-492d-857c-25a00e67c5c4",
+      "id": "05ad47a4-51fe-4e71-b98d-d7be64426228",
       "name": "Webhook Verificação Meta",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -736,
-        672
+        -2704,
+        1328
       ],
       "webhookId": "meta-verification-webhook"
     },
@@ -939,13 +938,13 @@
         },
         "options": {}
       },
-      "id": "96f1ef08-a2fc-40b3-bf63-bddc5235ebbf",
+      "id": "aba86348-eef0-495d-affb-0fe85a388034",
       "name": "Token Válido?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -512,
-        672
+        -2480,
+        1328
       ]
     },
     {
@@ -954,13 +953,13 @@
         "responseBody": "={{ $('Webhook Verificação Meta').first().json.query['hub.challenge'] }}",
         "options": {}
       },
-      "id": "cacb7c17-c87f-4be8-87b8-a9f45ee0ed78",
+      "id": "947ce08b-a7cf-4b41-aa09-2d2d55181d69",
       "name": "Responder Verificação",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -288,
-        544
+        -2256,
+        1200
       ]
     },
     {
@@ -971,13 +970,13 @@
           "responseCode": 403
         }
       },
-      "id": "de2eed01-cb11-48bb-821d-b2418da0f883",
+      "id": "f640fae9-5486-45ba-a017-b556288b4ec1",
       "name": "Responder Proibido",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -288,
-        784
+        -2256,
+        1440
       ]
     },
     {
@@ -988,13 +987,13 @@
           "responseCode": 200
         }
       },
-      "id": "578f7f08-22f3-45e7-b97c-fd1f981a11e5",
+      "id": "0a55bb6e-86d2-4438-9b25-a18ddab92868",
       "name": "Responder 200 OK",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -160,
-        -160
+        -2128,
+        496
       ]
     },
     {
@@ -1006,13 +1005,13 @@
           "rawBody": true
         }
       },
-      "id": "3b8dd9d7-b3e4-4279-8776-36762cf551c6",
+      "id": "7f38fb32-011d-482c-8731-1d0ac5ee18e2",
       "name": "Webhook Mensagens Recebidas",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -720,
-        32
+        -2688,
+        688
       ],
       "webhookId": "joao-leao-webhook"
     },
@@ -1024,13 +1023,13 @@
           "queryReplacement": "={{ $json.whatsapp_phone_number }}"
         }
       },
-      "id": "8d8e0c01-4d25-4708-b6cc-e3fc1328c24c",
+      "id": "d17c22f6-ac97-4920-976f-aaee78371989",
       "name": "Buscar tenant",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        -160,
-        240
+        -2128,
+        896
       ],
       "credentials": {
         "postgres": {
@@ -1043,13 +1042,13 @@
       "parameters": {
         "jsCode": "// Extrair dados da mensagem recebida via API Oficial do WhatsApp (Meta Cloud API)\nconst body = $input.first().json.body || $input.first().json;\n\n// Validar que é um webhook do WhatsApp Business\nif (body.object !== 'whatsapp_business_account') {\n  return [];\n}\n\n// Extrair a primeira entrada e mudança\nconst entry = (body.entry || [])[0];\nif (!entry) return [];\n\nconst change = (entry.changes || [])[0];\nif (!change || change.field !== 'messages') return [];\n\nconst value = change.value || {};\nconst metadata = value.metadata || {};\n\n// Extrair mensagem (ignorar status/delivery receipts)\nconst messages = value.messages || [];\nif (messages.length === 0) return [];\n\nconst msg = messages[0];\nconst contacts = value.contacts || [];\nconst contact = contacts[0] || {};\n\n// Dados do remetente\nconst message_from = msg.from || '';\nconst message_from_profile_name = contact.profile?.name || '';\nconst message_id = msg.id || '';\nconst whatsapp_phone_number = metadata.display_phone_number || '';\nconst whatsapp_phone_number_id = metadata.phone_number_id || '';\n\n// Determinar tipo da mensagem\nlet message_type = 'text';\nlet message_content = '';\nlet media_mimetype = '';\nlet media_caption = '';\nlet media_id = '';\n\nif (msg.type === 'audio') {\n  message_type = 'audio';\n  media_mimetype = msg.audio?.mime_type || 'audio/ogg';\n  media_id = msg.audio?.id || '';\n} else if (msg.type === 'image') {\n  message_type = 'image';\n  media_mimetype = msg.image?.mime_type || 'image/jpeg';\n  media_caption = msg.image?.caption || '';\n  media_id = msg.image?.id || '';\n} else if (msg.type === 'text') {\n  message_content = msg.text?.body || '';\n} else if (msg.type === 'interactive') {\n  message_content = msg.interactive?.button_reply?.title || msg.interactive?.list_reply?.title || '';\n} else if (msg.type === 'button') {\n  message_content = msg.button?.text || '';\n} else {\n  // Tipo não suportado\n  return [];\n}\n\n// Detectar comandos de reset da conversa\nconst resetCommands = ['/limpar', '/reset', '/reiniciar', '/nova conversa', '/novo', 'nova conversa', 'limpar conversa', '#reiniciar', '#reset', '#limpar', 'reiniciar conversa', 'recomeçar conversa', 'recomecar conversa', 'começar denovo', 'comecar denovo'];\n\nconst normalizedContent = message_content.trim().toLowerCase();\nif (resetCommands.includes(normalizedContent)) {\n  message_type = 'reset';\n}\n\n// Montar sessionId: telefone do assistente + telefone do usuário\nconst session_id = whatsapp_phone_number + '|' + message_from;\n\nreturn [{\n  json: {\n    message_type,\n    message_content,\n    media_mimetype,\n    media_caption,\n    media_id,\n    message_from,\n    message_from_profile_name,\n    message_id,\n    session_id, \n    whatsapp_phone_number,\n    whatsapp_phone_number_id,\n    raw_message: msg\n  }\n}];"
       },
-      "id": "fa97b2a4-ad9f-4832-b3b4-2c041b240a9d",
+      "id": "b731f669-5c9f-404d-85a5-29de1ced50b6",
       "name": "Mensagem Recebida",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        32
+        -2432,
+        688
       ]
     },
     {
@@ -1156,26 +1155,26 @@
         },
         "options": {}
       },
-      "id": "49290d26-b206-4544-9215-8e47aa43ef1b",
+      "id": "da8b8057-ab2b-43b4-ad9e-792a26bc1822",
       "name": "Tipo de Mensagem",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        384,
-        208
+        -1584,
+        864
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar texto transcrito do áudio para o agente IA\nconst transcription = $input.first().json.text || '';\nconst originalData = $('Mensagem Recebida').first().json;\n\nconst transcription_text = (transcription && transcription.trim()) \n      ? transcription.trim()\n      : '[Áudio recebido mas não foi possível transcrever. Por favor, envie em texto.]'\n\nreturn [{\n  json: {\n    ...originalData,\n    message_type: 'audio',\n    chat_input: `[Mensagem de áudio transcrita]: ${transcription_text}`,\n    original_transcription: transcription_text\n  }\n}];"
       },
-      "id": "309c2d0b-9b66-4fd8-b4da-55bad5eba474",
+      "id": "edb4fd1e-d38c-427a-bf41-7bf7c943459c",
       "name": "Preparar Texto do Áudio",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1568,
-        112
+        -400,
+        768
       ]
     },
     {
@@ -1187,10 +1186,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        1328,
-        112
+        -640,
+        768
       ],
-      "id": "00267687-9ee0-421e-962c-e15063e2bcdd",
+      "id": "2be9bd10-f5ed-45b1-8c55-c6dd131a2888",
       "name": "Transcribe a recording",
       "credentials": {
         "openAiApi": {
@@ -1208,10 +1207,10 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        832,
-        112
+        -1136,
+        768
       ],
-      "id": "38adbb05-99d0-4ba7-a18a-4165e91c7acb",
+      "id": "b21765af-3e29-43ae-908e-6f0c29e1ed8d",
       "name": "Download audio",
       "webhookId": "da1b6a8d-7add-451c-8800-5f319f5e8372",
       "credentials": {
@@ -1237,10 +1236,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1088,
-        112
+        -880,
+        768
       ],
-      "id": "67670415-158e-4a1b-9f1a-5997a033a853",
+      "id": "3f854775-cc50-4144-8c3b-6a48ee8d4f4a",
       "name": "Baixar Áudio Binary",
       "credentials": {
         "whatsAppApi": {
@@ -1253,26 +1252,26 @@
       "parameters": {
         "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Unificar todas as mensagens (texto, áudio, imagem) para o agente IA\nconst item = $input.first().json;\n\nreturn [{\n  json: {\n    ...item,\n    ...originalData\n  }\n}];"
       },
-      "id": "c84ae89d-632a-45b9-80f8-f04075933b57",
+      "id": "52d4a1a1-48a1-4a19-9d32-e436a34f922f",
       "name": "Unificar Mensagens",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2144,
-        192
+        176,
+        848
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar mensagem de texto para o agente IA\nconst originalData = $('Mensagem Recebida').first().json;\nconst messageContent = originalData.message_content\n\nreturn [{\n  json: {\n    ...originalData,\n    chat_input: messageContent,\n    message_type: 'text'\n  }\n}];"
       },
-      "id": "1b9b6858-2210-4230-9568-cfcf912b0661",
+      "id": "62518e95-7c6c-423a-ae4f-4b4eb7fa843a",
       "name": "Preparar Texto",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1136,
-        -368
+        -832,
+        288
       ]
     },
     {
@@ -1395,10 +1394,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1120,
-        992
+        -848,
+        1648
       ],
-      "id": "b47860c0-4d3f-4e77-aef4-26fed4667c17",
+      "id": "fe67445a-d7a8-41bd-afab-8a43c477a697",
       "name": "Salvar Histórico de Conversa",
       "credentials": {
         "postgres": {
@@ -1418,10 +1417,10 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        5568,
-        160
+        3600,
+        816
       ],
-      "id": "06d865ff-7b43-4912-8b99-200693154903",
+      "id": "209ad874-7780-403b-8800-851705a30f05",
       "name": "Enviar Mensagem Resposta",
       "webhookId": "cd14995a-7e3e-45d5-b337-1d094a35d364",
       "credentials": {
@@ -1435,13 +1434,13 @@
       "parameters": {
         "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Mensagem de reset\nconst mensagemReset = $('Mensagem de Reset').first().json;\n\nreturn [{\n  json: {\n    ...mensagemReset,\n    ...originalData\n  }\n}];"
       },
-      "id": "0c41c1b0-520a-4895-b792-3e0feaa3a54c",
+      "id": "2d5b3d67-dbb2-4ad1-b970-c9a1e7a3b5b7",
       "name": "Restaurar Dados",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1824,
-        992
+        -144,
+        1648
       ]
     },
     {
@@ -1454,10 +1453,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
-        3392,
-        320
+        1424,
+        976
       ],
-      "id": "8aa87f15-65e7-4bc5-8064-3d3420b80972",
+      "id": "65f9ad3d-f5e6-4334-9682-c93f0fc6f089",
       "name": "Postgres PGVector Store",
       "credentials": {
         "postgres": {
@@ -1473,10 +1472,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3488,
-        528
+        1520,
+        1184
       ],
-      "id": "35fb7a66-8fc4-42ca-a2da-9252b71bd82d",
+      "id": "88b305b3-8271-4ca0-8fb6-6bb5694e4e51",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
@@ -1496,10 +1495,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2400,
-        192
+        432,
+        848
       ],
-      "id": "926dec07-03b8-410f-aabb-b823fed6758a",
+      "id": "19144e0c-815c-4ab3-acba-ba7d8bb91a19",
       "name": "AI Agent"
     }
   ],
@@ -1540,18 +1539,18 @@
           "headers": {
             "host": "n8n.bahiati.cloud",
             "user-agent": "facebookexternalua",
-            "content-length": "578",
+            "content-length": "575",
             "accept": "*/*",
             "accept-encoding": "deflate, gzip",
             "content-type": "application/json",
-            "x-forwarded-for": "173.252.95.60",
+            "x-forwarded-for": "173.252.127.3",
             "x-forwarded-host": "n8n.bahiati.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
             "x-forwarded-server": "0559ca9a5ebb",
-            "x-hub-signature": "sha1=f59d5f73398f51b8211d6632252ecd987a4c254c",
-            "x-hub-signature-256": "sha256=5c4895dfeae818fca0c74cf7d575ae91cf7059a00c8c06ccfef73e0831ef068f",
-            "x-real-ip": "173.252.95.60"
+            "x-hub-signature": "sha1=bd1c7351170ecb6ebb8850f77c2f328b06d394a6",
+            "x-hub-signature-256": "sha256=176ea1f2823ddb1784f26311cb1c4c14df02d4bda13fcbfe678144b376506823",
+            "x-real-ip": "173.252.127.3"
           },
           "params": {},
           "query": {},
@@ -1581,10 +1580,10 @@
                         {
                           "from": "553496620569",
                           "from_user_id": "BR.4255431628102803",
-                          "id": "wamid.HBgMNTUzNDk2NjIwNTY5FQIAEhgUM0IzRUJCNjA0NDgwNTBDNjlCQUIA",
-                          "timestamp": "1778821107",
+                          "id": "wamid.HBgMNTUzNDk2NjIwNTY5FQIAEhgUM0IxRDdBMDY5NzcyRDc1MjE0MEQA",
+                          "timestamp": "1778823887",
                           "text": {
-                            "body": "quero comecar uma nova conversa"
+                            "body": "quais dentistas disponiveis?"
                           },
                           "type": "text"
                         }
@@ -1601,7 +1600,7 @@
         },
         "binary": {
           "data": {
-            "data": "eyJvYmplY3QiOiJ3aGF0c2FwcF9idXNpbmVzc19hY2NvdW50IiwiZW50cnkiOlt7ImlkIjoiMTg2NzIyMDA4NzMwODkzNyIsImNoYW5nZXMiOlt7InZhbHVlIjp7Im1lc3NhZ2luZ19wcm9kdWN0Ijoid2hhdHNhcHAiLCJtZXRhZGF0YSI6eyJkaXNwbGF5X3Bob25lX251bWJlciI6IjU1NzE5MjAwNDM1ODgiLCJwaG9uZV9udW1iZXJfaWQiOiIxMDA5NjEyNjY4OTEzMDI2In0sImNvbnRhY3RzIjpbeyJwcm9maWxlIjp7Im5hbWUiOiJEYWxcdTAwZWQgRnJlaXJlIn0sIndhX2lkIjoiNTUzNDk2NjIwNTY5IiwidXNlcl9pZCI6IkJSLjQyNTU0MzE2MjgxMDI4MDMifV0sIm1lc3NhZ2VzIjpbeyJmcm9tIjoiNTUzNDk2NjIwNTY5IiwiZnJvbV91c2VyX2lkIjoiQlIuNDI1NTQzMTYyODEwMjgwMyIsImlkIjoid2FtaWQuSEJnTU5UVXpORGsyTmpJd05UWTVGUUlBRWhnVU0wSXpSVUpDTmpBME5EZ3dOVEJETmpsQ1FVSUEiLCJ0aW1lc3RhbXAiOiIxNzc4ODIxMTA3IiwidGV4dCI6eyJib2R5IjoicXVlcm8gY29tZWNhciB1bWEgbm92YSBjb252ZXJzYSJ9LCJ0eXBlIjoidGV4dCJ9XX0sImZpZWxkIjoibWVzc2FnZXMifV19XX0=",
+            "data": "eyJvYmplY3QiOiJ3aGF0c2FwcF9idXNpbmVzc19hY2NvdW50IiwiZW50cnkiOlt7ImlkIjoiMTg2NzIyMDA4NzMwODkzNyIsImNoYW5nZXMiOlt7InZhbHVlIjp7Im1lc3NhZ2luZ19wcm9kdWN0Ijoid2hhdHNhcHAiLCJtZXRhZGF0YSI6eyJkaXNwbGF5X3Bob25lX251bWJlciI6IjU1NzE5MjAwNDM1ODgiLCJwaG9uZV9udW1iZXJfaWQiOiIxMDA5NjEyNjY4OTEzMDI2In0sImNvbnRhY3RzIjpbeyJwcm9maWxlIjp7Im5hbWUiOiJEYWxcdTAwZWQgRnJlaXJlIn0sIndhX2lkIjoiNTUzNDk2NjIwNTY5IiwidXNlcl9pZCI6IkJSLjQyNTU0MzE2MjgxMDI4MDMifV0sIm1lc3NhZ2VzIjpbeyJmcm9tIjoiNTUzNDk2NjIwNTY5IiwiZnJvbV91c2VyX2lkIjoiQlIuNDI1NTQzMTYyODEwMjgwMyIsImlkIjoid2FtaWQuSEJnTU5UVXpORGsyTmpJd05UWTVGUUlBRWhnVU0wSXhSRGRCTURZNU56Y3lSRGMxTWpFME1FUUEiLCJ0aW1lc3RhbXAiOiIxNzc4ODIzODg3IiwidGV4dCI6eyJib2R5IjoicXVhaXMgZGVudGlzdGFzIGRpc3Bvbml2ZWlzPyJ9LCJ0eXBlIjoidGV4dCJ9XX0sImZpZWxkIjoibWVzc2FnZXMifV19XX0=",
             "mimeType": "application/json"
           }
         },
@@ -1825,11 +1824,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Compose AI Prompt": {
-      "main": [
-        []
       ]
     },
     "Webhook Verificação Meta": {
@@ -2068,7 +2062,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "eb0c65e5-83ff-473a-9f18-c24796c27700",
+  "versionId": "bceb35c0-7423-484b-94e3-a119db44465e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
