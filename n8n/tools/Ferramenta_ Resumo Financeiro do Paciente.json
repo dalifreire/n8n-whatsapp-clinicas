@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "patient_phone"
             }
           ]
@@ -23,7 +26,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.obter_resumo_financeiro_paciente($1::varchar);",
+        "query": "SELECT * FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.obter_resumo_financeiro_paciente($1::varchar);",
         "options": {
           "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
         }

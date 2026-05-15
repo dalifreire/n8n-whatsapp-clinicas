@@ -134,12 +134,22 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}"
           },
           "matchingColumns": [
-            "patient_phone"
           ],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "patient_phone",
               "displayName": "patient_phone",
@@ -176,12 +186,23 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', ``, 'string') }}",
             "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', ``, 'string') }}",
             "dentist_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dentist_id', ``, 'string') }}"
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "dentist_id",
               "displayName": "dentist_id",
@@ -235,6 +256,7 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}",
             "patient_name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('patient_name', `Nome completo do paciente`, 'string') }}",
             "dentist_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dentist_id', `ID do dentista`, 'string') }}",
@@ -245,6 +267,16 @@
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "patient_phone",
               "displayName": "patient_phone",
@@ -335,12 +367,23 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "appointment_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('appointment_id', ``, 'string') }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}",
             "reason": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('reason', ``, 'string') }}"
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "appointment_id",
               "displayName": "appointment_id",
@@ -395,11 +438,22 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').item.json.message_from }}",
             "status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status', ``, 'string') }}"
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "patient_phone",
               "displayName": "patient_phone",
@@ -444,12 +498,23 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', ``, 'string') }}",
             "specialty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('specialty', ``, 'string') }}",
             "category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('category', ``, 'string') }}"
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "type",
               "displayName": "type",
@@ -504,12 +569,23 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
             "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}"
           },
           "matchingColumns": [
             "patient_phone"
           ],
           "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
             {
               "id": "patient_phone",
               "displayName": "patient_phone",
@@ -599,9 +675,22 @@
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
-          "value": {},
+          "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}"
+          },
           "matchingColumns": [],
-          "schema": [],
+          "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         }
@@ -620,7 +709,7 @@
         "operation": "executeQuery",
         "query": "SELECT * FROM {{ $(\"Load Tenant Config\").first().json.schema_name }}.reiniciar_conversa($1::varchar);",
         "options": {
-          "queryReplacement": "={{ $('Mensagem Recebida').item.json.message_from }}"
+          "queryReplacement": "={{ $('Mensagem Recebida').item.json.session_id }}"
         }
       },
       "type": "n8n-nodes-base.postgres",

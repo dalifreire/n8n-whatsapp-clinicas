@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "type"
             },
             {
@@ -42,7 +45,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "-- Dentistas\nSELECT 'dentista' as record_type, d.id, d.nome, d.cro, d.especialidade as detail1, array_to_string(d.especialidades, ', ') as detail2, NULL as detail3, NULL::decimal as price\nFROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.dentistas d\nWHERE d.ativo = true\n  AND ($1::text = 'dentistas')\n  AND (NULLIF(TRIM($2::text), '') IS NULL OR d.especialidade ILIKE '%' || $2::text || '%' OR $2::text = ANY(d.especialidades))\n\nUNION ALL\n\n-- Procedimentos\nSELECT 'procedimento' as record_type, p.id, p.nome, p.codigo as cro, p.categoria as detail1, p.descricao as detail2, p.duracao_media_min || ' min' as detail3, p.preco_base as price\nFROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.procedimentos p\nWHERE p.ativo = true\n  AND ($1::text = 'procedimentos')\n  AND (NULLIF(TRIM($3::text), '') IS NULL OR p.categoria ILIKE '%' || $3::text || '%')\n\nORDER BY record_type, nome\nLIMIT 30;",
+        "query": "-- Dentistas\nSELECT 'dentista' as record_type, d.id, d.nome, d.cro, d.especialidade as detail1, array_to_string(d.especialidades, ', ') as detail2, NULL as detail3, NULL::decimal as price\nFROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.dentistas d\nWHERE d.ativo = true\n  AND ($1::text = 'dentistas')\n  AND (NULLIF(TRIM($2::text), '') IS NULL OR d.especialidade ILIKE '%' || $2::text || '%' OR $2::text = ANY(d.especialidades))\n\nUNION ALL\n\n-- Procedimentos\nSELECT 'procedimento' as record_type, p.id, p.nome, p.codigo as cro, p.categoria as detail1, p.descricao as detail2, p.duracao_media_min || ' min' as detail3, p.preco_base as price\nFROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.procedimentos p\nWHERE p.ativo = true\n  AND ($1::text = 'procedimentos')\n  AND (NULLIF(TRIM($3::text), '') IS NULL OR p.categoria ILIKE '%' || $3::text || '%')\n\nORDER BY record_type, nome\nLIMIT 30;",
         "options": {
           "queryReplacement": "={{ [$json.type, $json.specialty, $json.category] }}"
         }

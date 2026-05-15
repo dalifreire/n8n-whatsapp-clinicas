@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "patient_phone"
             },
             {
@@ -54,7 +57,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.criar_agendamento_whatsapp($1::varchar, $2::varchar, $3::bigint, NULLIF(TRIM($4::text), '')::bigint, $5::date, $6::time, NULLIF(TRIM($7::text), ''));",
+        "query": "SELECT * FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.criar_agendamento_whatsapp($1::varchar, $2::varchar, $3::bigint, NULLIF(TRIM($4::text), '')::bigint, $5::date, $6::time, NULLIF(TRIM($7::text), ''));",
         "options": {
           "queryReplacement": "={{ [$json.patient_phone, $json.patient_name, $json.dentist_id, $json.procedure_id, $json.date, $json.time, $json.notes] }}"
         }

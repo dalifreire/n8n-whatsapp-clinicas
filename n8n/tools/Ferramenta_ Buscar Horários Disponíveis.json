@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "dentist_id"
             },
             {
@@ -42,7 +45,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT\n  d.id as id_dentista,\n  d.nome as nome_dentista,\n  d.especialidade,\n  s.slot_inicio,\n  s.slot_fim\nFROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.dentistas d\nCROSS JOIN LATERAL {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.obter_slots_disponiveis(d.id, $1::date) s\nWHERE d.ativo = true\n  AND (NULLIF(TRIM($2::text), '') IS NULL OR d.id = NULLIF(TRIM($2::text), '')::bigint)\n  AND (NULLIF(TRIM($3::text), '') IS NULL OR unaccent(lower(d.especialidade)) ILIKE '%' || unaccent(lower($3::text)) || '%' OR EXISTS (SELECT 1 FROM unnest(d.especialidades) e WHERE unaccent(lower(e)) ILIKE '%' || unaccent(lower($3::text)) || '%'))\nORDER BY d.nome, s.slot_inicio\nLIMIT 20;",
+        "query": "SELECT\n  d.id as id_dentista,\n  d.nome as nome_dentista,\n  d.especialidade,\n  s.slot_inicio,\n  s.slot_fim\nFROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.dentistas d\nCROSS JOIN LATERAL {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.obter_slots_disponiveis(d.id, $1::date) s\nWHERE d.ativo = true\n  AND (NULLIF(TRIM($2::text), '') IS NULL OR d.id = NULLIF(TRIM($2::text), '')::bigint)\n  AND (NULLIF(TRIM($3::text), '') IS NULL OR unaccent(lower(d.especialidade)) ILIKE '%' || unaccent(lower($3::text)) || '%' OR EXISTS (SELECT 1 FROM unnest(d.especialidades) e WHERE unaccent(lower(e)) ILIKE '%' || unaccent(lower($3::text)) || '%'))\nORDER BY d.nome, s.slot_inicio\nLIMIT 20;",
         "options": {
           "queryReplacement": "={{ [$json.date, $json.dentist_id, $json.specialty] }}"
         }

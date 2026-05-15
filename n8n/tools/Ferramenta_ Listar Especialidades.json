@@ -4,7 +4,11 @@
     {
       "parameters": {
         "workflowInputs": {
-          "values": []
+          "values": [
+            {
+              "name": "schema_name"
+            }
+          ]
         }
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
@@ -19,7 +23,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.listar_especialidades_disponiveis();",
+        "query": "SELECT * FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.listar_especialidades_disponiveis();",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",

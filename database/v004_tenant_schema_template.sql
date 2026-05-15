@@ -510,13 +510,20 @@ BEGIN
 
   EXECUTE format($ddl$
     CREATE OR REPLACE FUNCTION %I.reiniciar_conversa(p_session_id text)
-    RETURNS void
+    RETURNS TABLE (success boolean, chat_messages_deleted integer)
     LANGUAGE plpgsql
     SECURITY DEFINER
     SET search_path = %I, pg_temp
     AS $fn$
+    DECLARE
+      v_deleted integer;
     BEGIN
       DELETE FROM n8n_chat_histories WHERE session_id = p_session_id;
+      GET DIAGNOSTICS v_deleted = ROW_COUNT;
+
+      success := true;
+      chat_messages_deleted := v_deleted;
+      RETURN NEXT;
     END;
     $fn$;
   $ddl$, p_schema_name, p_schema_name);

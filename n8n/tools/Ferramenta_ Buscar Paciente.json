@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "patient_phone"
             }
           ]
@@ -23,7 +26,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.buscar_paciente_por_telefone($1::varchar);",
+        "query": "SELECT * FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.buscar_paciente_por_telefone($1::varchar);",
         "options": {
           "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
         }
@@ -46,7 +49,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const result = $input.first().json;\n\nif (!result.patient_id) {\n  return [{ json: { resultado: 'Paciente não encontrado no cadastro. Pode ser um novo paciente.' } }];\n}\n\nlet resultado = `Paciente encontrado:\\n`;\nresultado += `👤 ${result.name}\\n`;\nresultado += `📱 ${result.phone}\\n`;\nif (result.birth_date) resultado += `🎂 ${new Date(result.birth_date).toLocaleDateString('pt-BR')}\\n`;\nif (result.health_insurance) resultado += `🏥 Convênio: ${result.health_insurance}\\n`;\nif (result.allergies && result.allergies.length > 0) resultado += `⚠️ Alergias: ${result.allergies.join(', ')}\\n`;\nif (result.medical_conditions && result.medical_conditions.length > 0) resultado += `🩺 Condições: ${result.medical_conditions.join(', ')}\\n`;\nresultado += `📊 Total de consultas: ${result.total_appointments}\\n`;\nif (result.active_treatments > 0) resultado += `🔄 Tratamentos ativos: ${result.active_treatments}\\n`;\nif (result.last_appointment) resultado += `📅 Última consulta: ${new Date(result.last_appointment).toLocaleDateString('pt-BR')}\\n`;\n\nreturn [{ json: { resultado, patient_id: result.patient_id } }];"
+        "jsCode": "const result = $input.first().json;\n\nif (!result.id_paciente) {\n  return [{ json: { resultado: 'Paciente não encontrado no cadastro. Pode ser um novo paciente.' } }];\n}\n\nlet resultado = `Paciente encontrado:\\n`;\nresultado += `👤 ${result.nome}\\n`;\nresultado += `📱 ${result.telefone}\\n`;\nif (result.data_nascimento) resultado += `🎂 ${new Date(result.data_nascimento).toLocaleDateString('pt-BR')}\\n`;\nif (result.convenio) resultado += `🏥 Convênio: ${result.convenio}\\n`;\nif (result.alergias && result.alergias.length > 0) resultado += `⚠️ Alergias: ${result.alergias.join(', ')}\\n`;\nif (result.condicoes_medicas && result.condicoes_medicas.length > 0) resultado += `🩺 Condições: ${result.condicoes_medicas.join(', ')}\\n`;\nresultado += `📊 Total de consultas: ${result.total_agendamentos || 0}\\n`;\nif ((result.tratamentos_ativos || 0) > 0) resultado += `🔄 Tratamentos ativos: ${result.tratamentos_ativos}\\n`;\nif (result.ultima_consulta) resultado += `📅 Última consulta: ${new Date(result.ultima_consulta).toLocaleDateString('pt-BR')}\\n`;\n\nreturn [{ json: { resultado, patient_id: result.id_paciente } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,

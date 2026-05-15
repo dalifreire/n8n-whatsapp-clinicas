@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "appointment_id"
             },
             {
@@ -42,7 +45,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.cancelar_agendamento($1::bigint, $2::varchar, NULLIF(TRIM($3::text), ''));",
+        "query": "SELECT * FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.cancelar_agendamento($1::bigint, $2::varchar, NULLIF(TRIM($3::text), ''));",
         "options": {
           "queryReplacement": "={{ [$json.appointment_id, $json.patient_phone, $json.reason] }}"
         }

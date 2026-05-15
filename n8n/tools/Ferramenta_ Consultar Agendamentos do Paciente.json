@@ -6,6 +6,9 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "schema_name"
+            },
+            {
               "name": "patient_phone"
             },
             {
@@ -26,7 +29,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM {{ $(\"Execute Workflow Trigger\").first().json.schema_name || \"public\" }}.obter_agendamentos_paciente($1::varchar, NULLIF(TRIM($2::text), ''), 5);",
+        "query": "SELECT * FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.obter_agendamentos_paciente($1::varchar, NULLIF(TRIM($2::text), ''), 5);",
         "options": {
           "queryReplacement": "={{ [$json.patient_phone || $json.telefone_paciente, $json.status || ' '] }}"
         }
