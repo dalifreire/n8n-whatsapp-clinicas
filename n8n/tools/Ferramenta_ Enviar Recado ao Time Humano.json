@@ -1,0 +1,268 @@
+{
+  "name": "Tool: Enviar Recado ao Time Humano",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "schema_name"
+            },
+            {
+              "name": "sender_phone_number_id"
+            },
+            {
+              "name": "patient_phone"
+            },
+            {
+              "name": "patient_name"
+            },
+            {
+              "name": "session_id"
+            },
+            {
+              "name": "categoria"
+            },
+            {
+              "name": "urgencia"
+            },
+            {
+              "name": "resumo"
+            },
+            {
+              "name": "mensagem_usuario"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1296,
+        96
+      ],
+      "id": "eda411e3-52a9-4549-87f9-37c109e30fc7",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  tenant_code,\n  schema_name,\n  COALESCE(full_name, organization_name, tenant_code) AS owner_name,\n  COALESCE(assistant_persona_name, full_name, tenant_code) AS ai_assistant_name,\n  COALESCE(\n    NULLIF(organization_metadata->>'human_handoff_email', ''),\n    NULLIF(organization_metadata->>'recados_email', ''),\n    NULLIF(organization_metadata->>'escalation_email', ''),\n    NULLIF(organization_metadata->>'report_email', ''),\n    NULLIF(organization_metadata->>'email', ''),\n    'contato@bahiatecnologia.com.br'\n  ) AS team_email,\n  COALESCE(\n    NULLIF(organization_metadata->>'human_handoff_whatsapp', ''),\n    NULLIF(organization_metadata->>'recados_whatsapp', ''),\n    NULLIF(organization_metadata->>'escalation_whatsapp', ''),\n    NULLIF(organization_metadata->>'support_whatsapp', ''),\n    NULLIF(organization_phone, '')\n  ) AS team_whatsapp\nFROM clinicas.tenants\nWHERE schema_name = $1::text\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $json.schema_name || 'public' }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1024,
+        96
+      ],
+      "id": "e22743b7-fc33-4c28-bbed-915483e8b1bf",
+      "name": "Carregar Destinos do Time",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const trigger = $('Trigger').first().json || {};\nconst tenant = $input.first().json || {};\n\nconst normalize = (v, fallback = '') => {\n  if (v === null || v === undefined) return fallback;\n  const txt = String(v).trim();\n  return txt || fallback;\n};\n\nconst normalizePhone = (v) => normalize(v).replace(/[^0-9]/g, '');\n\nconst categoria = normalize(trigger.categoria, 'sem_categoria');\nconst urgencia = normalize(trigger.urgencia, 'media').toLowerCase();\nconst patientPhone = normalizePhone(trigger.patient_phone || trigger.telefone || trigger.phone);\nconst patientName = normalize(trigger.patient_name, 'Não informado');\nconst sessionId = normalize(trigger.session_id, 'N/A');\nconst resumo = normalize(trigger.resumo, 'Sem resumo adicional');\nconst mensagemUsuario = normalize(trigger.mensagem_usuario, 'Não informada');\nconst teamEmail = normalize(tenant.team_email, 'contato@bahiatecnologia.com.br');\nconst teamWhatsapp = normalizePhone(tenant.team_whatsapp);\nconst senderPhoneNumberId = normalize(trigger.sender_phone_number_id);\nconst nowBr = new Date().toLocaleString('pt-BR');\n\nconst assunto = `📣 Recado do Assistente (${categoria}) - ${tenant.owner_name || 'Clínica'} - ${nowBr}`;\n\nconst corpoEmail = [\n  `Recado automático enviado pelo assistente virtual ${tenant.ai_assistant_name || 'Assistente'}.`,\n  '',\n  `Categoria: ${categoria}`,\n  `Urgência: ${urgencia}`,\n  `Paciente: ${patientName}`,\n  `Telefone do paciente: ${patientPhone || 'Não informado'}`,\n  `Sessão: ${sessionId}`,\n  `Resumo: ${resumo}`,\n  `Mensagem do usuário: ${mensagemUsuario}`,\n  '',\n  `Data/Hora: ${nowBr}`\n].join('\\n');\n\nconst corpoWhatsapp = [\n  '📣 *Recado do assistente virtual*',\n  `*Categoria:* ${categoria}`,\n  `*Urgência:* ${urgencia}`,\n  `*Paciente:* ${patientName}`,\n  `*Telefone:* ${patientPhone || 'Não informado'}`,\n  `*Sessão:* ${sessionId}`,\n  `*Resumo:* ${resumo}`,\n  `*Mensagem do usuário:* ${mensagemUsuario}`,\n  `*Data/Hora:* ${nowBr}`\n].join('\\n');\n\nreturn [{\n  json: {\n    tenant_code: tenant.tenant_code || null,\n    schema_name: tenant.schema_name || trigger.schema_name || null,\n    owner_name: tenant.owner_name || null,\n    ai_assistant_name: tenant.ai_assistant_name || null,\n    categoria,\n    urgencia,\n    patient_phone: patientPhone || null,\n    patient_name: patientName,\n    session_id: sessionId,\n    mensagem_usuario: mensagemUsuario,\n    resumo,\n    team_email: teamEmail,\n    team_whatsapp: teamWhatsapp || null,\n    sender_phone_number_id: senderPhoneNumberId || null,\n    email_subject: assunto,\n    email_body: corpoEmail,\n    whatsapp_body: corpoWhatsapp\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        96
+      ],
+      "id": "f6942e17-674d-44e9-a94d-8a9578b6516c",
+      "name": "Preparar Recado"
+    },
+    {
+      "parameters": {
+        "sendTo": "=contato@bahiatecnologia.com.br",
+        "subject": "={{ $json.email_subject }}",
+        "message": "={{ $json.email_body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        96
+      ],
+      "id": "2b95bf1a-997c-4d00-b21d-4a1444eaf333",
+      "name": "Enviar Recado por E-mail",
+      "webhookId": "3c2735eb-9b7f-4ae2-9f35-688cedbcfc37",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QgS6qXwHFfgn1v3X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ba9fc6a3-5b6a-4528-bf0b-11b8379a4ac9",
+              "leftValue": "={{ !!$json.team_whatsapp && !!$json.sender_phone_number_id }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        96
+      ],
+      "id": "706d9b26-7ba5-4e64-9770-8e58858b50ef",
+      "name": "Tem Config WhatsApp do Time?"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $json.sender_phone_number_id }}",
+        "recipientPhoneNumber": "=553496620569",
+        "textBody": "={{ $json.whatsapp_body }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8bb4d2c4-780d-4144-9a88-ce2f7b1c27d5",
+      "name": "Enviar Recado no WhatsApp",
+      "webhookId": "80f79945-fc1c-4fdf-a1b6-c7ef214cc340",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "QEdJvd4UlIJ2xjVE",
+          "name": "Tenóbio - WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $('Preparar Recado').first().json || {};\n\nconst enviadoNoWhatsapp = !!base.team_whatsapp && !!base.sender_phone_number_id;\n\nreturn [{\n  json: {\n    resultado: enviadoNoWhatsapp\n      ? `Recado enviado para o time humano por e-mail (${base.team_email}) e WhatsApp (${base.team_whatsapp}).`\n      : `Recado enviado para o time humano por e-mail (${base.team_email}). WhatsApp não foi enviado por falta de configuração (team_whatsapp ou sender_phone_number_id).`,\n    status: 'ok',\n    canais: {\n      email: 'enviado',\n      whatsapp: enviadoNoWhatsapp ? 'enviado' : 'nao_configurado'\n    },\n    destino: {\n      email: base.team_email || null,\n      whatsapp: base.team_whatsapp || null\n    },\n    payload: {\n      categoria: base.categoria || null,\n      urgencia: base.urgencia || null,\n      paciente: {\n        nome: base.patient_name || null,\n        telefone: base.patient_phone || null\n      },\n      resumo: base.resumo || null,\n      mensagem_usuario: base.mensagem_usuario || null\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        96
+      ],
+      "id": "2a9c5c6a-2ad7-42d1-93af-348343cdb893",
+      "name": "Retornar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Carregar Destinos do Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar Destinos do Time": {
+      "main": [
+        [
+          {
+            "node": "Preparar Recado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Recado": {
+      "main": [
+        [
+          {
+            "node": "Enviar Recado por E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Recado por E-mail": {
+      "main": [
+        [
+          {
+            "node": "Tem Config WhatsApp do Time?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Config WhatsApp do Time?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Recado no WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Retornar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Recado no WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Retornar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "e5efd7d7-3dfa-4379-91ed-60d9bc58702a",
+  "meta": {
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
+  },
+  "id": "JsPGEoNrxVqnkARIQihH4",
+  "tags": []
+}
