@@ -906,6 +906,62 @@
     },
     {
       "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM clinicas.check_whatsapp_rate_limit(\n  p_tenant_code := $1::text,\n  p_user_phone_e164 := $2::text,\n  p_provider_message_id := $3::text,\n  p_message_type := $4::text,\n  p_whatsapp_phone_e164 := $5::text,\n  p_request_metadata := jsonb_build_object('whatsapp_phone_number_id', $6::text)\n);",
+        "options": {
+          "queryReplacement": "={{ $('Buscar tenant').first().json.tenant_code }},={{ $('Mensagem Recebida').first().json.message_from }},={{ $('Mensagem Recebida').first().json.message_id }},={{ $('Mensagem Recebida').first().json.message_type }},={{ $('Mensagem Recebida').first().json.whatsapp_phone_number }},={{ $('Mensagem Recebida').first().json.whatsapp_phone_number_id }}"
+        }
+      },
+      "id": "5f6f8886-e2f0-4e14-b5d8-cf68e6974f97",
+      "name": "Aplicar Rate Limit",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        48,
+        2128
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "rate-limit-allowed-check",
+              "leftValue": "={{ String($json.allowed) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "47b220b3-0e71-4b45-bf83-9310101ee532",
+      "name": "Rate Limit Permitido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        288,
+        2128
+      ]
+    },
+    {
+      "parameters": {
         "jsCode": "// Extrair dados da mensagem recebida via API Oficial do WhatsApp (Meta Cloud API)\nconst body = $input.first().json.body || $input.first().json;\n\n// Validar que é um webhook do WhatsApp Business\nif (body.object !== 'whatsapp_business_account') {\n  return [];\n}\n\n// Extrair a primeira entrada e mudança\nconst entry = (body.entry || [])[0];\nif (!entry) return [];\n\nconst change = (entry.changes || [])[0];\nif (!change || change.field !== 'messages') return [];\n\nconst value = change.value || {};\nconst metadata = value.metadata || {};\n\n// Extrair mensagem (ignorar status/delivery receipts)\nconst messages = value.messages || [];\nif (messages.length === 0) return [];\n\nconst msg = messages[0];\nconst contacts = value.contacts || [];\nconst contact = contacts[0] || {};\n\n// Dados do remetente\nconst message_from = msg.from || '';\nconst message_from_profile_name = contact.profile?.name || '';\nconst message_id = msg.id || '';\nconst whatsapp_phone_number = metadata.display_phone_number || '';\nconst whatsapp_phone_number_id = metadata.phone_number_id || '';\n\n// Determinar tipo da mensagem\nlet message_type = 'text';\nlet message_content = '';\nlet media_mimetype = '';\nlet media_caption = '';\nlet media_id = '';\n\nif (msg.type === 'audio') {\n  message_type = 'audio';\n  media_mimetype = msg.audio?.mime_type || 'audio/ogg';\n  media_id = msg.audio?.id || '';\n} else if (msg.type === 'image') {\n  message_type = 'image';\n  media_mimetype = msg.image?.mime_type || 'image/jpeg';\n  media_caption = msg.image?.caption || '';\n  media_id = msg.image?.id || '';\n} else if (msg.type === 'text') {\n  message_content = msg.text?.body || '';\n} else if (msg.type === 'interactive') {\n  message_content = msg.interactive?.button_reply?.title || msg.interactive?.list_reply?.title || '';\n} else if (msg.type === 'button') {\n  message_content = msg.button?.text || '';\n} else {\n  // Tipo não suportado\n  return [];\n}\n\n// Detectar comandos de reset da conversa\nconst resetCommands = ['/limpar', '/reset', '/reiniciar', '/nova conversa', '/novo', 'nova conversa', 'limpar conversa', '#reiniciar', '#reset', '#limpar', 'reiniciar conversa', 'recomeçar conversa', 'recomecar conversa', 'começar denovo', 'comecar denovo'];\n\nconst normalizedContent = message_content.trim().toLowerCase();\nif (resetCommands.includes(normalizedContent)) {\n  message_type = 'reset';\n}\n\n// Montar sessionId: telefone do assistente + telefone do usuário\nconst session_id = whatsapp_phone_number + '|' + message_from;\n\nreturn [{\n  json: {\n    message_type,\n    message_content,\n    media_mimetype,\n    media_caption,\n    media_id,\n    message_from,\n    message_from_profile_name,\n    message_id,\n    session_id, \n    whatsapp_phone_number,\n    whatsapp_phone_number_id,\n    raw_message: msg\n  }\n}];"
       },
       "id": "95e93fe0-94d6-44e0-b364-7894bca4fd45",
@@ -1868,11 +1924,34 @@
       "main": [
         [
           {
-            "node": "Load Tenant Config",
+            "node": "Aplicar Rate Limit",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "Aplicar Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Permitido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Permitido?": {
+      "main": [
+        [
+          {
+            "node": "Load Tenant Config",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
       ]
     },
     "Mensagem Recebida": {

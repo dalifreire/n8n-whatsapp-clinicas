@@ -49,10 +49,39 @@ Campos críticos usados pelo n8n:
 2. Extrai `tenant_code`
 3. Executa query de contexto (`clinicas.get_professional_context`)
 4. Valida tenant apto (`professional_status` e `whatsapp_status`)
-5. Monta prompt (configuração base + contexto da clínica/profissional)
-6. Executa agente e ferramentas
-7. Persiste histórico no schema do tenant
-8. Envia resposta pela instância do tenant
+5. Aplica rate limit por usuário e instância WhatsApp
+6. Monta prompt (configuração base + contexto da clínica/profissional)
+7. Executa agente e ferramentas
+8. Persiste histórico no schema do tenant
+9. Envia resposta pela instância do tenant
+
+## Rate Limit de Entrada
+
+Antes de qualquer etapa com custo externo, o workflow chama:
+
+```sql
+SELECT *
+FROM clinicas.check_whatsapp_rate_limit(
+  p_tenant_code := $1,
+  p_user_phone_e164 := $2,
+  p_provider_message_id := $3,
+  p_message_type := $4,
+  p_whatsapp_phone_e164 := $5,
+  p_request_metadata := $6::jsonb
+);
+```
+
+Se `allowed = false`, o fluxo para sem transcrever áudio, chamar modelo, consultar vetores ou executar ferramentas.
+
+Limites padrão por `(whatsapp_instances.id, telefone do usuário)`:
+
+- `per_minute`: 12
+- `per_hour`: 60
+- `per_day`: 200
+- `media_per_hour`: 10
+- `cooldown_seconds`: 300
+
+Overrides ficam em `clinicas.whatsapp_instances.config->'rate_limit'`.
 
 ## Padrão de Query Dinâmica por Schema
 
@@ -113,6 +142,7 @@ SELECT clinicas.mark_reminder_sent(
 - Querys usam o `schema_name` esperado
 - Ferramentas retornam dados somente do tenant
 - Memória/histórico não vaza entre tenants
+- Rate limit bloqueia antes do agente quando `allowed = false`
 - Reminder workflow processa e atualiza status
 
 ## Comandos SQL de Diagnóstico
@@ -124,7 +154,7 @@ ORDER BY tenant_code;
 ```
 
 ```sql
-SELECT p.tenant_code, wi.provider, wi.provider_instance_id, wi.status
+SELECT p.tenant_code, wi.provider, wi.provider_config->>'instance_id' AS instance_id, wi.status
 FROM clinicas.whatsapp_instances wi
 JOIN clinicas.professionals p ON p.id = wi.professional_id;
 ```
@@ -132,4 +162,10 @@ JOIN clinicas.professionals p ON p.id = wi.professional_id;
 ```sql
 SELECT *
 FROM clinicas.get_professional_context(p_tenant_code := 'dra-andreia');
+```
+
+```sql
+SELECT *
+FROM clinicas.whatsapp_rate_limit_active_blocks
+ORDER BY blocked_until DESC;
 ```

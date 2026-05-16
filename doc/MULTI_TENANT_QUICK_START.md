@@ -20,6 +20,7 @@ n8n-whatsapp-clinicas/
     v005_provisioning.sql            -- provision_professional_schema, register_existing_tenant
     v006_reminder_dispatchers.sql    -- fetch_due_reminders_all, mark_reminder_sent
     v007_seed_dra_andreia.sql        -- carga inicial Dra. Andreia Mota Mussi
+    v008_whatsapp_rate_limits.sql    -- rate limit por usuário e instância WhatsApp
   src/
     knowledge_base_atualizar.py
     knowledge_base_consultorio.py
@@ -46,11 +47,13 @@ v004_tenant_schema_template.sql
 v005_provisioning.sql
 v006_reminder_dispatchers.sql
 v007_seed_dra_andreia.sql   ← carga inicial (opcional em ambientes sem Dra. Andreia)
+v008_whatsapp_rate_limits.sql
 ```
 
 Após execução completa:
 
 - Schema `clinicas` com tabelas de plataforma: `organizations`, `professionals`, `assistant_configs`, `whatsapp_instances`, `message_dedupe`, `prompt_templates`
+- Rate limit de entrada por usuário e instância WhatsApp: `whatsapp_rate_limit_buckets`, `whatsapp_rate_limit_blocks`, `clinicas.check_whatsapp_rate_limit(...)`
 - Funções canônicas de contexto, provisionamento e lembretes
 - Seed inicial da Dra. Andreia (`tenant_code = 'dra-andreia'`, schema `clinicas_dra_andreia`)
 
@@ -63,7 +66,7 @@ FROM clinicas.professionals
 ORDER BY tenant_code;
 
 -- Instâncias WhatsApp
-SELECT p.tenant_code, wi.provider, wi.provider_instance_id, wi.phone_number, wi.status
+SELECT p.tenant_code, wi.provider, wi.provider_config->>'instance_id' AS instance_id, wi.phone_number, wi.status
 FROM clinicas.whatsapp_instances wi
 JOIN clinicas.professionals p ON p.id = wi.professional_id
 ORDER BY p.tenant_code;
@@ -85,7 +88,8 @@ Fluxo mínimo recomendado para qualquer webhook:
 1. Extrair `tenant_code` da rota (`/webhook/{tenant_code}`)
 2. Carregar contexto via `clinicas.get_professional_context(...)`
 3. Validar tenant ativo (contexto retornado + status)
-4. Usar `schema_name` retornado em todas as queries tenant-local
+4. Aplicar rate limit com `clinicas.check_whatsapp_rate_limit(...)` antes de transcrever áudio, chamar IA ou executar ferramentas
+5. Usar `schema_name` retornado em todas as queries tenant-local
 
 Exemplo de query de contexto:
 
@@ -102,7 +106,48 @@ FROM {schema_name}.pacientes
 WHERE telefone = $1;
 ```
 
-## 4. Provisionamento de Novo Profissional
+## 4. Rate Limit por Instância WhatsApp
+
+O workflow principal chama `clinicas.check_whatsapp_rate_limit(...)` logo após resolver o tenant pela instância WhatsApp. Se `allowed = false`, o fluxo para e não executa transcrição, embeddings, agente ou ferramentas.
+
+Limites padrão por par `(instância WhatsApp, telefone do usuário)`:
+
+- 12 mensagens por minuto
+- 60 mensagens por hora
+- 200 mensagens por dia
+- 10 mídias por hora (`audio`, `image`, `video`, `document`, `sticker`)
+- cooldown mínimo de 300 segundos
+
+Para personalizar uma instância, use `whatsapp_instances.config->'rate_limit'`:
+
+```sql
+UPDATE clinicas.whatsapp_instances wi
+SET config = jsonb_set(
+  COALESCE(config, '{}'::jsonb),
+  '{rate_limit}',
+  '{"enabled": true, "per_minute": 8, "per_hour": 40, "per_day": 120, "media_per_hour": 6, "cooldown_seconds": 600}'::jsonb,
+  true
+)
+FROM clinicas.professionals p
+WHERE p.id = wi.professional_id
+  AND p.tenant_code = 'dra-andreia';
+```
+
+Ver bloqueios ativos:
+
+```sql
+SELECT *
+FROM clinicas.whatsapp_rate_limit_active_blocks
+ORDER BY blocked_until DESC;
+```
+
+Limpeza periódica opcional:
+
+```sql
+SELECT * FROM clinicas.cleanup_whatsapp_rate_limits(7);
+```
+
+## 5. Provisionamento de Novo Profissional
 
 ### Opção A: Novo schema gerado pela plataforma
 
@@ -155,7 +200,7 @@ SELECT clinicas.register_existing_tenant(
         provider_config = jsonb_build_object('instance_id', 'Dr Carlos Silva'),
 ```
 
-## 5. Knowledge Base (Python)
+## 6. Knowledge Base (Python)
 
 Scripts atualizados em `src/`:
 
@@ -170,7 +215,7 @@ python src/knowledge_base_indexar.py --tenant-code dr-carlos
 python src/knowledge_base_atualizar.py --professional-id dr-carlos --full
 ```
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
 ### Tenant não encontrado
 
@@ -197,14 +242,15 @@ FROM information_schema.schemata
 WHERE schema_name = 'clinicas_dr_carlos';
 ```
 
-## 7. Regras de Segurança
+## 8. Regras de Segurança
 
 1. Nunca montar schema com input livre do usuário.
 2. `schema_name` deve vir do banco (`clinicas.get_professional_context` / `clinicas.professionals`).
-3. Manter RLS habilitado conforme setup.
-4. Segregar credenciais e segredos fora de JSONs de workflow.
+3. Aplicar rate limit antes de qualquer etapa com custo externo.
+4. Manter RLS habilitado conforme setup.
+5. Segregar credenciais e segredos fora de JSONs de workflow.
 
 ---
 
-Last Updated: 2026-05-12
-Version: 2.2 (scripts numerados v001–v007, padrão clinicas_<tenant> para schemas)
+Last Updated: 2026-05-15
+Version: 2.3 (scripts numerados v001–v008, rate limit por instância WhatsApp)
