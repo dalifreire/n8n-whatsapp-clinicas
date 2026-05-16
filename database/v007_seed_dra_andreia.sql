@@ -1,6 +1,6 @@
 -- ============================================================
 -- v007_seed_dra_andreia.sql
--- Carga inicial da profissional Dra. Andreia Mota Mussi.
+-- Carga inicial da profissional Dra. Andreia Mota.
 -- Este script é idempotente: pode ser re-executado sem efeito
 -- colateral (todos os INSERTs usam ON CONFLICT / WHERE NOT EXISTS).
 -- Depende de: v006_reminder_dispatchers.sql
@@ -14,7 +14,7 @@ BEGIN
   -- 1. Organização
   INSERT INTO clinicas.organizations (name, address, contact_phone, business_hours, instagram_handle, metadata)
   SELECT
-    'Consultório Dra. Andreia Mota Mussi',
+    'Consultório Dra. Andreia Mota',
     'Av. Antônio Carlos Magalhães, 585 – Ed. Pierre Fauchard, Sala 709 - Itaigara, Salvador - BA, CEP 41825-907',
     '(71) 3353-7900',
     '{"weekdays": "Segunda a Sexta, das 08:00 às 18:00", "weekend": "Sáb/Dom/Feriados: Fechado"}'::jsonb,
@@ -23,14 +23,14 @@ BEGIN
   WHERE NOT EXISTS (
     SELECT 1
     FROM clinicas.organizations
-    WHERE name = 'Consultório Dra. Andreia Mota Mussi'
+    WHERE name = 'Consultório Dra. Andreia Mota'
   )
   RETURNING id INTO v_org_id;
 
   IF v_org_id IS NULL THEN
     SELECT id INTO v_org_id
     FROM clinicas.organizations
-    WHERE name = 'Consultório Dra. Andreia Mota Mussi'
+    WHERE name = 'Consultório Dra. Andreia Mota'
     LIMIT 1;
   END IF;
 
@@ -43,7 +43,7 @@ BEGIN
 
   -- 3. Dados da profissional
   UPDATE clinicas.professionals SET
-    full_name         = 'Dra. Andreia Mota Mussi',
+    full_name         = 'Dra. Andreia Mota',
     specialties       = ARRAY[
       'Prótese Dentária',
       'Prevenção de Doenças Bucais',
@@ -75,7 +75,7 @@ BEGIN
           "O horário de atendimento é de segunda a sexta, das 08:00 às 18:00."
         ]},
         "professional": {"override": null, "extra_rules": [
-          "A Dra. Andreia Mota Mussi é especialista em Prótese Dentária.",
+          "A Dra. Andreia Mota é especialista em Prótese Dentária.",
           "Atua com prevenção de doenças bucais, restaurações em resina, limpeza dental, facetas em cerâmica e resina, próteses removíveis, prótese fixa sobre dente e prótese sobre implante.",
           "A Dra. Andreia integra o corpo docente do curso de residência em Reabilitação Oral da ABO-BA."
         ]},
@@ -111,7 +111,7 @@ BEGIN
     dias_trabalho, inicio_jornada, fim_jornada, inicio_almoco, fim_almoco,
     duracao_consulta_minutos, metadados
   ) VALUES (
-    'Dra. Andreia Mota Mussi',
+    'Dra. Andreia Mota',
     '4407',
     'Prótese Dentária',
     ARRAY[
@@ -170,10 +170,10 @@ BEGIN
   -- 6. Instância WhatsApp (WhatsApp Cloud API)
   UPDATE clinicas.whatsapp_instances SET
     provider             = 'whatsapp_cloud_api',
-    provider_config      = jsonb_build_object('instance_id', 'Dra Andreia Mota Mussi'),
+    provider_config      = jsonb_build_object('instance_id', 'Dra Andreia Mota'),
     status               = 'disconnected'
   WHERE professional_id = v_prof_id;
 
-  RAISE NOTICE 'Seed: Dra. Andreia Mota Mussi registrada (professional_id: %)', v_prof_id;
+  RAISE NOTICE 'Seed: Dra. Andreia Mota registrada (professional_id: %)', v_prof_id;
 END;
 $$;
