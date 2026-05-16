@@ -79,12 +79,12 @@ DECLARE
 BEGIN
   v_retention_days := GREATEST(COALESCE(p_retention_days, 7), 1);
 
-  DELETE FROM clinicas.whatsapp_rate_limit_buckets
-  WHERE bucket_start < date_trunc('day', now() - make_interval(days => v_retention_days));
+  DELETE FROM clinicas.whatsapp_rate_limit_buckets buckets
+  WHERE buckets.bucket_start < date_trunc('day', now() - make_interval(days => v_retention_days));
   GET DIAGNOSTICS deleted_buckets = ROW_COUNT;
 
-  DELETE FROM clinicas.whatsapp_rate_limit_blocks
-  WHERE blocked_until < now() - make_interval(days => v_retention_days);
+  DELETE FROM clinicas.whatsapp_rate_limit_blocks blocks
+  WHERE blocks.blocked_until < now() - make_interval(days => v_retention_days);
   GET DIAGNOSTICS deleted_blocks = ROW_COUNT;
 
   RETURN NEXT;
@@ -210,7 +210,7 @@ BEGIN
   IF v_provider_message_id IS NOT NULL THEN
     INSERT INTO clinicas.message_dedupe (tenant_code, provider_message_id, received_at)
     VALUES (v_tenant_code, v_provider_message_id, v_now)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT ON CONSTRAINT message_dedupe_pkey DO NOTHING;
     GET DIAGNOSTICS v_inserted_rows = ROW_COUNT;
 
     IF v_inserted_rows = 0 THEN
@@ -253,7 +253,7 @@ BEGIN
   v_hour_start := date_trunc('hour', v_now);
   v_day_start := date_trunc('day', v_now);
 
-  INSERT INTO clinicas.whatsapp_rate_limit_buckets (
+  INSERT INTO clinicas.whatsapp_rate_limit_buckets AS target_buckets (
     whatsapp_instance_id,
     tenant_code,
     user_phone_e164,
@@ -272,25 +272,25 @@ BEGIN
     v_now,
     v_now
   )
-  ON CONFLICT (whatsapp_instance_id, user_phone_e164, bucket_start, message_type)
+  ON CONFLICT ON CONSTRAINT whatsapp_rate_limit_buckets_pkey
   DO UPDATE SET
     tenant_code = EXCLUDED.tenant_code,
-    request_count = clinicas.whatsapp_rate_limit_buckets.request_count + 1,
+    request_count = target_buckets.request_count + 1,
     last_seen_at = EXCLUDED.last_seen_at;
 
   SELECT
-    COALESCE(SUM(request_count) FILTER (WHERE bucket_start >= v_minute_start), 0)::int,
-    COALESCE(SUM(request_count) FILTER (WHERE bucket_start >= v_hour_start), 0)::int,
-    COALESCE(SUM(request_count) FILTER (WHERE bucket_start >= v_day_start), 0)::int,
-    COALESCE(SUM(request_count) FILTER (
-      WHERE bucket_start >= v_hour_start
-        AND message_type IN ('audio', 'image', 'video', 'document', 'sticker')
+    COALESCE(SUM(buckets.request_count) FILTER (WHERE buckets.bucket_start >= v_minute_start), 0)::int,
+    COALESCE(SUM(buckets.request_count) FILTER (WHERE buckets.bucket_start >= v_hour_start), 0)::int,
+    COALESCE(SUM(buckets.request_count) FILTER (WHERE buckets.bucket_start >= v_day_start), 0)::int,
+    COALESCE(SUM(buckets.request_count) FILTER (
+      WHERE buckets.bucket_start >= v_hour_start
+        AND buckets.message_type IN ('audio', 'image', 'video', 'document', 'sticker')
     ), 0)::int
   INTO v_count_minute, v_count_hour, v_count_day, v_count_media_hour
-  FROM clinicas.whatsapp_rate_limit_buckets
-  WHERE whatsapp_instance_id = v_instance_pk
-    AND user_phone_e164 = v_user_phone
-    AND bucket_start >= v_day_start;
+  FROM clinicas.whatsapp_rate_limit_buckets buckets
+  WHERE buckets.whatsapp_instance_id = v_instance_pk
+    AND buckets.user_phone_e164 = v_user_phone
+    AND buckets.bucket_start >= v_day_start;
 
   SELECT blocks.blocked_until, blocks.reason
   INTO v_blocked_until, v_active_block_reason
@@ -344,15 +344,15 @@ BEGIN
   END IF;
 
   IF NOT v_allowed THEN
-    UPDATE clinicas.whatsapp_rate_limit_buckets
-    SET denied_count = denied_count + 1,
+    UPDATE clinicas.whatsapp_rate_limit_buckets buckets
+    SET denied_count = buckets.denied_count + 1,
         last_seen_at = v_now
-    WHERE whatsapp_instance_id = v_instance_pk
-      AND user_phone_e164 = v_user_phone
-      AND bucket_start = v_minute_start
-      AND message_type = v_message_type;
+    WHERE buckets.whatsapp_instance_id = v_instance_pk
+      AND buckets.user_phone_e164 = v_user_phone
+      AND buckets.bucket_start = v_minute_start
+      AND buckets.message_type = v_message_type;
 
-    INSERT INTO clinicas.whatsapp_rate_limit_blocks (
+    INSERT INTO clinicas.whatsapp_rate_limit_blocks AS target_blocks (
       whatsapp_instance_id,
       tenant_code,
       user_phone_e164,
@@ -373,10 +373,10 @@ BEGIN
       v_now,
       v_now
     )
-    ON CONFLICT (whatsapp_instance_id, user_phone_e164)
+    ON CONFLICT ON CONSTRAINT whatsapp_rate_limit_blocks_pkey
     DO UPDATE SET
       tenant_code = EXCLUDED.tenant_code,
-      blocked_until = GREATEST(clinicas.whatsapp_rate_limit_blocks.blocked_until, EXCLUDED.blocked_until),
+      blocked_until = GREATEST(target_blocks.blocked_until, EXCLUDED.blocked_until),
       reason = EXCLUDED.reason,
       last_provider_message_id = EXCLUDED.last_provider_message_id,
       metadata = EXCLUDED.metadata,
