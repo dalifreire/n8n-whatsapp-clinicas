@@ -161,7 +161,7 @@ JOIN clinicas.professionals p ON p.id = wi.professional_id;
 
 ```sql
 SELECT *
-FROM clinicas.get_professional_context(p_tenant_code := 'dra-andreia');
+FROM clinicas.get_professional_context(p_tenant_code := 'dra-andrea');
 ```
 
 ```sql

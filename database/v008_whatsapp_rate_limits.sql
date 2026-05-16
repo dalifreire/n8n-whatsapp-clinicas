@@ -3,7 +3,7 @@
 -- Rate limit por usuário em cada instância WhatsApp.
 -- Objetivo: bloquear abuso antes de transcrição, IA e ferramentas,
 -- reduzindo risco de DoS e descontrole de custos.
--- Depende de: v007_seed_dra_andreia.sql
+-- Depende de: v007_seed_dra_andrea.sql
 -- ============================================================
 
 DROP VIEW IF EXISTS clinicas.whatsapp_rate_limit_active_blocks;

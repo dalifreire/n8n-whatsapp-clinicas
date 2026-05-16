@@ -5,7 +5,7 @@
 A plataforma usa isolamento **schema-per-professional**.
 
 - Metadados compartilhados: schema `clinicas`
-- Dados operacionais: um schema por profissional (ex.: `clinicas_dra_andreia`)
+- Dados operacionais: um schema por profissional (ex.: `clinicas_dra_andrea`)
 - Contrato canônico de contexto: `clinicas.get_professional_context(p_tenant_code text)`
 
 ## Estrutura do Repositório
@@ -19,7 +19,7 @@ n8n-whatsapp-clinicas/
     v004_tenant_schema_template.sql  -- ensure_tenant_schema_objects (template por profissional)
     v005_provisioning.sql            -- provision_professional_schema, register_existing_tenant
     v006_reminder_dispatchers.sql    -- fetch_due_reminders_all, mark_reminder_sent
-    v007_seed_dra_andreia.sql        -- carga inicial Dra. Andreia Mota Mussi
+    v007_seed_dra_andrea.sql        -- carga inicial Dra. Andrea Mota
     v008_whatsapp_rate_limits.sql    -- rate limit por usuário e instância WhatsApp
   src/
     knowledge_base_atualizar.py
@@ -46,7 +46,7 @@ v003_platform_functions.sql
 v004_tenant_schema_template.sql
 v005_provisioning.sql
 v006_reminder_dispatchers.sql
-v007_seed_dra_andreia.sql   ← carga inicial (opcional em ambientes sem Dra. Andreia)
+v007_seed_dra_andrea.sql   ← carga inicial (opcional em ambientes sem Dra. Andrea)
 v008_whatsapp_rate_limits.sql
 ```
 
@@ -55,7 +55,7 @@ Após execução completa:
 - Schema `clinicas` com tabelas de plataforma: `organizations`, `professionals`, `assistant_configs`, `whatsapp_instances`, `message_dedupe`, `prompt_templates`
 - Rate limit de entrada por usuário e instância WhatsApp: `whatsapp_rate_limit_buckets`, `whatsapp_rate_limit_blocks`, `clinicas.check_whatsapp_rate_limit(...)`
 - Funções canônicas de contexto, provisionamento e lembretes
-- Seed inicial da Dra. Andreia (`tenant_code = 'dra-andreia'`, schema `clinicas_dra_andreia`)
+- Seed inicial da Dra. Andrea (`tenant_code = 'dra-andrea'`, schema `clinicas_dra_andrea`)
 
 ## 2. Verificações Rápidas
 
@@ -73,7 +73,7 @@ ORDER BY p.tenant_code;
 
 -- Contrato de contexto (entrada canônica para n8n/Python)
 SELECT *
-FROM clinicas.get_professional_context(p_tenant_code := 'dra-andreia');
+FROM clinicas.get_professional_context(p_tenant_code := 'dra-andrea');
 
 -- View de leitura baseada no contrato
 SELECT tenant_code, schema_name, full_name, assistant_persona_name, whatsapp_status
@@ -130,7 +130,7 @@ SET config = jsonb_set(
 )
 FROM clinicas.professionals p
 WHERE p.id = wi.professional_id
-  AND p.tenant_code = 'dra-andreia';
+  AND p.tenant_code = 'dra-andrea';
 ```
 
 Ver bloqueios ativos:

@@ -1,7 +1,7 @@
 # Summary: Multi-Tenant Knowledge Base Implementation
 
 **Date:** 2026-05-12
-**Status:** ✅ Completo — Plataforma multi-tenant genérica com seed da Dra. Andreia Mota Mussi
+**Status:** ✅ Completo — Plataforma multi-tenant genérica com seed da Dra. Andrea Mota
 
 ---
 
@@ -41,7 +41,7 @@ Generalização da camada de knowledge base AI/RAG para suportar **assistentes i
 | `v004_tenant_schema_template.sql` | `ensure_tenant_schema_objects`: 17 tabelas + índices + triggers + funções por tenant |
 | `v005_provisioning.sql` | `provision_professional_schema`, `register_existing_tenant` |
 | `v006_reminder_dispatchers.sql` | `fetch_due_reminders_all`, `mark_reminder_sent` (nível plataforma) |
-| `v007_seed_dra_andreia.sql` | Carga inicial Dra. Andreia Mota Mussi (idempotente) |
+| `v007_seed_dra_andrea.sql` | Carga inicial Dra. Andrea Mota Mussi (idempotente) |
 
 ### Documentação
 
