@@ -690,6 +690,56 @@
     },
     {
       "parameters": {
+        "name": "consultar_contexto_usuario",
+        "description": "Consulta contexto consolidado do usuário/paciente pelo telefone WhatsApp, incluindo histórico de interações, agendamentos, planos de tratamento, prontuários, prescrições e situação financeira. Use no início do atendimento para personalizar a conversa.",
+        "workflowId": {
+          "__rl": true,
+          "value": "=Qd8cLk2mR7tVw91pX5zH",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
+            "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "patient_phone",
+              "displayName": "patient_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        3408,
+        2576
+      ],
+      "id": "f0f20a4e-4f2c-4f03-86ef-bac4f0ae7f20",
+      "name": "Contexto do Usuário"
+    },
+    {
+      "parameters": {
         "operation": "executeQuery",
         "query": "SELECT * FROM {{ $(\"Load Tenant Config\").first().json.schema_name }}.reiniciar_conversa($1::varchar);",
         "options": {
@@ -2110,6 +2160,17 @@
           {
             "node": "Executar Reset",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexto do Usuário": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]

@@ -1,0 +1,101 @@
+{
+  "name": "Tool: Contexto do Usuário",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "schema_name"
+            },
+            {
+              "name": "patient_phone"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9d0b31d1-92b4-4ce9-9e77-37f7207453db",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH phone_input AS (\n  SELECT $1::varchar AS phone\n),\nusuario AS (\n  SELECT u.*\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.usuarios u\n  WHERE u.telefone = (SELECT phone FROM phone_input)\n  LIMIT 1\n),\npaciente AS (\n  SELECT p.*\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.pacientes p\n  WHERE p.telefone = (SELECT phone FROM phone_input)\n     OR p.telefone_secundario = (SELECT phone FROM phone_input)\n     OR (p.usuario_id IS NOT NULL AND p.usuario_id = (SELECT id FROM usuario))\n  ORDER BY p.atualizado_em DESC NULLS LAST\n  LIMIT 1\n),\naggr_agendamentos AS (\n  SELECT\n    COUNT(*)::int AS total_agendamentos,\n    COUNT(*) FILTER (WHERE a.status IN ('agendado', 'confirmado') AND a.data_consulta >= CURRENT_DATE)::int AS total_agendamentos_futuros,\n    MIN((a.data_consulta::text || ' ' || a.hora_consulta::text)::timestamp) FILTER (WHERE a.status IN ('agendado', 'confirmado') AND a.data_consulta >= CURRENT_DATE) AS proximo_agendamento,\n    MAX((a.data_consulta::text || ' ' || a.hora_consulta::text)::timestamp) FILTER (WHERE a.data_consulta <= CURRENT_DATE) AS ultima_consulta\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.agendamentos a\n  WHERE a.id_paciente = (SELECT id FROM paciente)\n),\naggr_planos AS (\n  SELECT\n    COUNT(*)::int AS total_planos_tratamento,\n    COUNT(*) FILTER (WHERE pt.status IN ('proposto', 'aprovado', 'em_andamento'))::int AS planos_ativos\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.planos_tratamento pt\n  WHERE pt.id_paciente = (SELECT id FROM paciente)\n),\naggr_prontuarios AS (\n  SELECT\n    COUNT(*)::int AS total_prontuarios,\n    MAX(pr.data_registro)::date AS ultimo_prontuario_em\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.prontuarios pr\n  WHERE pr.id_paciente = (SELECT id FROM paciente)\n),\naggr_prescricoes AS (\n  SELECT\n    COUNT(*)::int AS total_prescricoes,\n    MAX(ps.data_prescricao)::date AS prescricao_mais_recente\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.prescricoes ps\n  WHERE ps.id_paciente = (SELECT id FROM paciente)\n),\naggr_financeiro AS (\n  SELECT\n    COUNT(*)::int AS total_registros_financeiros,\n    COALESCE(SUM(rf.valor) FILTER (WHERE rf.status = 'pago'), 0)::numeric(10,2) AS total_pago,\n    COALESCE(SUM(rf.valor) FILTER (WHERE rf.status = 'pendente'), 0)::numeric(10,2) AS total_pendente,\n    COALESCE(SUM(rf.valor) FILTER (WHERE rf.status = 'atrasado'), 0)::numeric(10,2) AS total_atrasado,\n    MIN(rf.data_vencimento) FILTER (WHERE rf.status IN ('pendente', 'atrasado'))::date AS proximo_vencimento\n  FROM {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.registros_financeiros rf\n  WHERE rf.id_paciente = (SELECT id FROM paciente)\n)\nSELECT\n  (SELECT phone FROM phone_input) AS telefone_consulta,\n  u.id AS usuario_id,\n  u.nome AS usuario_nome,\n  u.email AS usuario_email,\n  u.primeira_interacao,\n  u.ultima_interacao,\n  u.total_interacoes,\n  u.metadados AS usuario_metadados,\n  p.id AS paciente_id,\n  p.nome AS paciente_nome,\n  p.data_nascimento,\n  p.convenio,\n  p.alergias,\n  p.condicoes_medicas,\n  p.observacoes AS observacoes_paciente,\n  aa.total_agendamentos,\n  aa.total_agendamentos_futuros,\n  aa.proximo_agendamento,\n  aa.ultima_consulta,\n  ap.total_planos_tratamento,\n  ap.planos_ativos,\n  apr.total_prontuarios,\n  apr.ultimo_prontuario_em,\n  aps.total_prescricoes,\n  aps.prescricao_mais_recente,\n  af.total_registros_financeiros,\n  af.total_pago,\n  af.total_pendente,\n  af.total_atrasado,\n  af.proximo_vencimento\nFROM usuario u\nFULL OUTER JOIN paciente p ON true\nLEFT JOIN aggr_agendamentos aa ON true\nLEFT JOIN aggr_planos ap ON true\nLEFT JOIN aggr_prontuarios apr ON true\nLEFT JOIN aggr_prescricoes aps ON true\nLEFT JOIN aggr_financeiro af ON true\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        0
+      ],
+      "id": "65d6079f-9a71-413f-a57f-137f69fa1d8d",
+      "name": "Consultar Contexto do Usuário",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json || {};\n\nconst hasUser = !!result.usuario_id;\nconst hasPatient = !!result.paciente_id;\n\nif (!hasUser && !hasPatient) {\n  return [{\n    json: {\n      resultado: 'Não encontrei histórico anterior para este telefone. Trate como primeiro atendimento e colete os dados essenciais do paciente.',\n      contexto_usuario: {\n        telefone: result.telefone_consulta || null,\n        usuario_existente: false,\n        paciente_existente: false\n      }\n    }\n  }];\n}\n\nconst brDate = (value) => {\n  if (!value) return null;\n  return new Date(value).toLocaleDateString('pt-BR');\n};\n\nlet resumo = '🧾 Contexto do usuário no sistema:\\n';\n\nif (hasUser) {\n  resumo += `\\n👤 Usuário (WhatsApp): ${result.usuario_nome || 'Sem nome'}\\n`;\n  resumo += `📱 Telefone: ${result.telefone_consulta || '-'}\\n`;\n  if (result.usuario_email) resumo += `✉️ Email: ${result.usuario_email}\\n`;\n  resumo += `💬 Interações: ${result.total_interacoes || 0}\\n`;\n  if (result.primeira_interacao) resumo += `🕐 Primeira interação: ${brDate(result.primeira_interacao)}\\n`;\n  if (result.ultima_interacao) resumo += `🕐 Última interação: ${brDate(result.ultima_interacao)}\\n`;\n}\n\nif (hasPatient) {\n  resumo += `\\n🦷 Paciente: ${result.paciente_nome || 'Sem nome'} (ID: ${result.paciente_id})\\n`;\n  if (result.data_nascimento) resumo += `🎂 Nascimento: ${brDate(result.data_nascimento)}\\n`;\n  if (result.convenio) resumo += `🏥 Convênio: ${result.convenio}\\n`;\n  if (Array.isArray(result.alergias) && result.alergias.length) resumo += `⚠️ Alergias: ${result.alergias.join(', ')}\\n`;\n  if (Array.isArray(result.condicoes_medicas) && result.condicoes_medicas.length) resumo += `🩺 Condições médicas: ${result.condicoes_medicas.join(', ')}\\n`;\n}\n\nresumo += `\\n📅 Agendamentos totais: ${result.total_agendamentos || 0}\\n`;\nresumo += `📌 Agendamentos futuros: ${result.total_agendamentos_futuros || 0}\\n`;\nif (result.proximo_agendamento) resumo += `➡️ Próximo agendamento: ${new Date(result.proximo_agendamento).toLocaleString('pt-BR')}\\n`;\nif (result.ultima_consulta) resumo += `⬅️ Última consulta: ${new Date(result.ultima_consulta).toLocaleString('pt-BR')}\\n`;\n\nresumo += `\\n🧩 Planos de tratamento: ${result.total_planos_tratamento || 0} (ativos: ${result.planos_ativos || 0})\\n`;\nresumo += `📝 Prontuários: ${result.total_prontuarios || 0}\\n`;\nif (result.ultimo_prontuario_em) resumo += `🗂️ Último prontuário: ${brDate(result.ultimo_prontuario_em)}\\n`;\nresumo += `💊 Prescrições: ${result.total_prescricoes || 0}\\n`;\nif (result.prescricao_mais_recente) resumo += `📄 Prescrição mais recente: ${brDate(result.prescricao_mais_recente)}\\n`;\n\nresumo += `\\n💰 Financeiro - Pago: R$ ${Number(result.total_pago || 0).toFixed(2)} | Pendente: R$ ${Number(result.total_pendente || 0).toFixed(2)} | Atrasado: R$ ${Number(result.total_atrasado || 0).toFixed(2)}\\n`;\nif (result.proximo_vencimento) resumo += `📆 Próximo vencimento: ${brDate(result.proximo_vencimento)}\\n`;\n\nreturn [{\n  json: {\n    resultado: resumo.trim(),\n    contexto_usuario: {\n      telefone: result.telefone_consulta || null,\n      usuario_existente: hasUser,\n      paciente_existente: hasPatient,\n      usuario: hasUser ? {\n        id: result.usuario_id,\n        nome: result.usuario_nome || null,\n        email: result.usuario_email || null,\n        primeira_interacao: result.primeira_interacao || null,\n        ultima_interacao: result.ultima_interacao || null,\n        total_interacoes: result.total_interacoes || 0,\n        metadados: result.usuario_metadados || null\n      } : null,\n      paciente: hasPatient ? {\n        id: result.paciente_id,\n        nome: result.paciente_nome || null,\n        data_nascimento: result.data_nascimento || null,\n        convenio: result.convenio || null,\n        alergias: result.alergias || [],\n        condicoes_medicas: result.condicoes_medicas || [],\n        observacoes: result.observacoes_paciente || null\n      } : null,\n      historico: {\n        agendamentos_total: result.total_agendamentos || 0,\n        agendamentos_futuros: result.total_agendamentos_futuros || 0,\n        proximo_agendamento: result.proximo_agendamento || null,\n        ultima_consulta: result.ultima_consulta || null,\n        planos_tratamento_total: result.total_planos_tratamento || 0,\n        planos_tratamento_ativos: result.planos_ativos || 0,\n        prontuarios_total: result.total_prontuarios || 0,\n        ultimo_prontuario_em: result.ultimo_prontuario_em || null,\n        prescricoes_total: result.total_prescricoes || 0,\n        prescricao_mais_recente: result.prescricao_mais_recente || null\n      },\n      financeiro: {\n        registros_total: result.total_registros_financeiros || 0,\n        total_pago: Number(result.total_pago || 0),\n        total_pendente: Number(result.total_pendente || 0),\n        total_atrasado: Number(result.total_atrasado || 0),\n        proximo_vencimento: result.proximo_vencimento || null\n      }\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        0
+      ],
+      "id": "62b31376-f166-4fa7-8038-074e6e5b0b79",
+      "name": "Formatar Contexto"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Consultar Contexto do Usuário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Contexto do Usuário": {
+      "main": [
+        [
+          {
+            "node": "Formatar Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "3f5e8c32-72b3-4c64-9afd-bf8d4a6df7d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
+  },
+  "id": "Qd8cLk2mR7tVw91pX5zH",
+  "tags": []
+}
