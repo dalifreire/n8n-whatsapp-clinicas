@@ -1,0 +1,110 @@
+{
+  "name": "Tool: Salvar Preferências do Usuário",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "schema_name"
+            },
+            {
+              "name": "patient_phone"
+            },
+            {
+              "name": "preference_key"
+            },
+            {
+              "name": "preference_value"
+            },
+            {
+              "name": "source"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a7f8c8d3-6508-4f4b-9ae9-1f2f63ef3c18",
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH entrada AS (\n  SELECT\n    $1::varchar AS patient_phone,\n    lower(regexp_replace(trim(COALESCE($2::text, '')), '[^a-zA-Z0-9_]+', '_', 'g')) AS preference_key,\n    trim(COALESCE($3::text, '')) AS preference_value,\n    COALESCE(NULLIF(trim(COALESCE($4::text, '')), ''), 'atendimento') AS source\n),\nvalidacao AS (\n  SELECT *\n  FROM entrada\n  WHERE patient_phone IS NOT NULL\n    AND patient_phone <> ''\n    AND preference_key <> ''\n    AND preference_value <> ''\n),\nupsert_usuario AS (\n  INSERT INTO {{ $(\"Trigger\").first().json.schema_name || \"public\" }}.usuarios (\n    telefone,\n    metadados,\n    primeira_interacao,\n    ultima_interacao,\n    total_interacoes\n  )\n  SELECT\n    v.patient_phone,\n    jsonb_build_object(\n      'preferencias', jsonb_build_object(v.preference_key, v.preference_value),\n      'preferencias_atualizado_em', to_jsonb(now()),\n      'preferencias_fonte', to_jsonb(v.source)\n    ),\n    now(),\n    now(),\n    1\n  FROM validacao v\n  ON CONFLICT (telefone) DO UPDATE\n  SET\n    metadados = jsonb_set(\n      jsonb_set(\n        jsonb_set(\n          COALESCE(usuarios.metadados, '{}'::jsonb),\n          '{preferencias}',\n          COALESCE(usuarios.metadados->'preferencias', '{}'::jsonb),\n          true\n        ),\n        ARRAY['preferencias', (SELECT preference_key FROM validacao LIMIT 1)],\n        to_jsonb((SELECT preference_value FROM validacao LIMIT 1)),\n        true\n      ),\n      '{preferencias_atualizado_em}',\n      to_jsonb(now()),\n      true\n    ) || jsonb_build_object('preferencias_fonte', (SELECT source FROM validacao LIMIT 1)),\n    ultima_interacao = now(),\n    atualizado_em = now()\n  RETURNING\n    id AS usuario_id,\n    telefone,\n    metadados\n)\nSELECT\n  u.usuario_id,\n  u.telefone,\n  (SELECT preference_key FROM validacao LIMIT 1) AS preference_key,\n  (SELECT preference_value FROM validacao LIMIT 1) AS preference_value,\n  (u.metadados->'preferencias') AS preferencias,\n  u.metadados AS usuario_metadados\nFROM upsert_usuario u;",
+        "options": {
+          "queryReplacement": "={{ $json.patient_phone || $json.telefone || $json.phone || '' }},={{ $json.preference_key || '' }},={{ $json.preference_value || '' }},={{ $json.source || 'atendimento' }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        0
+      ],
+      "id": "f2fe4ea1-c8d8-4835-b40b-d7d1e9832a98",
+      "name": "Salvar Preferência",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $input.first().json || {};\n\nif (!row.usuario_id) {\n  return [{\n    json: {\n      resultado: 'Não consegui salvar a preferência. Verifique se patient_phone, preference_key e preference_value foram enviados.',\n      sucesso: false\n    }\n  }];\n}\n\nconst preferencias = row.preferencias && typeof row.preferencias === 'object' ? row.preferencias : {};\nconst chave = row.preference_key || null;\nconst valor = row.preference_value || null;\n\nreturn [{\n  json: {\n    resultado: `Preferência salva com sucesso para ${row.telefone}: ${chave} = ${valor}.`,\n    sucesso: true,\n    preferencia_salva: {\n      telefone: row.telefone,\n      chave,\n      valor\n    },\n    preferencias,\n    usuario_metadados: row.usuario_metadados || null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        0
+      ],
+      "id": "3d82df5e-c153-4b8f-a4ca-fb767de8e094",
+      "name": "Formatar Resultado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Salvar Preferência",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Preferência": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "0f5b92e2-b43a-422c-ac8c-a9bc1eb739f6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
+  },
+  "id": "U1p6aKv9LmR2sJd5X4nQ",
+  "tags": []
+}

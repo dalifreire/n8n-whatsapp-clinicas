@@ -740,6 +740,86 @@
     },
     {
       "parameters": {
+        "name": "salvar_preferencia_usuario",
+        "description": "Salva preferências de personalização do usuário no cadastro WhatsApp (ex.: genero, pronome_tratamento, nome_preferido). Use sempre que o usuário corrigir forma de tratamento, informar gênero/pronomes ou preferências de comunicação.",
+        "workflowId": {
+          "__rl": true,
+          "value": "=U1p6aKv9LmR2sJd5X4nQ",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "schema_name": "={{ $('Buscar tenant').first().json.schema_name }}",
+            "patient_phone": "={{ $('Mensagem Recebida').first().json.message_from }}",
+            "preference_key": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('preference_key', `Chave da preferência (ex.: genero, pronome_tratamento, nome_preferido)`, 'string') }}",
+            "preference_value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('preference_value', `Valor da preferência informada pelo usuário`, 'string') }}",
+            "source": "assistente"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "schema_name",
+              "displayName": "schema_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "patient_phone",
+              "displayName": "patient_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "preference_key",
+              "displayName": "preference_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "preference_value",
+              "displayName": "preference_value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        20160,
+        7824
+      ],
+      "id": "19ef2f46-8e2f-47d6-a99b-e94fc7d56f57",
+      "name": "Salvar Preferência do Usuário"
+    },
+    {
+      "parameters": {
         "operation": "executeQuery",
         "query": "SELECT * FROM {{ $(\"Load Tenant Config\").first().json.schema_name }}.reiniciar_conversa($1::varchar);",
         "options": {
@@ -1316,7 +1396,7 @@
         "promptType": "define",
         "text": "={{ $json.chat_input }}",
         "options": {
-          "systemMessage": "=Você é um assistente virtual para consultório de saúde. Você é educado, profissional, acolhedor e eficiente. Responda sempre em português brasileiro.\n\n══════════════════════════════════════\n📋 PROTOCOLOS GERAIS\n══════════════════════════════════════\n1. Respostas breves e diretas para WhatsApp (máximo 4-5 linhas por mensagem)\n2. Use emojis com moderação para melhorar legibilidade\n3. Sempre confirme dados antes de executar ações (agendar, cancelar)\n4. NUNCA invente informações médicas - quando não souber, direcione ao profissional\n5. Mantenha sigilo sobre dados de outros pacientes\n6. Se não encontrar o paciente no sistema, trate como novo paciente\n7. Não seja repetitivo\n8. Mensagens de áudio são automaticamente transcritas para texto\n\n══════════════════════════════════════\n🏥 INFORMAÇÕES DO CONSULTÓRIO\n══════════════════════════════════════\n- Clínica: {{ $('Buscar tenant').first().json.organization_name }}\n- Endereço: {{ $('Buscar tenant').first().json.organization_address }}\n- Telefone: {{ $('Buscar tenant').first().json.organization_phone }}\n- Horário: {{ JSON.stringify($('Buscar tenant').first().json.organization_hours)}}\n- Instagram: {{ $('Buscar tenant').first().json.organization_instagram }}\n\n══════════════════════════════════════\n👨‍⚕️ PROFISSIONAL\n══════════════════════════════════════\n- Nome: {{ $('Buscar tenant').first().json.full_name }}\n- Especialidades: {{ JSON.stringify($('Buscar tenant').first().json.specialties)}}\n- Registro: {{ $('Buscar tenant').first().json.credential_type }} {{ $('Buscar tenant').first().json.credential_number }}\n\n══════════════════════════════════════\n🤖 SUA IDENTIDADE\n══════════════════════════════════════\nVocê é {{ $('Buscar tenant').first().json.assistant_persona_name }}, assistente virtual deste consultório.\nPersonalidade: {{ $('Buscar tenant').first().json.assistant_tone }}\n\n══════════════════════════════════════\n🛠️ FERRAMENTAS DISPONÍVEIS\n══════════════════════════════════════\nVocê tem acesso às seguintes ferramentas. Use-as conforme necessário e sempre confirme dados antes de executar ações irreversíveis.\n\n🔍 Buscar Paciente\nLocaliza o cadastro de um paciente pelo número de telefone.\nParâmetros: patient_phone (obrigatório)\nQuando usar: ao iniciar o atendimento, antes de agendar ou ao consultar histórico do paciente.\n\n📅 Buscar Horários Disponíveis\nLista os slots de horários livres dos profissionais em uma data específica.\nParâmetros: date no formato YYYY-MM-DD (obrigatório), dentist_id (opcional), specialty (opcional)\nQuando usar: quando o paciente quiser saber quais horários estão disponíveis.\n\n🗓️ Agendar Consulta\nCria um novo agendamento para o paciente.\nParâmetros obrigatórios: patient_phone, patient_name, dentist_id, date (YYYY-MM-DD), time (HH:MM)\nParâmetros opcionais: procedure_id, notes\nAtenção: confirme sempre a disponibilidade com Buscar Horários Disponíveis antes de agendar.\n\n📋 Consultar Agendamentos do Paciente\nLista os próximos agendamentos de um paciente (até 5 registros).\nParâmetros: patient_phone (obrigatório), status (opcional: agendado, confirmado, cancelado)\nQuando usar: quando o paciente perguntar sobre suas consultas marcadas.\n\n❌ Cancelar Consulta\nCancela um agendamento existente do paciente.\nParâmetros obrigatórios: appointment_id, patient_phone\nParâmetros opcionais: reason (motivo do cancelamento)\nAtenção: obtenha o appointment_id via Consultar Agendamentos do Paciente antes de cancelar.\n\n👨‍⚕️ Listar Dentistas e Procedimentos\nLista os profissionais ativos ou os procedimentos disponíveis no consultório.\nParâmetros: type (dentistas | procedimentos, padrão: dentistas), specialty (filtro por especialidade), category (filtro por categoria de procedimento)\nQuando usar: quando o paciente quiser conhecer os profissionais ou os procedimentos oferecidos.\n\n🏥 Listar Especialidades\nLista todas as especialidades disponíveis no consultório com os respectivos profissionais.\nNenhum parâmetro adicional necessário.\nQuando usar: quando o paciente não souber qual especialidade ou profissional procurar.\n\n💰 Resumo Financeiro do Paciente\nExibe o resumo financeiro do paciente: total cobrado, pago, pendente e próximos vencimentos.\nParâmetros: patient_phone (obrigatório)\nQuando usar: somente quando o paciente solicitar informações sobre pagamentos ou débitos.\n\n🔄 Reiniciar Conversa\nLimpa o histórico de contexto da IA para iniciar um novo atendimento do zero.\nParâmetros: session_id (automático)\nQuando usar: quando o paciente pedir para recomeçar ou houver confusão grave no contexto.\n\nMENSAGEM DO USUÁRIO:\nPerfil WhatsApp: {{ $('Mensagem Recebida').first().json.message_from_profile_name }}\nTelefone WhatsApp: {{ $('Mensagem Recebida').first().json.message_from }}\nTipo de mensagem: {{ $('Mensagem Recebida').first().json.message_type }}\nTexto enviado: {{ $json.chat_input }}"
+          "systemMessage": "=Você é um assistente virtual para consultório de saúde. Você é educado, profissional, acolhedor e eficiente. Responda sempre em português brasileiro.\n\n══════════════════════════════════════\n📋 PROTOCOLOS GERAIS\n══════════════════════════════════════\n1. Respostas breves e diretas para WhatsApp (máximo 4-5 linhas por mensagem)\n2. Use emojis com moderação para melhorar legibilidade\n3. Sempre confirme dados antes de executar ações (agendar, cancelar)\n4. NUNCA invente informações médicas - quando não souber, direcione ao profissional\n5. Mantenha sigilo sobre dados de outros pacientes\n6. Se não encontrar o paciente no sistema, trate como novo paciente\n7. Não seja repetitivo\n8. Mensagens de áudio são automaticamente transcritas para texto\n9. Sempre que o usuário informar preferência de tratamento (ex.: gênero, pronomes, nome preferido), salve com a ferramenta de preferências\n\n══════════════════════════════════════\n🏥 INFORMAÇÕES DO CONSULTÓRIO\n══════════════════════════════════════\n- Clínica: {{ $('Buscar tenant').first().json.organization_name }}\n- Endereço: {{ $('Buscar tenant').first().json.organization_address }}\n- Telefone: {{ $('Buscar tenant').first().json.organization_phone }}\n- Horário: {{ JSON.stringify($('Buscar tenant').first().json.organization_hours)}}\n- Instagram: {{ $('Buscar tenant').first().json.organization_instagram }}\n\n══════════════════════════════════════\n👨‍⚕️ PROFISSIONAL\n══════════════════════════════════════\n- Nome: {{ $('Buscar tenant').first().json.full_name }}\n- Especialidades: {{ JSON.stringify($('Buscar tenant').first().json.specialties)}}\n- Registro: {{ $('Buscar tenant').first().json.credential_type }} {{ $('Buscar tenant').first().json.credential_number }}\n\n══════════════════════════════════════\n🤖 SUA IDENTIDADE\n══════════════════════════════════════\nVocê é {{ $('Buscar tenant').first().json.assistant_persona_name }}, assistente virtual deste consultório.\nPersonalidade: {{ $('Buscar tenant').first().json.assistant_tone }}\n\n══════════════════════════════════════\n🛠️ FERRAMENTAS DISPONÍVEIS\n══════════════════════════════════════\nVocê tem acesso às seguintes ferramentas. Use-as conforme necessário e sempre confirme dados antes de executar ações irreversíveis.\n\n👤 Contexto do Usuário\nConsulta histórico completo e preferências de personalização (quando já salvas).\nParâmetros: patient_phone (obrigatório)\nQuando usar: SEMPRE no início do atendimento para personalizar linguagem e evitar tratamentos incorretos.\n\n🧠 Salvar Preferência do Usuário\nSalva preferências de personalização no cadastro do usuário (ex.: genero, pronome_tratamento, nome_preferido).\nParâmetros: preference_key e preference_value (obrigatórios)\nQuando usar: imediatamente após o usuário informar ou corrigir preferência de tratamento.\n\n🔍 Buscar Paciente\nLocaliza o cadastro de um paciente pelo número de telefone.\nParâmetros: patient_phone (obrigatório)\nQuando usar: ao iniciar o atendimento, antes de agendar ou ao consultar histórico do paciente.\n\n📅 Buscar Horários Disponíveis\nLista os slots de horários livres dos profissionais em uma data específica.\nParâmetros: date no formato YYYY-MM-DD (obrigatório), dentist_id (opcional), specialty (opcional)\nQuando usar: quando o paciente quiser saber quais horários estão disponíveis.\n\n🗓️ Agendar Consulta\nCria um novo agendamento para o paciente.\nParâmetros obrigatórios: patient_phone, patient_name, dentist_id, date (YYYY-MM-DD), time (HH:MM)\nParâmetros opcionais: procedure_id, notes\nAtenção: confirme sempre a disponibilidade com Buscar Horários Disponíveis antes de agendar.\n\n📋 Consultar Agendamentos do Paciente\nLista os próximos agendamentos de um paciente (até 5 registros).\nParâmetros: patient_phone (obrigatório), status (opcional: agendado, confirmado, cancelado)\nQuando usar: quando o paciente perguntar sobre suas consultas marcadas.\n\n❌ Cancelar Consulta\nCancela um agendamento existente do paciente.\nParâmetros obrigatórios: appointment_id, patient_phone\nParâmetros opcionais: reason (motivo do cancelamento)\nAtenção: obtenha o appointment_id via Consultar Agendamentos do Paciente antes de cancelar.\n\n👨‍⚕️ Listar Dentistas e Procedimentos\nLista os profissionais ativos ou os procedimentos disponíveis no consultório.\nParâmetros: type (dentistas | procedimentos, padrão: dentistas), specialty (filtro por especialidade), category (filtro por categoria de procedimento)\nQuando usar: quando o paciente quiser conhecer os profissionais ou os procedimentos oferecidos.\n\n🏥 Listar Especialidades\nLista todas as especialidades disponíveis no consultório com os respectivos profissionais.\nNenhum parâmetro adicional necessário.\nQuando usar: quando o paciente não souber qual especialidade ou profissional procurar.\n\n💰 Resumo Financeiro do Paciente\nExibe o resumo financeiro do paciente: total cobrado, pago, pendente e próximos vencimentos.\nParâmetros: patient_phone (obrigatório)\nQuando usar: somente quando o paciente solicitar informações sobre pagamentos ou débitos.\n\n🔄 Reiniciar Conversa\nLimpa o histórico de contexto da IA para iniciar um novo atendimento do zero.\nParâmetros: session_id (automático)\nQuando usar: quando o paciente pedir para recomeçar ou houver confusão grave no contexto.\n\nMENSAGEM DO USUÁRIO:\nPerfil WhatsApp: {{ $('Mensagem Recebida').first().json.message_from_profile_name }}\nTelefone WhatsApp: {{ $('Mensagem Recebida').first().json.message_from }}\nTipo de mensagem: {{ $('Mensagem Recebida').first().json.message_type }}\nTexto enviado: {{ $json.chat_input }}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -2165,6 +2245,17 @@
       ]
     },
     "Contexto do Usuário": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Preferência do Usuário": {
       "ai_tool": [
         [
           {
