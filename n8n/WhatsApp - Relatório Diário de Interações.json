@@ -1,0 +1,206 @@
+{
+  "name": "WhatsApp - Relatório Diário de Interações",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 4 * * *"
+            }
+          ]
+        }
+      },
+      "id": "f7992a6f-cf1f-4a78-a79a-740cd16f2ef7",
+      "name": "Trigger Diário 01h BRT",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DROP TABLE IF EXISTS tmp_relatorio_interacoes_dia_anterior;\n\nCREATE TEMP TABLE tmp_relatorio_interacoes_dia_anterior (\n  ai_assistant_id text,\n  owner_name text,\n  ai_assistant_name text,\n  recipient_email text,\n  id bigint,\n  session_id text,\n  sender text,\n  sender_name text,\n  message_type text,\n  user_message text,\n  ai_response text,\n  created_at timestamptz,\n  profile_name text\n);\n\nDO $$\nDECLARE\n  t record;\nBEGIN\n  FOR t IN\n    SELECT\n      tenant_code,\n      schema_name,\n      COALESCE(full_name, organization_name, tenant_code) AS owner_name,\n      COALESCE(assistant_persona_name, full_name, tenant_code) AS ai_assistant_name,\n      COALESCE(\n        NULLIF(organization_metadata->>'report_email', ''),\n        NULLIF(organization_metadata->>'email_relatorio', ''),\n        NULLIF(organization_metadata->>'email', ''),\n        'contato@bahiatecnologia.com.br'\n      ) AS recipient_email\n    FROM clinicas.tenants\n  LOOP\n    EXECUTE format($q$\n      INSERT INTO tmp_relatorio_interacoes_dia_anterior (\n        ai_assistant_id, owner_name, ai_assistant_name, recipient_email,\n        id, session_id, sender, sender_name, message_type,\n        user_message, ai_response, created_at, profile_name\n      )\n      SELECT\n        %L AS ai_assistant_id,\n        %L AS owner_name,\n        %L AS ai_assistant_name,\n        %L AS recipient_email,\n        c.id,\n        c.telefone AS session_id,\n        c.telefone AS sender,\n        c.nome AS sender_name,\n        'text'::text AS message_type,\n        c.mensagem AS user_message,\n        c.resposta_ia AS ai_response,\n        c.data_hora AS created_at,\n        c.nome AS profile_name\n      FROM %I.conversas c\n      WHERE c.data_hora >= (CURRENT_DATE - INTERVAL '1 day')::timestamptz\n        AND c.data_hora < CURRENT_DATE::timestamptz\n      ORDER BY c.telefone, c.data_hora\n    $q$,\n      t.tenant_code,\n      t.owner_name,\n      t.ai_assistant_name,\n      t.recipient_email,\n      t.schema_name\n    );\n  END LOOP;\nEND $$;\n\nSELECT\n  ai_assistant_id,\n  owner_name,\n  ai_assistant_name,\n  recipient_email,\n  id,\n  session_id,\n  sender,\n  sender_name,\n  message_type,\n  user_message,\n  ai_response,\n  created_at,\n  profile_name\nFROM tmp_relatorio_interacoes_dia_anterior\nORDER BY ai_assistant_name, session_id, created_at;",
+        "options": {}
+      },
+      "id": "2b9bc62b-7e20-4212-a4c8-ed7cf9cb7567",
+      "name": "Buscar Interações do Dia Anterior",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        688
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rtR0aIfgqJvl8ozT",
+          "name": "Postgres supabase cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "188f7df4-0f0a-4ae1-b97d-73055789f6f5",
+              "leftValue": "={{ $items(\"Buscar Interações do Dia Anterior\").length > 0 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "f062d25a-87a7-497d-a9b4-2f29533f8fb6",
+              "leftValue": "={{ Object.keys($items(\"Buscar Interações do Dia Anterior\")[0].json || {}).length > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "331eaaf0-39d9-42ba-9f11-a77f7103948a",
+      "name": "Verificar se Há Interações",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        256,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gera um item de email isolado por assistente, mantendo HTML no estilo WhatsApp\nconst rows = $input\n  .all()\n  .map(item => item.json)\n  .filter(data => data && Object.keys(data).length > 0 && data.ai_assistant_id);\n\nif (rows.length === 0) {\n  return [];\n}\n\nconst dataOntem = new Date();\ndataOntem.setDate(dataOntem.getDate() - 1);\nconst dataFormatada = dataOntem.toLocaleDateString('pt-BR', {\n  day: '2-digit',\n  month: '2-digit',\n  year: 'numeric'\n});\n\nconst porAssistente = {};\n\nfunction normalizarTexto(value, fallback = '') {\n  if (value === null || value === undefined) return fallback;\n  const texto = String(value).trim();\n  return texto || fallback;\n}\n\nfunction normalizarEmail(value) {\n  return normalizarTexto(value).toLowerCase();\n}\n\nfor (const data of rows) {\n  const assistenteId = data.ai_assistant_id;\n  const recipient_email = normalizarEmail(data.recipient_email);\n\n  if (!porAssistente[assistenteId]) {\n    porAssistente[assistenteId] = {\n      ai_assistant_id: assistenteId,\n      recipient_email,\n      owner_name: normalizarTexto(data.owner_name, 'Sem nome'),\n      ai_assistant_name: normalizarTexto(data.ai_assistant_name, 'Assistente'),\n      sessoes: {},\n      total_conversas: 0,\n      total_mensagens: 0,\n      tiposMensagem: { text: 0, audio: 0, image: 0, outros: 0 }\n    };\n  } else if (!porAssistente[assistenteId].recipient_email && recipient_email) {\n    porAssistente[assistenteId].recipient_email = recipient_email;\n  }\n\n  const assistente = porAssistente[assistenteId];\n\n  if (!data.id || !data.session_id || !data.created_at) {\n    continue;\n  }\n\n  assistente.total_mensagens += 1;\n\n  if (data.message_type === 'text') assistente.tiposMensagem.text += 1;\n  else if (data.message_type === 'audio') assistente.tiposMensagem.audio += 1;\n  else if (data.message_type === 'image') assistente.tiposMensagem.image += 1;\n  else assistente.tiposMensagem.outros += 1;\n\n  if (!assistente.sessoes[data.session_id]) {\n    assistente.sessoes[data.session_id] = {\n      sender: data.sender,\n      profile_name: data.profile_name || data.sender_name || data.sender,\n      mensagens: []\n    };\n    assistente.total_conversas += 1;\n  }\n\n  assistente.sessoes[data.session_id].mensagens.push({\n    timestamp: new Date(data.created_at),\n    tipo: data.message_type,\n    user_message: data.user_message,\n    ai_response: data.ai_response\n  });\n}\n\nfunction formatarHora(date) {\n  return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });\n}\n\nfunction escapeHtml(text) {\n  if (text === null || text === undefined) return '';\n  return String(text)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;')\n    .replace(/\\n/g, '<br>');\n}\n\nfunction formatWhatsApp(text) {\n  if (!text) return '';\n  let html = escapeHtml(text);\n  html = html.replace(/\\*(.*?)\\*/g, '<b>$1</b>');\n  html = html.replace(/\\b_(.*?)_\\b/g, '<i>$1</i>');\n  html = html.replace(/~(.*?)~/g, '<s>$1</s>');\n  html = html.replace(/```(.*?)```/gs, '<code style=\"background-color:#1a2730;padding:2px 4px;border-radius:3px;font-family:monospace;\">$1</code>');\n  return html;\n}\n\nfunction renderizarMensagens(sessao) {\n  let html = '';\n\n  sessao.mensagens.forEach(msg => {\n    if (msg.user_message) {\n      let tipoBadgeHtml = '';\n      if (msg.tipo !== 'text') {\n        let badgeBg = '#333';\n        let badgeColor = '#ccc';\n        if (msg.tipo === 'audio') {\n          badgeBg = '#0a4d3f';\n          badgeColor = '#7ed9c5';\n        } else if (msg.tipo === 'image') {\n          badgeBg = '#4a3c0a';\n          badgeColor = '#e6d47d';\n        }\n        tipoBadgeHtml = `<span style=\"display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-bottom:4px;font-weight:600;text-transform:uppercase;background-color:${badgeBg};color:${badgeColor};\">${msg.tipo}</span><br>`;\n      }\n\n      html += `\n        <div style=\"display:block;margin:4px 0;clear:both;overflow:hidden;text-align:left;\">\n          <div style=\"display:inline-block;max-width:65%;padding:8px 12px;border-radius:0 8px 8px 8px;background-color:#202c33;color:#e9edef;word-wrap:break-word;text-align:left;\">\n            ${tipoBadgeHtml}<div style=\"margin-top:4px;\">${formatWhatsApp(msg.user_message)}</div>\n            <div style=\"font-size:11px;color:#8696a0;margin-top:4px;text-align:right;\">${formatarHora(msg.timestamp)}</div>\n          </div>\n        </div>\n`;\n    }\n\n    if (msg.ai_response) {\n      html += `\n        <div style=\"display:block;margin:4px 0;clear:both;overflow:hidden;text-align:right;\">\n          <div style=\"display:inline-block;max-width:65%;padding:8px 12px;border-radius:8px 0 8px 8px;background-color:#005c4b;color:#ffffff;word-wrap:break-word;text-align:left;\">\n            <div style=\"margin-top:4px;\">${formatWhatsApp(msg.ai_response)}</div>\n            <div style=\"font-size:11px;color:#b8d4c6;margin-top:4px;text-align:right;\">${formatarHora(msg.timestamp)}</div>\n          </div>\n        </div>\n`;\n    }\n  });\n\n  return html;\n}\n\nfunction gerarHtmlAssistente(assistente) {\n  const sessoes = Object.values(assistente.sessoes)\n    .map(sessao => ({\n      ...sessao,\n      mensagens: [...sessao.mensagens].sort((a, b) => a.timestamp - b.timestamp)\n    }));\n\n  let html = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Resumo diário do WhatsApp - ${escapeHtml(assistente.owner_name)} - ${dataFormatada}</title>\n</head>\n<body style=\"margin:0;padding:20px;background-color:#0b141a;color:#e9edef;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.5;\">\n  <div style=\"max-width:900px;margin:0 auto;background-color:#111b21;border-radius:8px;overflow:hidden;\">\n    <div style=\"background:linear-gradient(135deg,#005c4b 0%,#128c7e 100%);padding:30px;text-align:center;border-bottom:3px solid #00a884;\">\n      <h1 style=\"margin:0 0 8px 0;padding:0;font-size:28px;color:#ffffff;\">&#128202; Resumo diário do WhatsApp</h1>\n      <div style=\"font-size:18px;color:#ffffff;font-weight:600;margin-bottom:6px;\">${escapeHtml(assistente.owner_name)}</div>\n      <div style=\"font-size:16px;color:#d1f4dd;font-weight:500;margin-top:8px;\">${dataFormatada}</div>\n    </div>\n\n    <div style=\"padding:25px;background-color:#1a2730;border-bottom:1px solid #2a3942;\">\n      <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\">\n        <tr>\n          <td width=\"33%\" style=\"padding:8px;\" valign=\"top\">\n            <div style=\"background-color:#202c33;padding:15px;border-radius:8px;text-align:center;border-left:4px solid #00a884;\">\n              <div style=\"font-size:12px;color:#8696a0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;\">Total de Conversas</div>\n              <div style=\"font-size:24px;font-weight:bold;color:#00a884;\">${assistente.total_conversas}</div>\n            </div>\n          </td>\n          <td width=\"33%\" style=\"padding:8px;\" valign=\"top\">\n            <div style=\"background-color:#202c33;padding:15px;border-radius:8px;text-align:center;border-left:4px solid #00a884;\">\n              <div style=\"font-size:12px;color:#8696a0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;\">Total de Mensagens</div>\n              <div style=\"font-size:24px;font-weight:bold;color:#00a884;\">${assistente.total_mensagens}</div>\n            </div>\n          </td>\n          <td width=\"34%\" style=\"padding:8px;\" valign=\"top\">\n            <div style=\"background-color:#202c33;padding:15px;border-radius:8px;text-align:center;border-left:4px solid #00a884;\">\n              <div style=\"font-size:12px;color:#8696a0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;\">Mensagens de Texto</div>\n              <div style=\"font-size:24px;font-weight:bold;color:#00a884;\">${assistente.tiposMensagem.text}</div>\n            </div>\n          </td>\n        </tr>\n        <tr>\n          <td width=\"33%\" style=\"padding:8px;\" valign=\"top\">\n            <div style=\"background-color:#202c33;padding:15px;border-radius:8px;text-align:center;border-left:4px solid #00a884;\">\n              <div style=\"font-size:12px;color:#8696a0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;\">Mensagens de Áudio</div>\n              <div style=\"font-size:24px;font-weight:bold;color:#00a884;\">${assistente.tiposMensagem.audio}</div>\n            </div>\n          </td>\n          <td width=\"33%\" style=\"padding:8px;\" valign=\"top\">\n            <div style=\"background-color:#202c33;padding:15px;border-radius:8px;text-align:center;border-left:4px solid #00a884;\">\n              <div style=\"font-size:12px;color:#8696a0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;\">Imagens</div>\n              <div style=\"font-size:24px;font-weight:bold;color:#00a884;\">${assistente.tiposMensagem.image}</div>\n            </div>\n          </td>\n          <td width=\"34%\" style=\"padding:8px;\" valign=\"top\">\n            <div style=\"background-color:#202c33;padding:15px;border-radius:8px;text-align:center;border-left:4px solid #00a884;\">\n              <div style=\"font-size:12px;color:#8696a0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;\">Outros Tipos</div>\n              <div style=\"font-size:24px;font-weight:bold;color:#00a884;\">${assistente.tiposMensagem.outros}</div>\n            </div>\n          </td>\n        </tr>\n      </table>\n    </div>\n`;\n\n  if (sessoes.length === 0) {\n    html += `\n    <div style=\"margin:20px;background-color:#1a2730;border-radius:8px;padding:24px;border:1px solid #2a3942;text-align:center;\">\n      <div style=\"font-size:18px;font-weight:600;color:#e9edef;margin-bottom:8px;\">Nenhuma conversa no período</div>\n      <div style=\"font-size:14px;color:#8696a0;\">Não houve mensagens registradas para ${escapeHtml(assistente.ai_assistant_name)} no dia ${dataFormatada}.</div>\n    </div>\n`;\n  }\n\n  for (const sessao of sessoes) {\n    const numMensagens = sessao.mensagens.length;\n    const primeiraMsg = sessao.mensagens[0];\n    const ultimaMsg = sessao.mensagens[sessao.mensagens.length - 1];\n\n    html += `\n    <div style=\"margin:20px;background-color:#0b141a;border-radius:8px;padding:15px;border:1px solid #2a3942;\">\n      <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid #2a3942;\">\n        <tr>\n          <td style=\"font-size:16px;font-weight:600;color:#e9edef;\">&#128172; ${escapeHtml(sessao.profile_name)} <span style=\"font-weight:400;font-size:13px;color:#8696a0;\">${escapeHtml(sessao.sender)}</span></td>\n          <td style=\"font-size:12px;color:#8696a0;text-align:right;\">${numMensagens} mensagem(s) &bull; ${formatarHora(primeiraMsg.timestamp)} - ${formatarHora(ultimaMsg.timestamp)}</td>\n        </tr>\n      </table>\n      <div style=\"display:block;\">\n${renderizarMensagens(sessao)}\n      </div>\n    </div>\n`;\n  }\n\n  html += `\n    <div style=\"text-align:center;padding:20px;color:#8696a0;font-size:12px;background-color:#1a2730;border-top:1px solid #2a3942;\">\n      Resumo diário gerado automaticamente para ${escapeHtml(assistente.ai_assistant_name)} em ${dataFormatada}.\n    </div>\n  </div>\n</body>\n</html>\n`;\n\n  return html;\n}\n\nreturn Object.values(porAssistente)\n  .filter(assistente => assistente.recipient_email)\n  .map(assistente => ({\n    json: {\n      ai_assistant_id: assistente.ai_assistant_id,\n      recipient_email: assistente.recipient_email,\n      ai_assistant_name: assistente.ai_assistant_name,\n      owner_name: assistente.owner_name,\n      data_ontem: dataFormatada,\n      total_conversas: assistente.total_conversas,\n      total_mensagens: assistente.total_mensagens,\n      email_subject: assistente.total_mensagens > 0\n        ? `📊 Resumo diário do WhatsApp — ${assistente.owner_name} — ${dataFormatada}`\n        : `📭 Resumo diário do WhatsApp — ${assistente.owner_name} — ${dataFormatada}`,\n      html: gerarHtmlAssistente(assistente)\n    }\n  }));"
+      },
+      "id": "f7441a50-a67e-4e69-a8ba-0e2cb8f928f2",
+      "name": "Gerar HTML WhatsApp",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        560
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "8f9f39f5-e2d1-43f7-8f3a-3df84f7f7e17",
+      "name": "Sem Interações",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        480,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.recipient_email || 'contato@bahiatecnologia.com.br' }}",
+        "subject": "={{ $json.email_subject }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        560
+      ],
+      "id": "2c9ec3d0-8f95-4bca-829d-0e51b6afac2e",
+      "name": "Enviar Relatório por E-mail",
+      "webhookId": "f8c1c7f0-3f4b-4a69-bce8-6337cd40bb49",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QgS6qXwHFfgn1v3X",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger Diário 01h BRT": {
+      "main": [
+        [
+          {
+            "node": "Buscar Interações do Dia Anterior",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Interações do Dia Anterior": {
+      "main": [
+        [
+          {
+            "node": "Verificar se Há Interações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar se Há Interações": {
+      "main": [
+        [
+          {
+            "node": "Gerar HTML WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sem Interações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar HTML WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Enviar Relatório por E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "87f5e6b9-fd79-4cd5-a30e-3ee030dc5484",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
+  },
+  "id": "JpQf7M3aNy2Lx8uB0r1V",
+  "tags": []
+}

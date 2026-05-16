@@ -36,8 +36,8 @@ BEGIN
 
   -- 2. Schema + profissional (idempotente via provision)
   v_prof_id := clinicas.provision_professional_schema(
-    p_tenant_code     := 'dra-Andrea',
-    p_schema_name     := 'clinicas_dra_Andrea',
+    p_tenant_code     := 'dra-andrea',
+    p_schema_name     := 'clinicas_dra_andrea',
     p_organization_id := v_org_id
   );
 
@@ -106,7 +106,7 @@ BEGIN
   WHERE professional_id = v_prof_id;
 
   -- 5. Carga inicial do schema da profissional
-  INSERT INTO clinicas_dra_Andrea.dentistas (
+  INSERT INTO clinicas_dra_andrea.dentistas (
     nome, cro, especialidade, especialidades, telefone, ativo,
     dias_trabalho, inicio_jornada, fim_jornada, inicio_almoco, fim_almoco,
     duracao_consulta_minutos, metadados
@@ -150,7 +150,7 @@ BEGIN
     metadados = EXCLUDED.metadados,
     atualizado_em = now();
 
-  INSERT INTO clinicas_dra_Andrea.procedimentos (codigo, nome, categoria, duracao_media_min, ativo)
+  INSERT INTO clinicas_dra_andrea.procedimentos (codigo, nome, categoria, duracao_media_min, ativo)
   VALUES
     ('PREV-001', 'Prevenção de Doenças Bucais', 'prevenção', 30, true),
     ('LIMP-001', 'Limpeza Dental', 'prevenção', 30, true),
