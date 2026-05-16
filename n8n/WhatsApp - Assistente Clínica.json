@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        48,
-        2304
+        16928,
+        7520
       ],
-      "id": "f04f7686-75eb-4749-86a7-115b45039c83",
+      "id": "9afba02c-e098-4eab-b1a7-c33cfa925c3e",
       "name": "Load Tenant Config",
       "alwaysOutputData": true,
       "credentials": {
@@ -39,10 +39,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        1920,
-        2512
+        18800,
+        7728
       ],
-      "id": "71c91808-8703-4a39-9231-14d7f3b0949b",
+      "id": "0625b1e1-bc48-4dd4-b198-7ad8191cb899",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -61,10 +61,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        2064,
-        2512
+        18944,
+        7728
       ],
-      "id": "7f95998a-c90f-455d-b322-4ab7990aca96",
+      "id": "6f32a38f-ba29-4ddd-a028-e7bf9ffd615f",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
@@ -78,10 +78,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1.1,
       "position": [
-        2192,
-        2800
+        19072,
+        8016
       ],
-      "id": "405a108d-8238-4352-aa7d-769f4b51630a",
+      "id": "a67fcd91-2b9e-4137-ae73-d8c539eb59f8",
       "name": "Think"
     },
     {
@@ -91,10 +91,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        2192,
-        2512
+        19072,
+        7728
       ],
-      "id": "969a41af-21cc-4877-8b71-ae78c9afbd8d",
+      "id": "ae86e9f8-e70f-4a56-86e6-e74bfe6282f9",
       "name": "Date & Time"
     },
     {
@@ -102,10 +102,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        2192,
-        2656
+        19072,
+        7872
       ],
-      "id": "757c2cfa-cc66-4863-80f7-f8e7283f5e02",
+      "id": "00c1588b-9c1f-4ed3-91fa-892158d7a071",
       "name": "Calculator"
     },
     {
@@ -153,10 +153,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2576,
-        2512
+        19456,
+        7728
       ],
-      "id": "ef054931-fde2-493b-8db1-d6241efe8014",
+      "id": "29a825a7-9293-4cf9-bd87-8dc70ca7de4f",
       "name": "Buscar Paciente"
     },
     {
@@ -224,10 +224,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2896,
-        2704
+        19776,
+        7920
       ],
-      "id": "3481bc83-4210-4067-9b33-ca0a5704254d",
+      "id": "bdd16c79-6202-4ffa-ac06-128c7e3be7b4",
       "name": "Buscar Horários"
     },
     {
@@ -334,10 +334,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2944,
-        2512
+        19824,
+        7728
       ],
-      "id": "872530f2-9ff7-4d3a-965a-8244b006d09c",
+      "id": "d530853f-178e-42e1-b12f-fda01335f01f",
       "name": "Agendar Consulta"
     },
     {
@@ -405,10 +405,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3072,
-        2704
+        19952,
+        7920
       ],
-      "id": "964e173a-78c2-415b-a680-7720d7f32baa",
+      "id": "38c46e66-a4f3-4bec-b410-aa2c5c57b613",
       "name": "Cancelar Consulta"
     },
     {
@@ -466,10 +466,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3104,
-        2496
+        19984,
+        7712
       ],
-      "id": "03e95c80-9f3e-495f-ab16-e11f571bde6a",
+      "id": "04bbca61-5f90-4ad7-a3c4-df67c91ea6fb",
       "name": "Consultar Agendamentos"
     },
     {
@@ -536,10 +536,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2736,
-        2768
+        19616,
+        7984
       ],
-      "id": "ba18d08f-1d9c-41a6-9520-7ecd7eddddf7",
+      "id": "6a06c251-c58e-48c5-824e-a7c700c53817",
       "name": "Listar Dentistas/Procedimentos"
     },
     {
@@ -587,10 +587,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3264,
-        2576
+        20144,
+        7824
       ],
-      "id": "11e9afe6-6cbc-4e60-9e61-f4eae254e2ba",
+      "id": "a4003329-ce39-4de2-aafa-cf1b3766b09f",
       "name": "Resumo Financeiro"
     },
     {
@@ -641,10 +641,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2560,
-        2768
+        19440,
+        7984
       ],
-      "id": "eb12d63a-3033-41bb-9f5c-733e9e12f0c9",
+      "id": "02b2fe31-4f91-4235-9061-513764093aee",
       "name": "Reiniciar Conversa"
     },
     {
@@ -682,10 +682,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        2752,
-        2496
+        19632,
+        7712
       ],
-      "id": "339a6437-5d66-488d-a7b4-2995a2e8af63",
+      "id": "7123a164-f437-48ec-8f9f-392949428c1e",
       "name": "Listar Especialidades"
     },
     {
@@ -694,7 +694,7 @@
         "description": "Consulta contexto consolidado do usuário/paciente pelo telefone WhatsApp, incluindo histórico de interações, agendamentos, planos de tratamento, prontuários, prescrições e situação financeira. Use no início do atendimento para personalizar a conversa.",
         "workflowId": {
           "__rl": true,
-          "value": "=Qd8cLk2mR7tVw91pX5zH",
+          "value": "=-XvFkZLuXnb0SzBqAWRQP",
           "mode": "id"
         },
         "workflowInputs": {
@@ -732,10 +732,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        3408,
-        2576
+        20160,
+        7664
       ],
-      "id": "f0f20a4e-4f2c-4f03-86ef-bac4f0ae7f20",
+      "id": "5dd9e62e-89cb-4af9-beac-ae1c4b88c057",
       "name": "Contexto do Usuário"
     },
     {
@@ -749,10 +749,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1376,
-        3056
+        18256,
+        8272
       ],
-      "id": "eaf1e210-0478-4094-bb88-5bb985785770",
+      "id": "1fc418b7-12ab-4413-ace2-1f793b43ea57",
       "name": "Executar Reset",
       "alwaysOutputData": true,
       "credentials": {
@@ -769,10 +769,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        736,
-        3056
+        17616,
+        8272
       ],
-      "id": "53e72101-9135-4998-b363-f03df97a6e70",
+      "id": "11334245-c3d0-4251-8b7c-769024755a8d",
       "name": "Mensagem de Reset"
     },
     {
@@ -782,10 +782,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4816,
-        2208
+        21696,
+        7424
       ],
-      "id": "5481d319-c6e1-4934-9fd3-bfbaa89a239c",
+      "id": "ba2bc526-50a4-4bc0-a806-f986203c2950",
       "name": "Code in JavaScript2"
     },
     {
@@ -795,10 +795,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        5232,
-        2208
+        22112,
+        7424
       ],
-      "id": "ad35a8de-6f26-44fc-b4dd-720d7825216a",
+      "id": "f7e5967b-9a50-4fa6-b308-b384e6bf7ffe",
       "name": "Loop Over Items"
     },
     {
@@ -807,13 +807,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "2be03830-ab6a-45e5-99bc-367f07ec6348",
+      "id": "5ad56bcb-028a-436a-a1f9-9f31d379928a",
       "name": "Webhook Verificação Meta",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -784,
-        1488
+        16096,
+        6704
       ],
       "webhookId": "meta-verification-webhook"
     },
@@ -841,13 +841,13 @@
         },
         "options": {}
       },
-      "id": "b07ead9d-1aa6-4f73-82bd-bb7fdf3a2628",
+      "id": "993ea89c-be19-4792-8846-7c41dd7a416f",
       "name": "Token Válido?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -560,
-        1488
+        16320,
+        6704
       ]
     },
     {
@@ -856,13 +856,13 @@
         "responseBody": "={{ $('Webhook Verificação Meta').first().json.query['hub.challenge'] }}",
         "options": {}
       },
-      "id": "640cd83b-bcc9-4a83-89ff-371b1e077cb9",
+      "id": "def6e837-1014-4f6d-aafc-8422eb939ac8",
       "name": "Responder Verificação",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -336,
-        1360
+        16544,
+        6576
       ]
     },
     {
@@ -873,13 +873,13 @@
           "responseCode": 403
         }
       },
-      "id": "8fa9eff1-06e7-4964-9e62-c46445d28a93",
+      "id": "aa95c869-448b-4f61-b0b6-ca2b11d55a63",
       "name": "Responder Proibido",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -336,
-        1600
+        16544,
+        6816
       ]
     },
     {
@@ -890,13 +890,13 @@
           "responseCode": 200
         }
       },
-      "id": "6e4afe4c-759d-4120-8a5b-8c4d7a83f7ec",
+      "id": "dfcb8a08-b5db-4cc2-b4e7-4a239d17c672",
       "name": "Responder 200 OK",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -208,
-        1904
+        16048,
+        7136
       ]
     },
     {
@@ -908,13 +908,13 @@
           "rawBody": true
         }
       },
-      "id": "f2fd2812-30f1-42b3-8ce5-7e61eb1f60d7",
+      "id": "dcc64dcd-fa45-4461-bbf3-5ed56c6c4ec3",
       "name": "Webhook Mensagens Recebidas",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -768,
-        2096
+        15488,
+        7328
       ],
       "webhookId": "joao-leao-webhook"
     },
@@ -926,13 +926,13 @@
           "queryReplacement": "={{ $json.whatsapp_phone_number }}"
         }
       },
-      "id": "8a0aa664-f8e1-420e-ace3-634cd129cbbe",
+      "id": "69c82633-52ba-4805-8fc2-de56a8cfdaec",
       "name": "Buscar tenant",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        -208,
-        2304
+        16048,
+        7536
       ],
       "credentials": {
         "postgres": {
@@ -949,13 +949,13 @@
           "queryReplacement": "={{ $('Buscar tenant').first().json.tenant_code }},={{ $('Mensagem Recebida').first().json.message_from }},={{ $('Mensagem Recebida').first().json.message_id }},={{ $('Mensagem Recebida').first().json.message_type }},={{ $('Mensagem Recebida').first().json.whatsapp_phone_number }},={{ $('Mensagem Recebida').first().json.whatsapp_phone_number_id }}"
         }
       },
-      "id": "5f6f8886-e2f0-4e14-b5d8-cf68e6974f97",
+      "id": "ebc89b79-9b2e-4580-a960-d86bd64c41a8",
       "name": "Aplicar Rate Limit",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        48,
-        2128
+        16384,
+        7536
       ],
       "credentials": {
         "postgres": {
@@ -988,26 +988,26 @@
         },
         "options": {}
       },
-      "id": "47b220b3-0e71-4b45-bf83-9310101ee532",
+      "id": "7cb44d9b-ce5e-4a6d-a9d5-6d66af5caeb2",
       "name": "Rate Limit Permitido?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        288,
-        2128
+        16624,
+        7536
       ]
     },
     {
       "parameters": {
         "jsCode": "// Extrair dados da mensagem recebida via API Oficial do WhatsApp (Meta Cloud API)\nconst body = $input.first().json.body || $input.first().json;\n\n// Validar que é um webhook do WhatsApp Business\nif (body.object !== 'whatsapp_business_account') {\n  return [];\n}\n\n// Extrair a primeira entrada e mudança\nconst entry = (body.entry || [])[0];\nif (!entry) return [];\n\nconst change = (entry.changes || [])[0];\nif (!change || change.field !== 'messages') return [];\n\nconst value = change.value || {};\nconst metadata = value.metadata || {};\n\n// Extrair mensagem (ignorar status/delivery receipts)\nconst messages = value.messages || [];\nif (messages.length === 0) return [];\n\nconst msg = messages[0];\nconst contacts = value.contacts || [];\nconst contact = contacts[0] || {};\n\n// Dados do remetente\nconst message_from = msg.from || '';\nconst message_from_profile_name = contact.profile?.name || '';\nconst message_id = msg.id || '';\nconst whatsapp_phone_number = metadata.display_phone_number || '';\nconst whatsapp_phone_number_id = metadata.phone_number_id || '';\n\n// Determinar tipo da mensagem\nlet message_type = 'text';\nlet message_content = '';\nlet media_mimetype = '';\nlet media_caption = '';\nlet media_id = '';\n\nif (msg.type === 'audio') {\n  message_type = 'audio';\n  media_mimetype = msg.audio?.mime_type || 'audio/ogg';\n  media_id = msg.audio?.id || '';\n} else if (msg.type === 'image') {\n  message_type = 'image';\n  media_mimetype = msg.image?.mime_type || 'image/jpeg';\n  media_caption = msg.image?.caption || '';\n  media_id = msg.image?.id || '';\n} else if (msg.type === 'text') {\n  message_content = msg.text?.body || '';\n} else if (msg.type === 'interactive') {\n  message_content = msg.interactive?.button_reply?.title || msg.interactive?.list_reply?.title || '';\n} else if (msg.type === 'button') {\n  message_content = msg.button?.text || '';\n} else {\n  // Tipo não suportado\n  return [];\n}\n\n// Detectar comandos de reset da conversa\nconst resetCommands = ['/limpar', '/reset', '/reiniciar', '/nova conversa', '/novo', 'nova conversa', 'limpar conversa', '#reiniciar', '#reset', '#limpar', 'reiniciar conversa', 'recomeçar conversa', 'recomecar conversa', 'começar denovo', 'comecar denovo'];\n\nconst normalizedContent = message_content.trim().toLowerCase();\nif (resetCommands.includes(normalizedContent)) {\n  message_type = 'reset';\n}\n\n// Montar sessionId: telefone do assistente + telefone do usuário\nconst session_id = whatsapp_phone_number + '|' + message_from;\n\nreturn [{\n  json: {\n    message_type,\n    message_content,\n    media_mimetype,\n    media_caption,\n    media_id,\n    message_from,\n    message_from_profile_name,\n    message_id,\n    session_id, \n    whatsapp_phone_number,\n    whatsapp_phone_number_id,\n    raw_message: msg\n  }\n}];"
       },
-      "id": "95e93fe0-94d6-44e0-b364-7894bca4fd45",
+      "id": "9f9f9129-4b4d-46c4-afc6-b041b2f597cc",
       "name": "Mensagem Recebida",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -512,
-        2096
+        15744,
+        7328
       ]
     },
     {
@@ -1114,26 +1114,26 @@
         },
         "options": {}
       },
-      "id": "904d8a07-dadd-434f-a8df-aaeb74ada64f",
+      "id": "22bf7bae-ab8f-4f13-ace8-8c17ca51d95a",
       "name": "Tipo de Mensagem",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        336,
-        2272
+        17216,
+        7488
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar texto transcrito do áudio para o agente IA\nconst transcription = $input.first().json.text || '';\nconst originalData = $('Mensagem Recebida').first().json;\n\nconst transcription_text = (transcription && transcription.trim()) \n      ? transcription.trim()\n      : '[Áudio recebido mas não foi possível transcrever. Por favor, envie em texto.]'\n\nreturn [{\n  json: {\n    ...originalData,\n    message_type: 'audio',\n    chat_input: `[Mensagem de áudio transcrita]: ${transcription_text}`,\n    original_transcription: transcription_text\n  }\n}];"
       },
-      "id": "8365f5b4-c425-4ffe-a7f3-31ebd6e6728c",
+      "id": "feaa267c-8c27-4bac-8e11-e76485c8400e",
       "name": "Preparar Texto do Áudio",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1520,
-        2176
+        18400,
+        7392
       ]
     },
     {
@@ -1145,10 +1145,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        1280,
-        2176
+        18160,
+        7392
       ],
-      "id": "68492373-ea4e-4b5d-9025-52cefc7cd51e",
+      "id": "f3614902-4097-4452-98c9-22d79af08e1c",
       "name": "Transcribe a recording",
       "credentials": {
         "openAiApi": {
@@ -1166,10 +1166,10 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        784,
-        2176
+        17664,
+        7392
       ],
-      "id": "bb5e0612-4f50-48b6-a150-afb6d90df1e4",
+      "id": "9c36b94d-cbd5-4bc9-8a4f-1737dc6323d5",
       "name": "Download audio",
       "webhookId": "da1b6a8d-7add-451c-8800-5f319f5e8372",
       "credentials": {
@@ -1195,10 +1195,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1040,
-        2176
+        17920,
+        7392
       ],
-      "id": "236f11e3-d631-4f39-ba6f-65ab716da48c",
+      "id": "d92215fa-333f-4451-8c5f-0fca26defe6c",
       "name": "Baixar Áudio Binary",
       "credentials": {
         "whatsAppApi": {
@@ -1211,26 +1211,26 @@
       "parameters": {
         "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Unificar todas as mensagens (texto, áudio, imagem) para o agente IA\nconst item = $input.first().json;\n\nreturn [{\n  json: {\n    ...item,\n    ...originalData\n  }\n}];"
       },
-      "id": "5f42504c-4801-4dfb-a6f1-d9031610ecae",
+      "id": "8029db73-bde0-4383-8447-506f19bf3b72",
       "name": "Unificar Mensagens",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2096,
-        2256
+        18976,
+        7472
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar mensagem de texto para o agente IA\nconst originalData = $('Mensagem Recebida').first().json;\nconst messageContent = originalData.message_content\n\nreturn [{\n  json: {\n    ...originalData,\n    chat_input: messageContent,\n    message_type: 'text'\n  }\n}];"
       },
-      "id": "ea173434-2be2-427c-bb40-cf8d71035352",
+      "id": "34aaa16d-dac7-4a72-aff8-2d178cc4db72",
       "name": "Preparar Texto",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1088,
-        1696
+        17968,
+        6912
       ]
     },
     {
@@ -1244,10 +1244,10 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        5520,
-        2224
+        22400,
+        7440
       ],
-      "id": "4c74266b-0f31-4926-85b6-ea65858983a3",
+      "id": "d5546478-07ec-4c66-98e4-ded75f0ebea9",
       "name": "Enviar Mensagem Resposta",
       "webhookId": "cd14995a-7e3e-45d5-b337-1d094a35d364",
       "credentials": {
@@ -1261,13 +1261,13 @@
       "parameters": {
         "jsCode": "// Restaurar dados originais da mensagem recebida\nconst originalData = $('Mensagem Recebida').first().json;\n\n// Mensagem de reset\nconst mensagemReset = $('Mensagem de Reset').first().json;\n\nreturn [{\n  json: {\n    ...mensagemReset,\n    ...originalData\n  }\n}];"
       },
-      "id": "dffdc69e-6cf3-4e62-96a7-2c4779d70eb8",
+      "id": "d9587e19-ebc5-4611-a94b-8859feaaf988",
       "name": "Restaurar Dados",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1776,
-        3056
+        18656,
+        8272
       ]
     },
     {
@@ -1280,10 +1280,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
-        3408,
-        2416
+        20288,
+        7632
       ],
-      "id": "48ed5595-9f79-401c-9472-61af5d6ee1f6",
+      "id": "8c544ff3-373a-4aa1-8da7-8ec91d09c4af",
       "name": "Postgres PGVector Store",
       "credentials": {
         "postgres": {
@@ -1299,10 +1299,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3408,
-        2688
+        20288,
+        7904
       ],
-      "id": "71c490ea-9ffd-41e8-bf3a-6d21eaa9a37a",
+      "id": "3ca4ee7f-5cab-4599-8f09-d972b109d544",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
@@ -1322,10 +1322,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2352,
-        2256
+        19232,
+        7472
       ],
-      "id": "41d42b02-1913-450e-aa40-497b57a2dc69",
+      "id": "74108b5c-b827-47fe-9864-99d272f04ada",
       "name": "AI Agent"
     },
     {
@@ -1448,10 +1448,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1072,
-        3056
+        17952,
+        8272
       ],
-      "id": "c5f0134a-601b-428b-a77f-f06f8e77ffb6",
+      "id": "9228cc13-32d5-4d4b-942e-2d5b9573bcd4",
       "name": "Salvar Histórico de Conversa (reset)",
       "credentials": {
         "postgres": {
@@ -1580,10 +1580,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2880,
-        2096
+        19760,
+        7312
       ],
-      "id": "d255d0c4-10d5-495a-9535-b892429fce19",
+      "id": "937e7fd9-0b36-4f49-abe8-45b02a782087",
       "name": "Salvar Histórico de Conversa",
       "credentials": {
         "postgres": {
@@ -1982,8 +1982,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     },
     "Mensagem Recebida": {
@@ -2182,7 +2181,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "ec94dd2d-a0c8-4b6e-88cb-a126cad4da27",
+  "versionId": "20d10697-fe5e-4373-94ee-0a105f83b23d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d07a57d7c2add559a13f166055a90b89bb4e767a13639a3a9399707bf04755c3"
